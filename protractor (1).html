@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Virtual Protractor Manipulative</title>
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --accent: #059669;
+            --danger: #dc2626;
+            --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --heavy-border: 3px solid #000000;
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #475569;
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+        }
+
+        [data-contrast="high"] {
+            --bg-main: #ffffff;
+            --bg-card: #ffffff;
+            --text-main: #000000;
+            --text-muted: #000000;
+            --border-color: #000000;
+            --primary: #0000ff;
+            --primary-hover: #00008b;
+            --accent: #008000;
+            --danger: #ff0000;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            padding: 0.5rem 1rem;
+            border-bottom: var(--heavy-border);
+            z-index: 10;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            height: 60px;
+        }
+
+        header h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .main-layout {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            position: relative;
+            height: calc(100vh - 60px);
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background-color: var(--bg-main);
+            overflow: hidden;
+            cursor: default;
+        }
+
+        .canvas-container.grid-on {
+            background-image: 
+                linear-gradient(to right, var(--border-color) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--border-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #interaction-layer {
+            z-index: 2;
+        }
+
+        #annotation-layer {
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        #annotation-layer.active {
+            pointer-events: auto;
+            cursor: crosshair;
+        }
+
+        /* Bottom Controls Dock Panel Layout */
+        .bottom-dock {
+            background: var(--bg-card);
+            border-top: var(--heavy-border);
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.8rem;
+            padding: 0.8rem;
+            z-index: 8;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .dock-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            border-right: 2px dashed var(--border-color);
+            padding-right: 0.8rem;
+        }
+
+        .dock-section:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+
+        .dock-section h2 {
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.2rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.3rem;
+        }
+
+        .control-grid.three-col {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        button {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 2px solid var(--border-color);
+            padding: 0.4rem 0.5rem;
+            font-weight: 700;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            transition: all 0.1s ease;
+        }
+
+        button:hover:not(:disabled) {
+            background: var(--border-color);
+            border-color: var(--text-main);
+        }
+
+        button:active:not(:disabled) {
+            transform: scale(0.97);
+        }
+
+        button.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-danger.active {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+
+        .slider-group {
+            margin-bottom: 0.3rem;
+        }
+
+        .slider-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 0.1rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 5px;
+            background: var(--border-color);
+            border-radius: 3px;
+            outline: none;
+            accent-color: var(--primary);
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: 0.2rem;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 0.3rem;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-main);
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        /* HUD & Overlay displays */
+        .angle-hud {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: var(--bg-card);
+            border: 3px solid var(--heavy-border);
+            border-radius: 10px;
+            padding: 0.75rem;
+            z-index: 5;
+            min-width: 200px;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+        }
+
+        .hud-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .hud-value {
+            font-size: 1.75rem;
+            font-weight: 900;
+            margin: 0.1rem 0;
+        }
+
+        .hud-type {
+            font-size: 0.85rem;
+            font-weight: 800;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            display: inline-block;
+            color: white;
+            background: var(--text-muted);
+        }
+
+        /* Challenge Panel */
+        .challenge-box {
+            background: #fef08a;
+            color: #854d0e;
+            border: 2px solid #ca8a04;
+            border-radius: 6px;
+            padding: 0.4rem;
+            font-weight: 700;
+        }
+        
+        [data-theme="dark"] .challenge-box {
+            background: #713f12;
+            color: #fef08a;
+            border-color: #eab308;
+        }
+
+        .challenge-text {
+            font-size: 0.8rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .challenge-score {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+            padding-top: 0.2rem;
+        }
+
+        .canvas-instructions {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            background: rgba(0,0,0,0.75);
+            color: #ffffff;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        @media (max-width: 1024px) {
+            .bottom-dock {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .dock-section {
+                border-right: none;
+                border-bottom: 1px dashed var(--border-color);
+                padding-bottom: 0.4rem;
+            }
+        }
+    </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JSVKBDWEV5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-JSVKBDWEV5');
+</script>
+<body>
+
+    <header>
+        <h1>📐 Virtual Protractor Manipulative</h1>
+        <div style="display: flex; gap: 0.4rem;">
+            <button id="btn-undo" title="Undo Last Object" onclick="app.undo()">↩️ Undo</button>
+            <button id="btn-redo" title="Redo Object" onclick="app.redo()">↪️ Redo</button>
+            <button id="btn-reset" onclick="app.resetManipulative()">🔄 Reset Canvas</button>
+            <button id="btn-fullscreen" onclick="app.toggleFullscreen()">📺 Fullscreen</button>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <div class="canvas-container grid-on" id="container-frame">
+            
+            <div class="angle-hud" id="hud-panel">
+                <div class="hud-title">Measured Space</div>
+                <div class="hud-value" id="hud-deg-val">0°</div>
+                <div class="hud-type" id="hud-classification-type">Zero Angle</div>
+                <div id="challenge-feedback" style="margin-top:0.4rem; font-weight:800; font-size:0.85rem;"></div>
+            </div>
+
+            <div class="canvas-instructions" id="guide-pill">Mode: Ray Construction Engine active</div>
+
+            <canvas id="interaction-layer"></canvas>
+            <canvas id="annotation-layer"></canvas>
+        </div>
+
+        <footer class="bottom-dock">
+            
+            <div class="dock-section">
+                <h2>🎮 Application Mode</h2>
+                <div class="control-grid">
+                    <button id="mode-explore-btn" class="active" onclick="app.setAppMode('explore')">🔬 Exploration</button>
+                    <button id="mode-practice-btn" onclick="app.setAppMode('practice')">🏆 Challenge</button>
+                </div>
+                <div id="practice-area-box" style="display:none; margin-top:0.2rem;">
+                    <div class="challenge-box">
+                        <div class="challenge-text" id="target-challenge-string">Construct a perfectly verified right angle.</div>
+                        <div class="challenge-score">
+                            <span id="star-trophy-counter">⭐ 0 pts</span>
+                            <button onclick="app.generateChallengeQuestion()" style="padding:0.1rem 0.2rem; font-size:0.65rem;">Next 🎲</button>
+                        </div>
+                    </div>
+                    <button class="active" style="width:100%; background:var(--accent); margin-top:0.2rem; padding:0.2rem;" onclick="app.verifyChallengeAnswer()">Verify Answer</button>
+                </div>
+            </div>
+
+            <div class="dock-section">
+                <h2>✏️ Drawing Tools</h2>
+                <div class="control-grid">
+                    <button id="tool-ray-btn" class="active" onclick="app.setTool('ray')">📏 Ray</button>
+                    <button id="tool-segment-btn" onclick="app.setTool('segment')">🔗 Seg</button>
+                    <button id="tool-ink-btn" onclick="app.setTool('ink')">✒️ Pencil</button>
+                    <button id="tool-erase-btn" onclick="app.setTool('erase')">🧽 Erase</button>
+                </div>
+                <button class="btn-danger" style="width:100%; margin-top:0.2rem; padding:0.2rem;" onclick="app.clearDrawingsTrack()">🗑️ Clear Elements</button>
+            </div>
+
+            <div class="dock-section">
+                <h2>⭕ Protractor Engine</h2>
+                <div class="control-grid">
+                    <button id="prot-semi-btn" class="active" onclick="app.setProtractorShape('semi')">🌗 180°</button>
+                    <button id="prot-full-btn" onclick="app.setProtractorShape('full')">🌕 360°</button>
+                    <button id="prot-lock-btn" onclick="app.toggleProtractorLock()">🔓 Unlock</button>
+                    <button id="prot-snap-btn" onclick="app.toggleSnapState()">🧲 Snap</button>
+                </div>
+                
+                <div class="control-grid three-col" style="margin-top:0.2rem;">
+                    <button id="snap-1-btn" class="active" onclick="app.setSnapResolution(1)">1°</button>
+                    <button id="snap-5-btn" onclick="app.setSnapResolution(5)">5°</button>
+                    <button id="snap-10-btn" onclick="app.setSnapResolution(10)">10°</button>
+                </div>
+            </div>
+
+            <div class="dock-section">
+                <h2>📐 Metrics & Scale</h2>
+                <div class="slider-group">
+                    <div class="slider-label"><span>🔄 Rotation</span><span id="rotate-val-box">0°</span></div>
+                    <input type="range" id="protractor-rotator-slider" min="0" max="359" value="0" oninput="app.updateProtractorFromSliders()">
+                </div>
+                <div class="slider-group">
+                    <div class="slider-label"><span>🔍 Zoom</span><span id="zoom-val-box">100%</span></div>
+                    <input type="range" id="protractor-zoom-slider" min="50" max="200" value="100" oninput="app.updateProtractorFromSliders()">
+                </div>
+                <div class="input-group">
+                    <input type="number" id="manual-degree-input" min="0" max="360" value="0" placeholder="Angle" oninput="app.handleManualAngleInput()">
+                </div>
+            </div>
+
+            <div class="dock-section">
+                <h2>🏫 View & UI Suite</h2>
+                <div class="control-grid">
+                    <button id="show-labels-btn" class="active" onclick="app.toggleLabelsVisibility()">🏷️ Labels</button>
+                    <button id="freeze-measure-btn" onclick="app.toggleMeasurementFreeze()">🥶 Freeze</button>
+                    <button id="theme-toggle-btn" onclick="app.toggleThemeMode()">🌙 Dark</button>
+                    <button id="grid-toggle-btn" class="active" onclick="app.toggleGridPatternBackground()">🏁 Grid</button>
+                </div>
+                <div class="control-grid" style="margin-top:0.2rem;">
+                    <button id="show-baseline-btn" class="active" onclick="app.toggleBaselineVisibility()">🏁 Base</button>
+                    <button id="show-center-btn" class="active" onclick="app.toggleCenterVisibility()">🎯 Center</button>
+                </div>
+            </div>
+
+        </footer>
+    </div>
+
+    <script>
+        class VirtualProtractorApp {
+            constructor() {
+                this.rays = [];
+                this.segments = [];
+                this.inkLines = [];
+                this.currentInkLine = null;
+                
+                this.undoStack = [];
+                this.redoStack = [];
+
+                this.appMode = 'explore'; 
+                this.activeTool = 'ray'; 
+                this.protractorShape = 'semi'; 
+                this.isLocked = false;
+                this.isSnapped = false;
+                this.snapInterval = 1;
+                this.labelsVisible = true;
+                this.baselineVisible = true;
+                this.centerVisible = true;
+                this.measurementFrozen = false;
+
+                this.protractor = {
+                    x: 400,
+                    y: 300,
+                    radius: 180,
+                    baseRadius: 180,
+                    rotation: 0,
+                    scale: 1.0
+                };
+
+                this.dragState = {
+                    isDraggingProtractor: false,
+                    isRotatingProtractor: false,
+                    activeRayIndex: null,
+                    activeRayHandle: null, 
+                    activeSegmentIndex: null,
+                    activeSegmentHandle: null, 
+                    startX: 0,
+                    startY: 0,
+                    protStartX: 0,
+                    protStartY: 0,
+                    protStartRotation: 0
+                };
+
+                this.inkDrawingActive = false;
+
+                this.challengeScorePoints = 0;
+                this.currentChallengeTargetValue = 0;
+                this.currentChallengeType = 'make_angle'; 
+            }
+
+            init() {
+                this.interlayer = document.getElementById('interaction-layer');
+                this.ictx = this.interlayer.getContext('2d');
+                
+                this.annolayer = document.getElementById('annotation-layer');
+                this.actx = this.annolayer.getContext('2d');
+
+                this.resizeWorkspaceCanvases();
+                window.addEventListener('resize', () => this.resizeWorkspaceCanvases());
+
+                this.protractor.x = this.interlayer.width / 2;
+                this.protractor.y = this.interlayer.height / 2;
+
+                this.setupInteractionListeners();
+                this.generateDefaultInitialGeometrySetup();
+                this.refreshStateRenderEnginePipelines();
+            }
+
+            resizeWorkspaceCanvases() {
+                const frame = document.getElementById('container-frame');
+                
+                this.interlayer.width = frame.clientWidth;
+                this.interlayer.height = frame.clientHeight;
+                
+                this.annolayer.width = frame.clientWidth;
+                this.annolayer.height = frame.clientHeight;
+
+                this.refreshStateRenderEnginePipelines();
+                this.redrawFreehandLaserInkCanvas();
+            }
+
+            generateDefaultInitialGeometrySetup() {
+                const cx = this.protractor.x;
+                const cy = this.protractor.y;
+                
+                this.rays.push({ cx: cx, cy: cy, ex: cx + 160, ey: cy, isInfinite: false });
+                this.rays.push({ cx: cx, cy: cy, ex: cx + 110, ey: cy - 110, isInfinite: false });
+                
+                this.saveStateToHistoryTrack();
+            }
+
+            setupInteractionListeners() {
+                const startEvent = (e) => this.handlePointerDownSequence(this.getNormalizedEventCoords(e), e);
+                const moveEvent = (e) => this.handlePointerMoveSequence(this.getNormalizedEventCoords(e), e);
+                const endEvent = (e) => this.handlePointerUpSequence(e);
+
+                this.interlayer.addEventListener('mousedown', startEvent);
+                this.interlayer.addEventListener('mousemove', moveEvent);
+                window.addEventListener('mouseup', endEvent);
+
+                this.interlayer.addEventListener('touchstart', startEvent, { passive: false });
+                this.interlayer.addEventListener('touchmove', moveEvent, { passive: false });
+                window.addEventListener('touchend', endEvent);
+
+                this.annolayer.addEventListener('mousedown', (e) => this.handleInkMouseDown(this.getNormalizedEventCoords(e)));
+                this.annolayer.addEventListener('mousemove', (e) => this.handleInkMouseMove(this.getNormalizedEventCoords(e)));
+                window.addEventListener('mouseup', () => this.handleInkMouseUp());
+
+                this.annolayer.addEventListener('touchstart', (e) => {
+                    this.handleInkMouseDown(this.getNormalizedEventCoords(e.touches[0]));
+                    e.preventDefault();
+                }, { passive: false });
+                this.annolayer.addEventListener('touchmove', (e) => {
+                    this.handleInkMouseMove(this.getNormalizedEventCoords(e.touches[0]));
+                    e.preventDefault();
+                }, { passive: false });
+                window.addEventListener('touchend', () => this.handleInkMouseUp());
+            }
+
+            getNormalizedEventCoords(e) {
+                const rect = this.interlayer.getBoundingClientRect();
+                const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+                const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            }
+
+            saveStateToHistoryTrack() {
+                const snap = {
+                    rays: JSON.parse(JSON.stringify(this.rays)),
+                    segments: JSON.parse(JSON.stringify(this.segments))
+                };
+                this.undoStack.push(snap);
+                this.redoStack = []; 
+                this.updateHistoryButtonsState();
+            }
+
+            undo() {
+                if (this.undoStack.length > 1) {
+                    const current = this.undoStack.pop();
+                    this.redoStack.push(current);
+                    const previous = this.undoStack[this.undoStack.length - 1];
+                    
+                    this.rays = JSON.parse(JSON.stringify(previous.rays));
+                    this.segments = JSON.parse(JSON.stringify(previous.segments));
+                    
+                    this.refreshStateRenderEnginePipelines();
+                    this.updateHistoryButtonsState();
+                }
+            }
+
+            redo() {
+                if (this.redoStack.length > 0) {
+                    const nextState = this.redoStack.pop();
+                    this.undoStack.push(nextState);
+                    
+                    this.rays = JSON.parse(JSON.stringify(nextState.rays));
+                    this.segments = JSON.parse(JSON.stringify(nextState.segments));
+                    
+                    this.refreshStateRenderEnginePipelines();
+                    this.updateHistoryButtonsState();
+                }
+            }
+
+            updateHistoryButtonsState() {
+                document.getElementById('btn-undo').disabled = (this.undoStack.length <= 1);
+                document.getElementById('btn-redo').disabled = (this.redoStack.length === 0);
+            }
+
+            refreshStateRenderEnginePipelines() {
+                this.ictx.clearRect(0, 0, this.interlayer.width, this.interlayer.height);
+                this.drawGeometricElementsOnCanvas();
+                this.drawProtractorVectorGraphicMesh();
+                if (!this.measurementFrozen) {
+                    this.calculateAndDisplayAngleMetrics();
+                }
+            }
+
+            drawGeometricElementsOnCanvas() {
+                const ctx = this.ictx;
+
+                this.segments.forEach((seg, index) => {
+                    ctx.beginPath();
+                    ctx.moveTo(seg.x1, seg.y1);
+                    ctx.lineTo(seg.x2, seg.y2);
+                    ctx.strokeStyle = '#4f46e5';
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+
+                    this.drawGrabCircleHandlePoint(ctx, seg.x1, seg.y1, '#6366f1');
+                    this.drawGrabCircleHandlePoint(ctx, seg.x2, seg.y2, '#6366f1');
+                });
+
+                this.rays.forEach((ray, index) => {
+                    ctx.beginPath();
+                    ctx.moveTo(ray.cx, ray.cy);
+                    
+                    let targetX = ray.ex;
+                    let targetY = ray.ey;
+
+                    if (ray.isInfinite) {
+                        const dx = ray.ex - ray.cx;
+                        const dy = ray.ey - ray.cy;
+                        const len = Math.sqrt(dx*dx + dy*dy) || 1;
+                        targetX = ray.cx + (dx / len) * 2000;
+                        targetY = ray.cy + (dy / len) * 2000;
+                    }
+
+                    ctx.lineTo(targetX, targetY);
+                    ctx.strokeStyle = '#059669';
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+
+                    if (this.centerVisible) {
+                        this.drawGrabCircleHandlePoint(ctx, ray.cx, ray.cy, '#10b981', 5);
+                    }
+                    this.drawGrabCircleHandlePoint(ctx, ray.ex, ray.ey, '#d97706', 7);
+                });
+            }
+
+            drawGrabCircleHandlePoint(ctx, x, y, color, radius = 6) {
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.fillStyle = color;
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2;
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            drawProtractorVectorGraphicMesh() {
+                const ctx = this.ictx;
+                const p = this.protractor;
+                const rad = p.radius * p.scale;
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate((p.rotation * Math.PI) / 180);
+
+                ctx.beginPath();
+                if (this.protractorShape === 'semi') {
+                    ctx.arc(0, 0, rad, Math.PI, 0, false);
+                } else {
+                    ctx.arc(0, 0, rad, 0, Math.PI * 2, false);
+                }
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+                ctx.fill();
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                if (this.baselineVisible) {
+                    ctx.beginPath();
+                    ctx.moveTo(-rad, 0);
+                    ctx.lineTo(rad, 0);
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
+                }
+
+                if (this.labelsVisible) {
+                    this.drawProtractorTickScales(ctx, rad);
+                }
+
+                if (this.centerVisible) {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 4, 0, Math.PI*2);
+                    ctx.fillStyle = '#ff0000';
+                    ctx.fill();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(-12, 0); ctx.lineTo(12, 0);
+                    ctx.moveTo(0, -12); ctx.lineTo(0, 12);
+                    ctx.strokeStyle = '#ff0000';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                }
+
+                ctx.beginPath();
+                ctx.arc(0, -rad - 20, 10, 0, Math.PI * 2);
+                ctx.fillStyle = '#d97706';
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2;
+                ctx.fill();
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(0, -rad);
+                ctx.lineTo(0, -rad - 10);
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.restore();
+            }
+
+            drawProtractorTickScales(ctx, rad) {
+                const totalDegrees = this.protractorShape === 'semi' ? 180 : 360;
+                
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#000000';
+
+                for (let i = 0; i <= totalDegrees; i++) {
+                    let angleInRad = ((i - 180) * Math.PI) / 180;
+                    if (this.protractorShape === 'full') {
+                        angleInRad = (i * Math.PI) / 180;
+                    }
+
+                    let tickLength = 6;
+                    let drawText = false;
+
+                    if (i % 10 === 0) {
+                        tickLength = 14;
+                        drawText = true;
+                    } else if (i % 5 === 0) {
+                        tickLength = 10;
+                    }
+
+                    const innerX = (rad - tickLength) * Math.cos(angleInRad);
+                    const innerY = (rad - tickLength) * Math.sin(angleInRad);
+                    const outerX = rad * Math.cos(angleInRad);
+                    const outerY = rad * Math.sin(angleInRad);
+
+                    ctx.beginPath();
+                    ctx.moveTo(innerX, innerY);
+                    ctx.lineTo(outerX, outerY);
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = i % 10 === 0 ? 1.5 : 1;
+                    ctx.stroke();
+
+                    if (drawText && i <= 180) {
+                        ctx.font = 'bold 9px sans-serif';
+                        const textRadiusOuter = rad - 24;
+                        const txOuter = textRadiusOuter * Math.cos(angleInRad);
+                        const tyOuter = textRadiusOuter * Math.sin(angleInRad);
+                        ctx.fillText(i.toString(), txOuter, tyOuter);
+
+                        const textRadiusInner = rad - 36;
+                        const txInner = textRadiusInner * Math.cos(angleInRad);
+                        const tyInner = textRadiusInner * Math.sin(angleInRad);
+                        ctx.fillText((180 - i).toString(), txInner, tyInner);
+                    }
+                }
+            }
+
+            calculateAndDisplayAngleMetrics() {
+                if (this.rays.length < 2) {
+                    this.updateAngleHUDDisplayPanelMetrics(0, "Zero Angle");
+                    return;
+                }
+
+                const r1 = this.rays[0];
+                const r2 = this.rays[1];
+
+                const a1 = Math.atan2(r1.ey - r1.cy, r1.ex - r1.cx);
+                const a2 = Math.atan2(r2.ey - r2.cy, r2.ex - r2.cx);
+
+                let diffRad = a2 - a1;
+                let deg = Math.round((diffRad * 180) / Math.PI);
+                
+                if (deg < 0) deg += 360;
+                
+                // ALWAYS MEASURE INSIDE ANGLE (0° to 180° bound)
+                if (deg > 180) {
+                    deg = 360 - deg;
+                }
+                
+                let classification = "Acute Angle";
+                if (deg === 0) classification = "Zero Angle";
+                else if (deg < 90) classification = "Acute Angle";
+                else if (deg === 90) classification = "Right Angle";
+                else if (deg < 180) classification = "Obtuse Angle";
+                else if (deg === 180) classification = "Straight Angle";
+
+                this.updateAngleHUDDisplayPanelMetrics(deg, classification);
+
+                const ctx = this.ictx;
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(r1.cx, r1.cy);
+                
+                // Sweep matching the minimal interior direction perfectly
+                let targetStart = a1;
+                let targetEnd = a2;
+                let finalDiff = a2 - a1;
+                while (finalDiff < -Math.PI) finalDiff += Math.PI * 2;
+                while (finalDiff > Math.PI) finalDiff -= Math.PI * 2;
+                
+                ctx.arc(r1.cx, r1.cy, 50, targetStart, targetStart + finalDiff, finalDiff < 0);
+                ctx.lineTo(r1.cx, r1.cy);
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(37, 99, 235, 0.25)';
+                ctx.strokeStyle = '#2563eb';
+                ctx.lineWidth = 2;
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            updateAngleHUDDisplayPanelMetrics(deg, type) {
+                document.getElementById('hud-deg-val').innerText = `${deg}°`;
+                
+                const typeBadge = document.getElementById('hud-classification-type');
+                typeBadge.innerText = type;
+
+                const colorsMap = {
+                    "Zero Angle": "#64748b",
+                    "Acute Angle": "#059669",
+                    "Right Angle": "#2563eb",
+                    "Obtuse Angle": "#d97706",
+                    "Straight Angle": "#7c3aed"
+                };
+                typeBadge.style.backgroundColor = colorsMap[type] || "#64748b";
+            }
+
+            handlePointerDownSequence(coords, nativeEvent) {
+                const p = this.protractor;
+                const rad = p.radius * p.scale;
+
+                const rotHandleWorldCoords = this.getRotationHandleWorldPositionCoords();
+                const distToRotHandle = Math.hypot(coords.x - rotHandleWorldCoords.x, coords.y - rotHandleWorldCoords.y);
+                
+                if (distToRotHandle <= 16) {
+                    this.dragState.isRotatingProtractor = true;
+                    this.dragState.protStartRotation = p.rotation;
+                    
+                    const centerAngle = Math.atan2(coords.y - p.y, coords.x - p.x);
+                    this.dragState.startX = centerAngle;
+                    return;
+                }
+
+                for (let i = 0; i < this.rays.length; i++) {
+                    const ray = this.rays[i];
+                    if (Math.hypot(coords.x - ray.ex, coords.y - ray.ey) <= 12) {
+                        this.dragState.activeRayIndex = i;
+                        this.dragState.activeRayHandle = 'end';
+                        return;
+                    }
+                    if (Math.hypot(coords.x - ray.cx, coords.y - ray.cy) <= 12) {
+                        this.dragState.activeRayIndex = i;
+                        this.dragState.activeRayHandle = 'center';
+                        return;
+                    }
+                }
+
+                for (let i = 0; i < this.segments.length; i++) {
+                    const seg = this.segments[i];
+                    if (Math.hypot(coords.x - seg.x1, coords.y - seg.y1) <= 12) {
+                        this.dragState.activeSegmentIndex = i;
+                        this.dragState.activeSegmentHandle = 'p1';
+                        return;
+                    }
+                    if (Math.hypot(coords.x - seg.x2, coords.y - seg.y2) <= 12) {
+                        this.dragState.activeSegmentIndex = i;
+                        this.dragState.activeSegmentHandle = 'p2';
+                        return;
+                    }
+                }
+
+                if (!this.isLocked) {
+                    const distToProtractorCenter = Math.hypot(coords.x - p.x, coords.y - p.y);
+                    if (distToProtractorCenter <= rad) {
+                        this.dragState.isDraggingProtractor = true;
+                        this.dragState.startX = coords.x;
+                        this.dragState.startY = coords.y;
+                        this.dragState.protStartX = p.x;
+                        this.dragState.protStartY = p.y;
+                        return;
+                    }
+                }
+
+                if (this.activeTool === 'ray') {
+                    this.rays.push({ cx: p.x, cy: p.y, ex: coords.x, ey: coords.y, isInfinite: false });
+                    this.dragState.activeRayIndex = this.rays.length - 1;
+                    this.dragState.activeRayHandle = 'end';
+                    this.saveStateToHistoryTrack();
+                    this.refreshStateRenderEnginePipelines();
+                } else if (this.activeTool === 'segment') {
+                    this.segments.push({ x1: coords.x, y1: coords.y, x2: coords.x + 5, y2: coords.y + 5 });
+                    this.dragState.activeSegmentIndex = this.segments.length - 1;
+                    this.dragState.activeSegmentHandle = 'p2';
+                    this.saveStateToHistoryTrack();
+                    this.refreshStateRenderEnginePipelines();
+                }
+            }
+
+            handlePointerMoveSequence(coords, nativeEvent) {
+                const p = this.protractor;
+
+                if (this.dragState.isRotatingProtractor) {
+                    const currentAngle = Math.atan2(coords.y - p.y, coords.x - p.x);
+                    const angleDiffDeg = ((currentAngle - this.dragState.startX) * 180) / Math.PI;
+                    let targetRot = this.dragState.protStartRotation + angleDiffDeg;
+                    
+                    if (this.isSnapped) {
+                        targetRot = Math.round(targetRot / this.snapInterval) * this.snapInterval;
+                    }
+                    
+                    p.rotation = (targetRot + 360) % 360;
+                    this.synchronizeSlidersInterfaceWidgetsDisplay();
+                    this.refreshStateRenderEnginePipelines();
+                    return;
+                }
+
+                if (this.dragState.isDraggingProtractor) {
+                    const dx = coords.x - this.dragState.startX;
+                    const dy = coords.y - this.dragState.startY;
+                    p.x = this.dragState.protStartX + dx;
+                    p.y = this.dragState.protStartY + dy;
+                    this.refreshStateRenderEnginePipelines();
+                    return;
+                }
+
+                if (this.dragState.activeRayIndex !== null) {
+                    const ray = this.rays[this.dragState.activeRayIndex];
+                    if (this.dragState.activeRayHandle === 'end') {
+                        ray.ex = coords.x;
+                        ray.ey = coords.y;
+                    } else {
+                        ray.cx = coords.x;
+                        ray.cy = coords.y;
+                    }
+                    this.refreshStateRenderEnginePipelines();
+                    return;
+                }
+
+                if (this.dragState.activeSegmentIndex !== null) {
+                    const seg = this.segments[this.dragState.activeSegmentIndex];
+                    if (this.dragState.activeSegmentHandle === 'p1') {
+                        seg.x1 = coords.x; seg.y1 = coords.y;
+                    } else {
+                        seg.x2 = coords.x; seg.y2 = coords.y;
+                    }
+                    this.refreshStateRenderEnginePipelines();
+                    return;
+                }
+            }
+
+            handlePointerUpSequence(nativeEvent) {
+                if (this.dragState.activeRayIndex !== null || this.dragState.activeSegmentIndex !== null) {
+                    this.saveStateToHistoryTrack();
+                }
+
+                this.dragState.isDraggingProtractor = false;
+                this.dragState.isRotatingProtractor = false;
+                this.dragState.activeRayIndex = null;
+                this.dragState.activeSegmentIndex = null;
+            }
+
+            getRotationHandleWorldPositionCoords() {
+                const p = this.protractor;
+                const rad = p.radius * p.scale;
+                const localY = -rad - 20;
+                const angleRad = (p.rotation * Math.PI) / 180;
+                
+                return {
+                    x: p.x + (0 * Math.cos(angleRad) - localY * Math.sin(angleRad)),
+                    y: p.y + (0 * Math.sin(angleRad) + localY * Math.cos(angleRad))
+                };
+            }
+
+            handleInkMouseDown(coords) {
+                if (this.activeTool !== 'ink' && this.activeTool !== 'erase') return;
+                
+                if (this.activeTool === 'erase') {
+                    this.executeInkEraserPulseAction(coords);
+                    this.inkDrawingActive = true;
+                    return;
+                }
+
+                this.inkDrawingActive = true;
+                this.currentInkLine = [coords];
+                this.inkLines.push(this.currentInkLine);
+            }
+
+            handleInkMouseMove(coords) {
+                if (!this.inkDrawingActive) return;
+
+                if (this.activeTool === 'erase') {
+                    this.executeInkEraserPulseAction(coords);
+                    return;
+                }
+
+                if (this.currentInkLine) {
+                    this.currentInkLine.push(coords);
+                    this.redrawFreehandLaserInkCanvas();
+                }
+            }
+
+            handleInkMouseUp() {
+                this.inkDrawingActive = false;
+                this.currentInkLine = null;
+            }
+
+            executeInkEraserPulseAction(coords) {
+                const radiusThreshold = 25;
+                this.inkLines = this.inkLines.filter(line => {
+                    const closePoints = line.filter(pt => Math.hypot(pt.x - coords.x, pt.y - coords.y) <= radiusThreshold);
+                    return closePoints.length === 0;
+                });
+                this.redrawFreehandLaserInkCanvas();
+            }
+
+            redrawFreehandLaserInkCanvas() {
+                this.actx.clearRect(0, 0, this.annolayer.width, this.annolayer.height);
+                this.actx.lineCap = 'round';
+                this.actx.lineJoin = 'round';
+                this.actx.lineWidth = 4;
+                this.actx.strokeStyle = '#dc2626'; 
+
+                this.inkLines.forEach(line => {
+                    if (line.length < 2) return;
+                    this.actx.beginPath();
+                    this.actx.moveTo(line[0].x, line[0].y);
+                    for (let i = 1; i < line.length; i++) {
+                        this.actx.lineTo(line[i].x, line[i].y);
+                    }
+                    this.actx.stroke();
+                });
+            }
+
+            updateProtractorFromSliders() {
+                const rotSlider = document.getElementById('protractor-rotator-slider');
+                const zoomSlider = document.getElementById('protractor-zoom-slider');
+
+                this.protractor.rotation = parseInt(rotSlider.value, 10);
+                this.protractor.scale = parseInt(zoomSlider.value, 10) / 100;
+
+                document.getElementById('rotate-val-box').innerText = `${this.protractor.rotation}°`;
+                document.getElementById('zoom-val-box').innerText = `${zoomSlider.value}%`;
+
+                this.refreshStateRenderEnginePipelines();
+            }
+
+            synchronizeSlidersInterfaceWidgetsDisplay() {
+                document.getElementById('protractor-rotator-slider').value = Math.round(this.protractor.rotation);
+                document.getElementById('rotate-val-box').innerText = `${Math.round(this.protractor.rotation)}°`;
+            }
+
+            handleManualAngleInput() {
+                const val = parseInt(document.getElementById('manual-degree-input').value, 10) || 0;
+                this.protractor.rotation = val % 360;
+                this.synchronizeSlidersInterfaceWidgetsDisplay();
+                this.refreshStateRenderEnginePipelines();
+            }
+
+            setTool(tool) {
+                this.activeTool = tool;
+                
+                if (tool === 'ink' || tool === 'erase') {
+                    document.getElementById('annotation-layer').classList.add('active');
+                    document.getElementById('guide-pill').innerText = `Mode: Presentation Ink Markup [${tool.toUpperCase()}]`;
+                } else {
+                    document.getElementById('annotation-layer').classList.remove('active');
+                    document.getElementById('guide-pill').innerText = `Mode: Geometric Element Builder [${tool.toUpperCase()}]`;
+                }
+
+                document.getElementById('tool-ray-btn').className = tool === 'ray' ? 'active' : '';
+                document.getElementById('tool-segment-btn').className = tool === 'segment' ? 'active' : '';
+                document.getElementById('tool-ink-btn').className = tool === 'ink' ? 'active' : '';
+                document.getElementById('tool-erase-btn').className = tool === 'erase' ? 'active' : '';
+            }
+
+            setAppMode(mode) {
+                this.appMode = mode;
+                const practiceBox = document.getElementById('practice-area-box');
+                
+                if (mode === 'practice') {
+                    practiceBox.style.display = 'block';
+                    document.getElementById('mode-practice-btn').className = 'active';
+                    document.getElementById('mode-explore-btn').className = '';
+                    this.generateChallengeQuestion();
+                } else {
+                    practiceBox.style.display = 'none';
+                    document.getElementById('mode-explore-btn').className = 'active';
+                    document.getElementById('mode-practice-btn').className = '';
+                    document.getElementById('challenge-feedback').innerText = '';
+                }
+            }
+
+            setProtractorShape(shape) {
+                this.protractorShape = shape;
+                document.getElementById('prot-semi-btn').className = shape === 'semi' ? 'active' : '';
+                document.getElementById('prot-full-btn').className = shape === 'full' ? 'active' : '';
+                this.refreshStateRenderEnginePipelines();
+            }
+
+            toggleProtractorLock() {
+                this.isLocked = !this.isLocked;
+                const btn = document.getElementById('prot-lock-btn');
+                btn.className = this.isLocked ? 'active' : '';
+                btn.innerText = this.isLocked ? '🔒 Locked' : '🔓 Unlock';
+            }
+
+            toggleSnapState() {
+                this.isSnapped = !this.isSnapped;
+                const btn = document.getElementById('prot-snap-btn');
+                btn.className = this.isSnapped ? 'active' : '';
+                btn.innerText = this.isSnapped ? '🧲 Snap: ON' : '🧲 Snap';
+            }
+
+            setSnapResolution(res) {
+                this.snapInterval = res;
+                document.getElementById('snap-1-btn').className = res === 1 ? 'active' : '';
+                document.getElementById('snap-5-btn').className = res === 5 ? 'active' : '';
+                document.getElementById('snap-10-btn').className = res === 10 ? 'active' : '';
+            }
+
+            toggleLabelsVisibility() {
+                this.labelsVisible = !this.labelsVisible;
+                document.getElementById('show-labels-btn').className = this.labelsVisible ? 'active' : '';
+                this.refreshStateRenderEnginePipelines();
+            }
+
+            toggleBaselineVisibility() {
+                this.baselineVisible = !this.baselineVisible;
+                document.getElementById('show-baseline-btn').className = this.baselineVisible ? 'active' : '';
+                this.refreshStateRenderEnginePipelines();
+            }
+
+            toggleCenterVisibility() {
+                this.centerVisible = !this.centerVisible;
+                document.getElementById('show-center-btn').className = this.centerVisible ? 'active' : '';
+                this.refreshStateRenderEnginePipelines();
+            }
+
+            toggleMeasurementFreeze() {
+                this.measurementFrozen = !this.measurementFrozen;
+                document.getElementById('freeze-measure-btn').className = this.measurementFrozen ? 'active' : '';
+                document.getElementById('freeze-measure-btn').innerText = this.measurementFrozen ? '🥶 Freeze' : '🥶 Freeze';
+            }
+
+            generateChallengeQuestion() {
+                document.getElementById('challenge-feedback').innerText = '';
+                
+                const taskTypes = ['make_angle', 'identify_type'];
+                this.currentChallengeType = taskTypes[Math.floor(Math.random() * taskTypes.length)];
+
+                if (this.currentChallengeType === 'make_angle') {
+                    const targetsList = [30, 45, 60, 90, 120, 135, 150];
+                    this.currentChallengeTargetValue = targetsList[Math.floor(Math.random() * targetsList.length)] + (Math.random() > 0.5 ? 5 : 0);
+                    document.getElementById('target-challenge-string').innerText = `Construct inside angle to match exactly: ${this.currentChallengeTargetValue}°`;
+                } else {
+                    const angleTypesDescriptionsList = ["Acute Angle", "Right Angle", "Obtuse Angle"];
+                    this.currentChallengeTargetValue = angleTypesDescriptionsList[Math.floor(Math.random() * angleTypesDescriptionsList.length)];
+                    document.getElementById('target-challenge-string').innerText = `Construct inside angle: ${this.currentChallengeTargetValue}`;
+                }
+            }
+
+            verifyChallengeAnswer() {
+                const currentDegText = document.getElementById('hud-deg-val').innerText;
+                const currentDegValue = parseInt(currentDegText, 10) || 0;
+                const currentClassificationType = document.getElementById('hud-classification-type').innerText;
+
+                const feedbackEl = document.getElementById('challenge-feedback');
+                let isCorrect = false;
+
+                if (this.currentChallengeType === 'make_angle') {
+                    const varianceMargin = Math.abs(currentDegValue - this.currentChallengeTargetValue);
+                    if (varianceMargin === 0) {
+                        isCorrect = true;
+                        feedbackEl.innerHTML = "🌟 Perfect! Exactly Correct!";
+                        feedbackEl.style.color = "var(--accent)";
+                    } else if (varianceMargin <= 2) {
+                        feedbackEl.innerHTML = "👍 Nearly Correct! Adjust slightly.";
+                        feedbackEl.style.color = "var(--primary)";
+                    } else {
+                        feedbackEl.innerHTML = "❌ Try Again! Read carefully.";
+                        feedbackEl.style.color = "var(--danger)";
+                    }
+                } else {
+                    if (currentClassificationType.toLowerCase() === this.currentChallengeTargetValue.toLowerCase()) {
+                        isCorrect = true;
+                        feedbackEl.innerHTML = "🌟 Awesome! Correct Classification!";
+                        feedbackEl.style.color = "var(--accent)";
+                    } else {
+                        feedbackEl.innerHTML = "❌ Not matching type criteria yet.";
+                        feedbackEl.style.color = "var(--danger)";
+                    }
+                }
+
+                if (isCorrect) {
+                    this.challengeScorePoints += 10;
+                    document.getElementById('star-trophy-counter').innerText = `⭐ ${this.challengeScorePoints} pts`;
+                }
+            }
+
+            toggleThemeMode() {
+                const node = document.documentElement;
+                const btn = document.getElementById('theme-toggle-btn');
+                if (node.getAttribute('data-theme') === 'dark') {
+                    node.removeAttribute('data-theme');
+                    btn.innerText = "🌙 Dark";
+                } else {
+                    node.setAttribute('data-theme', 'dark');
+                    btn.innerText = "☀️ Light";
+                }
+                this.refreshStateRenderEnginePipelines();
+            }
+
+            toggleHighContrast() {
+                const node = document.documentElement;
+                if (node.getAttribute('data-contrast') === 'high') {
+                    node.removeAttribute('data-contrast');
+                } else {
+                    node.setAttribute('data-contrast', 'high');
+                }
+                this.refreshStateRenderEnginePipelines();
+            }
+
+            toggleGridPatternBackground() {
+                const frame = document.getElementById('container-frame');
+                frame.classList.toggle('grid-on');
+                document.getElementById('grid-toggle-btn').classList.toggle('active');
+            }
+
+            clearDrawingsTrack() {
+                this.rays = [];
+                this.segments = [];
+                this.saveStateToHistoryTrack();
+                this.refreshStateRenderEnginePipelines();
+            }
+
+            clearAnnotationInk() {
+                this.inkLines = [];
+                this.redrawFreehandLaserInkCanvas();
+            }
+
+            resetManipulative() {
+                this.clearDrawingsTrack();
+                this.clearAnnotationInk();
+                
+                this.protractor.x = this.interlayer.width / 2;
+                this.protractor.y = this.interlayer.height / 2;
+                this.protractor.rotation = 0;
+                this.protractor.scale = 1.0;
+
+                document.getElementById('protractor-rotator-slider').value = 0;
+                document.getElementById('protractor-zoom-slider').value = 100;
+                document.getElementById('rotate-val-box').innerText = "0°";
+                document.getElementById('zoom-val-box').innerText = "100%";
+
+                this.generateDefaultInitialGeometrySetup();
+                this.refreshStateRenderEnginePipelines();
+            }
+
+            toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        const app = new VirtualProtractorApp();
+        window.addEventListener('DOMContentLoaded', () => app.init());
+    </script>
+</body>
+</html>

@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pattern Blocks Manipulative - Interactive Geometry & Fractions</title>
+    <style>
+        :root {
+            --bg-primary: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-sidebar: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --accent-primary: #3b82f6;
+            --accent-hover: #2563eb;
+            --border-color: #cbd5e1;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            
+            /* Pattern Block Colors */
+            --color-hexagon: #facc15;
+            --color-trapezoid: #ef4444;
+            --color-rhombus-wide: #3b82f6;
+            --color-triangle: #22c55e;
+            --color-square: #f97316;
+            --color-rhombus-thin: #a855f7;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-sidebar: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-color);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            z-index: 10;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            font-size: 28px;
+        }
+
+        .brand-text h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .brand-text p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .mode-tabs {
+            display: flex;
+            background: var(--bg-sidebar);
+            padding: 4px;
+            border-radius: 8px;
+            gap: 4px;
+        }
+
+        .tab-btn {
+            border: none;
+            background: transparent;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tab-btn.active {
+            background: var(--bg-surface);
+            color: var(--accent-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text-primary);
+            background: rgba(0,0,0,0.05);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+        }
+
+        .icon-btn:hover {
+            background-color: var(--bg-sidebar);
+            border-color: var(--text-secondary);
+        }
+
+        /* Toolbar */
+        .toolbar {
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-color);
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .tool-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            border-right: 1px solid var(--border-color);
+            padding-right: 12px;
+        }
+
+        .tool-group:last-child {
+            border-right: none;
+        }
+
+        .btn {
+            border: 1px solid var(--border-color);
+            background: var(--bg-surface);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .btn:hover {
+            background: var(--bg-sidebar);
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-active {
+            background: #e0f2fe;
+            border-color: #0284c7;
+            color: #0369a1;
+        }
+
+        [data-theme="dark"] .btn-active {
+            background: #0369a1;
+            border-color: #38bdf8;
+            color: white;
+        }
+
+        select.btn {
+            padding-right: 24px;
+        }
+
+        /* Main Container */
+        .main-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Sidebar / Palette */
+        .sidebar {
+            width: 220px;
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+            gap: 12px;
+            overflow-y: auto;
+            z-index: 5;
+        }
+
+        .sidebar-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .palette-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .shape-card {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .shape-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--accent-primary);
+        }
+
+        .shape-preview {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shape-info {
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        .shape-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .shape-meta {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+        }
+
+        /* Canvas Workspace */
+        .workspace {
+            flex: 1;
+            position: relative;
+            background-color: var(--bg-primary);
+            overflow: hidden;
+            cursor: default;
+        }
+
+        #svg-canvas {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Floating Controls on Canvas */
+        .canvas-controls {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 4px;
+            display: flex;
+            gap: 4px;
+            box-shadow: var(--shadow-md);
+            z-index: 5;
+        }
+
+        /* Inspector / Right Panel */
+        .inspector {
+            width: 280px;
+            background: var(--bg-surface);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            gap: 16px;
+            overflow-y: auto;
+            z-index: 5;
+        }
+
+        .panel-section {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .panel-section:last-child {
+            border-bottom: none;
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.82rem;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            font-weight: 600;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .badge {
+            background: var(--bg-sidebar);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Custom Color Swatches */
+        .color-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .color-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .color-dot:hover {
+            transform: scale(1.15);
+        }
+
+        .color-dot.active {
+            border-color: var(--text-primary);
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: var(--bg-surface);
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        /* Fraction Mode Box */
+        .fraction-summary-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        [data-theme="dark"] .fraction-summary-box {
+            background: #1e3a8a;
+            border-color: #3b82f6;
+        }
+
+        .fraction-big {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+            margin: 4px 0;
+        }
+
+        /* Notification Toast */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-50px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 200;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Puzzle celebration confetti canvas */
+        #fx-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 99;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 70px;
+                padding: 6px;
+            }
+            .shape-info, .sidebar-title {
+                display: none;
+            }
+            .inspector {
+                width: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="brand">
+            <span class="brand-icon">🧩</span>
+            <div class="brand-text">
+                <h1>Pattern Blocks</h1>
+                <p>Create • Explore • Discover Geometry</p>
+            </div>
+        </div>
+
+        <div class="mode-tabs">
+            <button class="tab-btn active" data-mode="free">🎨 Creative</button>
+            <button class="tab-btn" data-mode="fraction">🍰 Fractions</button>
+            <button class="tab-btn" data-mode="symmetry">🪞 Symmetry</button>
+            <button class="tab-btn" data-mode="puzzle">🎯 Puzzles</button>
+            <button class="tab-btn" data-mode="geometry">📐 Geometry</button>
+        </div>
+
+        <div class="header-actions">
+            <button class="icon-btn" id="btn-sound" title="Toggle Sound">🔊</button>
+            <button class="icon-btn" id="btn-theme" title="Toggle Light/Dark Theme">🌙</button>
+            <button class="icon-btn" id="btn-help" title="Help & Instructions">❓</button>
+        </div>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="tool-group">
+            <button class="btn" id="btn-undo" title="Undo (Ctrl+Z)">↩ Undo</button>
+            <button class="btn" id="btn-redo" title="Redo (Ctrl+Y)">↪ Redo</button>
+            <button class="btn" id="btn-clear" title="Clear Canvas">🧹 Clear</button>
+        </div>
+
+        <div class="tool-group">
+            <button class="btn" id="btn-duplicate" title="Duplicate Selection">📋 Duplicate</button>
+            <button class="btn" id="btn-rotate-cw" title="Rotate +30°">🔄 Rotate 30°</button>
+            <button class="btn" id="btn-flip-h" title="Flip Horizontal">↔ Flip H</button>
+            <button class="btn" id="btn-flip-v" title="Flip Vertical">↕ Flip V</button>
+        </div>
+
+        <div class="tool-group">
+            <label style="font-size:0.8rem; font-weight:600; color:var(--text-secondary); margin-right:4px;">Grid:</label>
+            <select class="btn" id="select-grid">
+                <option value="none">None</option>
+                <option value="triangle" selected>Triangle Grid</option>
+                <option value="square">Square Grid</option>
+                <option value="dot">Dot Grid</option>
+            </select>
+            <button class="btn btn-active" id="btn-snap" title="Magnetic Edge Snapping">🧲 Snap: ON</button>
+        </div>
+
+        <div class="tool-group">
+            <button class="btn" id="btn-save" title="Save Design">💾 Save</button>
+            <button class="btn" id="btn-load" title="Load Design">📂 Load</button>
+            <button class="btn" id="btn-export-png" title="Export as PNG">🖼 Export PNG</button>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-container">
+
+        <!-- Sidebar: Block Library -->
+        <div class="sidebar">
+            <div class="sidebar-title">Pattern Blocks</div>
+            <div class="palette-grid" id="palette-list">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <!-- Canvas Workspace -->
+        <div class="workspace" id="workspace">
+            <svg id="svg-canvas" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <!-- Grid Patterns -->
+                    <pattern id="grid-triangle" width="100" height="86.6025" patternUnits="userSpaceOnUse">
+                        <path d="M 0 0 L 100 0 L 50 86.6025 Z M 50 86.6025 L 150 86.6025 L 100 0 Z" fill="none" stroke="rgba(148, 163, 184, 0.25)" stroke-width="1"/>
+                    </pattern>
+                    <pattern id="grid-square" width="50" height="50" patternUnits="userSpaceOnUse">
+                        <rect width="50" height="50" fill="none" stroke="rgba(148, 163, 184, 0.25)" stroke-width="1"/>
+                    </pattern>
+                    <pattern id="grid-dot" width="50" height="50" patternUnits="userSpaceOnUse">
+                        <circle cx="25" cy="25" r="2" fill="rgba(148, 163, 184, 0.4)"/>
+                    </pattern>
+
+                    <!-- Drop Shadows & Filters -->
+                    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="3" stdDeviation="3" flood-opacity="0.2"/>
+                    </filter>
+                    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+                        <feGaussianBlur stdDeviation="4" result="blur" />
+                        <feComponentTransfer in="blur" result="glow">
+                            <feFuncA type="linear" slope="1.8"/>
+                        </feComponentTransfer>
+                        <feMerge>
+                            <feMergeNode in="glow"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Grid Background -->
+                <rect id="grid-rect" width="100%" height="100%" fill="url(#grid-triangle)"/>
+
+                <!-- Symmetry Line Layer -->
+                <g id="layer-symmetry" style="display:none;">
+                    <line id="symmetry-line" x1="50%" y1="0" x2="50%" y2="100%" stroke="#ef4444" stroke-width="2" stroke-dasharray="6,6"/>
+                </g>
+
+                <!-- Puzzle Silhouette Overlay Layer -->
+                <g id="layer-puzzle"></g>
+
+                <!-- Main Shape Layer -->
+                <g id="layer-shapes"></g>
+
+                <!-- Drag & Selection Handles Layer -->
+                <g id="layer-controls"></g>
+            </svg>
+
+            <!-- Zoom Controls -->
+            <div class="canvas-controls">
+                <button class="icon-btn" id="btn-zoom-in" title="Zoom In">+</button>
+                <button class="icon-btn" id="btn-zoom-out" title="Zoom Out">-</button>
+                <button class="icon-btn" id="btn-zoom-reset" title="Reset View" style="font-size:0.8rem; font-weight:bold;">100%</button>
+            </div>
+        </div>
+
+        <!-- Inspector Panel -->
+        <div class="inspector">
+
+            <!-- Dynamic Inspector Content based on Mode -->
+            <div id="inspector-content">
+                <!-- Populated by JavaScript -->
+            </div>
+
+            <!-- Custom Color Options -->
+            <div class="panel-section">
+                <div class="panel-title">Block Recolor</div>
+                <p style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px;">Select shape on canvas to recolor:</p>
+                <div class="color-picker-grid">
+                    <div class="color-dot" style="background:#facc15" data-color="#facc15"></div>
+                    <div class="color-dot" style="background:#ef4444" data-color="#ef4444"></div>
+                    <div class="color-dot" style="background:#3b82f6" data-color="#3b82f6"></div>
+                    <div class="color-dot" style="background:#22c55e" data-color="#22c55e"></div>
+                    <div class="color-dot" style="background:#f97316" data-color="#f97316"></div>
+                    <div class="color-dot" style="background:#a855f7" data-color="#a855f7"></div>
+                    <div class="color-dot" style="background:#ec4899" data-color="#ec4899"></div>
+                    <div class="color-dot" style="background:#14b8a6" data-color="#14b8a6"></div>
+                    <div class="color-dot" style="background:#64748b" data-color="#64748b"></div>
+                    <div class="color-dot" style="background:#1e293b" data-color="#1e293b"></div>
+                </div>
+            </div>
+
+            <!-- Global Stats -->
+            <div class="panel-section">
+                <div class="panel-title">Canvas Summary</div>
+                <div class="stat-row">
+                    <span class="stat-label">Total Blocks:</span>
+                    <span class="stat-value" id="stat-total-blocks">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Hexagon Value:</span>
+                    <span class="stat-value" id="stat-total-value">0.00</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Hidden File Input for Loading Files -->
+    <input type="file" id="file-input" accept=".json" style="display:none;" />
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">Notice message</div>
+
+    <!-- Celebration Canvas -->
+    <canvas id="fx-canvas"></canvas>
+
+    <!-- Help Modal -->
+    <div class="modal-overlay" id="help-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">🧩 Pattern Blocks Guide</h2>
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+            <div style="font-size:0.9rem; line-height:1.6; color:var(--text-secondary);">
+                <p style="margin-bottom:10px;"><strong>Welcome to Pattern Blocks!</strong> Learn geometry, fractions, and symmetry through hands-on virtual block manipulation.</p>
+                
+                <h4 style="color:var(--text-primary); margin-top:12px; margin-bottom:4px;">🎮 How to Controls:</h4>
+                <ul style="padding-left:20px; margin-bottom:12px;">
+                    <li><strong>Add Blocks:</strong> Click or drag shapes from the left sidebar onto the workspace.</li>
+                    <li><strong>Move & Snap:</strong> Drag blocks with mouse or finger. Blocks automatically snap magnetically along matching edges!</li>
+                    <li><strong>Rotate:</strong> Click a block to select it, then drag the top blue rotation handle or click rotation buttons in toolbar.</li>
+                    <li><strong>Pan & Zoom:</strong> Scroll wheel zooms in/out. Drag empty canvas space to pan around.</li>
+                </ul>
+
+                <h4 style="color:var(--text-primary); margin-top:12px; margin-bottom:4px;">🍰 Educational Modes:</h4>
+                <ul style="padding-left:20px;">
+                    <li><strong>Creative:</strong> Free-play design canvas with snap grid.</li>
+                    <li><strong>Fractions:</strong> Real-time visual fraction breakdown relative to Hexagon (1 Whole).</li>
+                    <li><strong>Symmetry:</strong> Mirror line guides for reflective pattern creation.</li>
+                    <li><strong>Puzzles:</strong> Solve silhouette shapes with automatic snap verification and celebration rewards!</li>
+                    <li><strong>Geometry:</strong> Detailed shape properties, side angles, perimeter, and mathematical relationships.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        /**
+         * Pattern Blocks Manipulative - Single File Web Application
+         * Pure JavaScript + SVG with Magnetic Edge Snapping & Audio API
+         */
+
+        // Base Scale Factor (Side Length = 50px)
+        const S = 50;
+        const H = S * Math.sqrt(3) / 2; // ~43.30127
+
+        // Mathematical Definition of Standard Pattern Block Shapes (Centered at 0,0)
+        const SHAPE_DEFINITIONS = {
+            hexagon: {
+                id: 'hexagon',
+                name: 'Yellow Hexagon',
+                color: '#facc15',
+                areaFraction: 1.0,
+                fractionLabel: '1',
+                angles: [120, 120, 120, 120, 120, 120],
+                sides: 6,
+                // Centered regular hexagon
+                points: [
+                    { x: -S/2, y: -H },
+                    { x: S/2, y: -H },
+                    { x: S, y: 0 },
+                    { x: S/2, y: H },
+                    { x: -S/2, y: H },
+                    { x: -S, y: 0 }
+                ]
+            },
+            trapezoid: {
+                id: 'trapezoid',
+                name: 'Red Trapezoid',
+                color: '#ef4444',
+                areaFraction: 0.5,
+                fractionLabel: '1/2',
+                angles: [60, 120, 120, 60],
+                sides: 4,
+                points: [
+                    { x: -S/2, y: -H/2 },
+                    { x: S/2, y: -H/2 },
+                    { x: S, y: H/2 },
+                    { x: -S, y: H/2 }
+                ]
+            },
+            rhombus_wide: {
+                id: 'rhombus_wide',
+                name: 'Blue Rhombus',
+                color: '#3b82f6',
+                areaFraction: 1/3,
+                fractionLabel: '1/3',
+                angles: [60, 120, 60, 120],
+                sides: 4,
+                points: [
+                    { x: 0, y: -H },
+                    { x: S/2, y: 0 },
+                    { x: 0, y: H },
+                    { x: -S/2, y: 0 }
+                ]
+            },
+            triangle: {
+                id: 'triangle',
+                name: 'Green Triangle',
+                color: '#22c55e',
+                areaFraction: 1/6,
+                fractionLabel: '1/6',
+                angles: [60, 60, 60],
+                sides: 3,
+                points: [
+                    { x: 0, y: -2*H/3 },
+                    { x: S/2, y: H/3 },
+                    { x: -S/2, y: H/3 }
+                ]
+            },
+            square: {
+                id: 'square',
+                name: 'Orange Square',
+                color: '#f97316',
+                areaFraction: null, // Non-hexagonal relative area
+                fractionLabel: 'N/A',
+                angles: [90, 90, 90, 90],
+                sides: 4,
+                points: [
+                    { x: -S/2, y: -S/2 },
+                    { x: S/2, y: -S/2 },
+                    { x: S/2, y: S/2 },
+                    { x: -S/2, y: S/2 }
+                ]
+            },
+            rhombus_thin: {
+                id: 'rhombus_thin',
+                name: 'Purple Thin Rhombus',
+                color: '#a855f7',
+                areaFraction: null,
+                fractionLabel: 'N/A',
+                angles: [30, 150, 30, 150],
+                sides: 4,
+                points: [
+                    { x: 0, y: -S * Math.sin(Math.PI/12) },
+                    { x: S * Math.cos(Math.PI/12), y: 0 },
+                    { x: 0, y: S * Math.sin(Math.PI/12) },
+                    { x: -S * Math.cos(Math.PI/12), y: 0 }
+                ]
+            }
+        };
+
+        // Puzzle Templates (Silhouettes)
+        const PUZZLE_TEMPLATES = [
+            {
+                id: 'flower',
+                name: '🌸 Spring Flower',
+                description: 'Build a blooming flower around a hexagon center!',
+                shapes: [
+                    { type: 'hexagon', x: 400, y: 300, rotation: 0 },
+                    { type: 'rhombus_wide', x: 400, y: 213.4, rotation: 0 },
+                    { type: 'rhombus_wide', x: 475, y: 256.7, rotation: 60 },
+                    { type: 'rhombus_wide', x: 475, y: 343.3, rotation: 120 },
+                    { type: 'rhombus_wide', x: 400, y: 386.6, rotation: 180 },
+                    { type: 'rhombus_wide', x: 325, y: 343.3, rotation: 240 },
+                    { type: 'rhombus_wide', x: 325, y: 256.7, rotation: 300 }
+                ]
+            },
+            {
+                id: 'rocket',
+                name: '🚀 Space Rocket',
+                description: 'Assemble a rocket heading into orbit!',
+                shapes: [
+                    { type: 'triangle', x: 400, y: 170, rotation: 0 },
+                    { type: 'trapezoid', x: 400, y: 235, rotation: 0 },
+                    { type: 'hexagon', x: 400, y: 320, rotation: 0 },
+                    { type: 'trapezoid', x: 400, y: 405, rotation: 180 }
+                ]
+            },
+            {
+                id: 'star',
+                name: '⭐ Glowing Star',
+                description: 'Fill in the six-pointed star silhouette.',
+                shapes: [
+                    { type: 'hexagon', x: 400, y: 300, rotation: 0 },
+                    { type: 'triangle', x: 400, y: 213.4, rotation: 0 },
+                    { type: 'triangle', x: 475, y: 256.7, rotation: 60 },
+                    { type: 'triangle', x: 475, y: 343.3, rotation: 120 },
+                    { type: 'triangle', x: 400, y: 386.6, rotation: 180 },
+                    { type: 'triangle', x: 325, y: 343.3, rotation: 240 },
+                    { type: 'triangle', x: 325, y: 256.7, rotation: 300 }
+                ]
+            }
+        ];
+
+        // State Management
+        const state = {
+            mode: 'free', // free, fraction, symmetry, puzzle, geometry
+            grid: 'triangle',
+            snapEnabled: true,
+            soundEnabled: true,
+            theme: 'light',
+            shapes: [], // Active shapes on canvas
+            selectedShapeId: null,
+            nextId: 1,
+            history: [],
+            historyIndex: -1,
+            activePuzzle: null,
+            puzzleCompleted: false,
+            pan: { x: 0, y: 0 },
+            zoom: 1.0
+        };
+
+        // Web Audio Synthesizer
+        class SoundFX {
+            constructor() {
+                this.ctx = null;
+            }
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+            play(type) {
+                if (!state.soundEnabled) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                const now = this.ctx.currentTime;
+
+                if (type === 'add') {
+                    osc.frequency.setValueAtTime(320, now);
+                    osc.frequency.exponentialRampToValueAtTime(540, now + 0.08);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'snap') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.exponentialRampToValueAtTime(80, now + 0.05);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } else if (type === 'rotate') {
+                    osc.frequency.setValueAtTime(400, now);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.04);
+                    osc.start(now);
+                    osc.stop(now + 0.04);
+                } else if (type === 'delete') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(250, now);
+                    osc.frequency.exponentialRampToValueAtTime(60, now + 0.12);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0, now + 0.12);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
+                } else if (type === 'win') {
+                    // Celebration fanfare
+                    const notes = [440, 554.37, 659.25, 880];
+                    notes.forEach((freq, i) => {
+                        const o = this.ctx.createOscillator();
+                        const g = this.ctx.createGain();
+                        o.connect(g);
+                        g.connect(this.ctx.destination);
+                        o.frequency.value = freq;
+                        g.gain.setValueAtTime(0.15, now + i * 0.1);
+                        g.gain.linearRampToValueAtTime(0, now + i * 0.1 + 0.25);
+                        o.start(now + i * 0.1);
+                        o.stop(now + i * 0.1 + 0.25);
+                    });
+                }
+            }
+        }
+
+        const audio = new SoundFX();
+
+        // DOM Elements
+        const svgCanvas = document.getElementById('svg-canvas');
+        const layerShapes = document.getElementById('layer-shapes');
+        const layerControls = document.getElementById('layer-controls');
+        const layerPuzzle = document.getElementById('layer-puzzle');
+        const layerSymmetry = document.getElementById('layer-symmetry');
+        const gridRect = document.getElementById('grid-rect');
+        const paletteList = document.getElementById('palette-list');
+        const inspectorContent = document.getElementById('inspector-content');
+
+        // Initialize App
+        function initApp() {
+            renderPalette();
+            setupEventListeners();
+            updateInspector();
+            saveStateToHistory();
+            window.addEventListener('resize', handleResize);
+        }
+
+        // Render Block Palette Sidebar
+        function renderPalette() {
+            paletteList.innerHTML = '';
+            Object.values(SHAPE_DEFINITIONS).forEach(def => {
+                const card = document.createElement('div');
+                card.className = 'shape-card';
+                card.innerHTML = `
+                    <div class="shape-preview">
+                        ${createSVGPreview(def)}
+                    </div>
+                    <div class="shape-info">
+                        <div class="shape-name">${def.name}</div>
+                        <div class="shape-meta">${def.sides} sides • ${def.fractionLabel !== 'N/A' ? def.fractionLabel + ' Whole' : 'Block'}</div>
+                    </div>
+                `;
+                card.addEventListener('click', () => addShapeToCanvas(def.id));
+                paletteList.appendChild(card);
+            });
+        }
+
+        // Generate SVG string for palette thumbnail
+        function createSVGPreview(def) {
+            const pts = def.points.map(p => `${p.x * 0.35 + 22},${p.y * 0.35 + 22}`).join(' ');
+            return `<svg width="44" height="44">
+                <polygon points="${pts}" fill="${def.color}" stroke="#1e293b" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>`;
+        }
+
+        // Add New Shape to Canvas Workspace
+        function addShapeToCanvas(typeId, customX = null, customY = null) {
+            const rect = svgCanvas.getBoundingClientRect();
+            const centerX = customX !== null ? customX : (rect.width / 2 - state.pan.x) / state.zoom;
+            const centerY = customY !== null ? customY : (rect.height / 2 - state.pan.y) / state.zoom;
+
+            const shape = {
+                id: state.nextId++,
+                type: typeId,
+                x: centerX,
+                y: centerY,
+                rotation: 0,
+                color: SHAPE_DEFINITIONS[typeId].color,
+                flipH: 1,
+                flipV: 1
+            };
+
+            state.shapes.push(shape);
+            state.selectedShapeId = shape.id;
+            audio.play('add');
+
+            renderCanvas();
+            saveStateToHistory();
+            showToast(`Added ${SHAPE_DEFINITIONS[typeId].name}`);
+        }
+
+        // Transform local shape points into absolute canvas world coordinates
+        function getTransformedPoints(shape) {
+            const def = SHAPE_DEFINITIONS[shape.type];
+            const rad = (shape.rotation * Math.PI) / 180;
+            const cos = Math.cos(rad);
+            const sin = Math.sin(rad);
+
+            return def.points.map(p => {
+                let px = p.x * (shape.flipH || 1);
+                let py = p.y * (shape.flipV || 1);
+
+                // Rotate
+                let rx = px * cos - py * sin;
+                let ry = px * sin + py * cos;
+
+                // Translate
+                return {
+                    x: shape.x + rx,
+                    y: shape.y + ry
+                };
+            });
+        }
+
+        // Render Entire Canvas
+        function renderCanvas() {
+            // Clear dynamic layers
+            layerShapes.innerHTML = '';
+            layerControls.innerHTML = '';
+
+            // Render Active Shapes
+            state.shapes.forEach(shape => {
+                const points = getTransformedPoints(shape);
+                const pointsString = points.map(p => `${p.x},${p.y}`).join(' ');
+
+                const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                polygon.setAttribute('points', pointsString);
+                polygon.setAttribute('fill', shape.color);
+                polygon.setAttribute('stroke', '#0f172a');
+                polygon.setAttribute('stroke-width', '2');
+                polygon.setAttribute('stroke-linejoin', 'round');
+                polygon.setAttribute('filter', 'url(#shadow)');
+                polygon.setAttribute('data-id', shape.id);
+
+                if (shape.id === state.selectedShapeId) {
+                    polygon.setAttribute('stroke', '#0284c7');
+                    polygon.setAttribute('stroke-width', '3');
+                    polygon.setAttribute('filter', 'url(#glow)');
+                }
+
+                // Attach pointer handlers
+                polygon.addEventListener('pointerdown', (e) => startDragShape(e, shape));
+
+                layerShapes.appendChild(polygon);
+            });
+
+            // Render Controls for Selected Shape
+            if (state.selectedShapeId) {
+                const selectedShape = state.shapes.find(s => s.id === state.selectedShapeId);
+                if (selectedShape) {
+                    renderSelectionControls(selectedShape);
+                }
+            }
+
+            updateInspector();
+            checkPuzzleCompletion();
+        }
+
+        // Render Rotation Handle and Selection Ring
+        function renderSelectionControls(shape) {
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+            // Bounding Indicator / Center Pivot Dot
+            const centerDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            centerDot.setAttribute('cx', shape.x);
+            centerDot.setAttribute('cy', shape.y);
+            centerDot.setAttribute('r', '4');
+            centerDot.setAttribute('fill', '#0284c7');
+            g.appendChild(centerDot);
+
+            // Rotation Handle
+            const handleDist = 55;
+            const handleX = shape.x + handleDist * Math.sin((shape.rotation * Math.PI) / 180);
+            const handleY = shape.y - handleDist * Math.cos((shape.rotation * Math.PI) / 180);
+
+            const handleLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            handleLine.setAttribute('x1', shape.x);
+            handleLine.setAttribute('y1', shape.y);
+            handleLine.setAttribute('x2', handleX);
+            handleLine.setAttribute('y2', handleY);
+            handleLine.setAttribute('stroke', '#0284c7');
+            handleLine.setAttribute('stroke-width', '2');
+            handleLine.setAttribute('stroke-dasharray', '3,3');
+            g.appendChild(handleLine);
+
+            const handleBtn = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            handleBtn.setAttribute('cx', handleX);
+            handleBtn.setAttribute('cy', handleY);
+            handleBtn.setAttribute('r', '8');
+            handleBtn.setAttribute('fill', '#0284c7');
+            handleBtn.setAttribute('stroke', '#ffffff');
+            handleBtn.setAttribute('stroke-width', '2');
+            handleBtn.style.cursor = 'grab';
+
+            handleBtn.addEventListener('pointerdown', (e) => startRotateShape(e, shape));
+            g.appendChild(handleBtn);
+
+            layerControls.appendChild(g);
+        }
+
+        // Drag & Drop Shape Logic with Magnetic Edge Snapping
+        let isDragging = false;
+        let dragOffset = { x: 0, y: 0 };
+
+        function startDragShape(e, shape) {
+            e.stopPropagation();
+            state.selectedShapeId = shape.id;
+            isDragging = true;
+
+            const pt = getSVGCoordinates(e);
+            dragOffset.x = pt.x - shape.x;
+            dragOffset.y = pt.y - shape.y;
+
+            // Bring to front
+            const index = state.shapes.findIndex(s => s.id === shape.id);
+            if (index > -1) {
+                state.shapes.push(state.shapes.splice(index, 1)[0]);
+            }
+
+            renderCanvas();
+
+            window.addEventListener('pointermove', onDragShape);
+            window.addEventListener('pointerup', endDragShape);
+        }
+
+        function onDragShape(e) {
+            if (!isDragging) return;
+            const shape = state.shapes.find(s => s.id === state.selectedShapeId);
+            if (!shape) return;
+
+            const pt = getSVGCoordinates(e);
+            let targetX = pt.x - dragOffset.x;
+            let targetY = pt.y - dragOffset.y;
+
+            // Apply Magnetic Snapping
+            if (state.snapEnabled) {
+                const snapResult = findBestSnap(shape, targetX, targetY);
+                if (snapResult.snapped) {
+                    targetX = snapResult.x;
+                    targetY = snapResult.y;
+                }
+            }
+
+            shape.x = targetX;
+            shape.y = targetY;
+
+            renderCanvas();
+        }
+
+        function endDragShape() {
+            if (isDragging) {
+                isDragging = false;
+                audio.play('snap');
+                saveStateToHistory();
+            }
+            window.removeEventListener('pointermove', onDragShape);
+            window.removeEventListener('pointerup', endDragShape);
+        }
+
+        // Magnetic Vertex & Edge Snapping Engine
+        function findBestSnap(currentShape, targetX, targetY) {
+            const SNAP_THRESHOLD = 18; // Max distance in pixels to magnetize
+            const tempShape = { ...currentShape, x: targetX, y: targetY };
+            const currentPoints = getTransformedPoints(tempShape);
+
+            let bestDist = SNAP_THRESHOLD;
+            let snapDelta = { x: 0, y: 0, snapped: false };
+
+            // 1. Snap to other shapes on canvas
+            state.shapes.forEach(other => {
+                if (other.id === currentShape.id) return;
+                const otherPoints = getTransformedPoints(other);
+
+                currentPoints.forEach(cp => {
+                    otherPoints.forEach(op => {
+                        const dist = Math.hypot(cp.x - op.x, cp.y - op.y);
+                        if (dist < bestDist) {
+                            bestDist = dist;
+                            snapDelta = {
+                                x: targetX + (op.x - cp.x),
+                                y: targetY + (op.y - cp.y),
+                                snapped: true
+                            };
+                        }
+                    });
+                });
+            });
+
+            return snapDelta;
+        }
+
+        // Interactive Rotation Logic
+        function startRotateShape(e, shape) {
+            e.stopPropagation();
+            const startPt = getSVGCoordinates(e);
+
+            const onRotate = (moveEvt) => {
+                const pt = getSVGCoordinates(moveEvt);
+                let angle = Math.atan2(pt.x - shape.x, -(pt.y - shape.y)) * (180 / Math.PI);
+                if (angle < 0) angle += 360;
+
+                // Snap rotation to 15-degree increments if enabled
+                if (state.snapEnabled) {
+                    angle = Math.round(angle / 15) * 15;
+                }
+
+                shape.rotation = angle % 360;
+                renderCanvas();
+            };
+
+            const endRotate = () => {
+                audio.play('rotate');
+                saveStateToHistory();
+                window.removeEventListener('pointermove', onRotate);
+                window.removeEventListener('pointerup', endRotate);
+            };
+
+            window.addEventListener('pointermove', onRotate);
+            window.addEventListener('pointerup', endRotate);
+        }
+
+        // Utility: Get exact SVG coordinates from pointer event
+        function getSVGCoordinates(e) {
+            const ctm = svgCanvas.getScreenCTM();
+            return {
+                x: (e.clientX - ctm.e) / ctm.a,
+                y: (e.clientY - ctm.f) / ctm.d
+            };
+        }
+
+        // Inspector Panel Dynamic Update
+        function updateInspector() {
+            const selectedShape = state.shapes.find(s => s.id === state.selectedShapeId);
+
+            // Calculate total blocks & hexagon fraction sum
+            let totalVal = 0;
+            state.shapes.forEach(s => {
+                const def = SHAPE_DEFINITIONS[s.type];
+                if (def.areaFraction) totalVal += def.areaFraction;
+            });
+
+            document.getElementById('stat-total-blocks').textContent = state.shapes.length;
+            document.getElementById('stat-total-value').textContent = totalVal.toFixed(2);
+
+            let html = '';
+
+            if (state.mode === 'free' || state.mode === 'geometry') {
+                if (selectedShape) {
+                    const def = SHAPE_DEFINITIONS[selectedShape.type];
+                    html = `
+                        <div class="panel-section">
+                            <div class="panel-title">${def.name} <span class="badge" style="background:${selectedShape.color}22; color:${selectedShape.color}">${def.fractionLabel}</span></div>
+                            <div class="stat-row"><span class="stat-label">Sides:</span><span class="stat-value">${def.sides}</span></div>
+                            <div class="stat-row"><span class="stat-label">Interior Angles:</span><span class="stat-value">${def.angles.join('°, ')}°</span></div>
+                            <div class="stat-row"><span class="stat-label">Rotation Angle:</span><span class="stat-value">${Math.round(selectedShape.rotation)}°</span></div>
+                            <div class="stat-row"><span class="stat-label">Relative Area:</span><span class="stat-value">${def.areaFraction || 'Custom'}</span></div>
+                            
+                            <div class="action-grid">
+                                <button class="btn" onclick="duplicateSelected()">📋 Duplicate</button>
+                                <button class="btn" onclick="deleteSelected()" style="color:#ef4444;">🗑 Delete</button>
+                                <button class="btn" onclick="rotateSelected(30)">🔄 +30°</button>
+                                <button class="btn" onclick="rotateSelected(-30)">🔄 -30°</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html = `<p style="font-size:0.85rem; color:var(--text-secondary);">Select a block on canvas to inspect properties or modify.</p>`;
+                }
+            } else if (state.mode === 'fraction') {
+                const wholePart = Math.floor(totalVal);
+                const remainder = totalVal - wholePart;
+                let fractionStr = `${totalVal.toFixed(2)}`;
+
+                if (Math.abs(remainder - 0.5) < 0.01) fractionStr = `${wholePart > 0 ? wholePart + ' ' : ''}1/2`;
+                else if (Math.abs(remainder - 0.333) < 0.02) fractionStr = `${wholePart > 0 ? wholePart + ' ' : ''}1/3`;
+                else if (Math.abs(remainder - 0.666) < 0.02) fractionStr = `${wholePart > 0 ? wholePart + ' ' : ''}2/3`;
+                else if (Math.abs(remainder - 0.166) < 0.02) fractionStr = `${wholePart > 0 ? wholePart + ' ' : ''}1/6`;
+                else if (Math.abs(remainder - 0.833) < 0.02) fractionStr = `${wholePart > 0 ? wholePart + ' ' : ''}5/6`;
+
+                html = `
+                    <div class="panel-section">
+                        <div class="panel-title">🍰 Fraction Calculator</div>
+                        <p style="font-size:0.8rem; color:var(--text-secondary);">1 Yellow Hexagon = 1 Whole Unit</p>
+                        <div class="fraction-summary-box">
+                            <div style="font-size:0.8rem; font-weight:600;">Total Canvas Value:</div>
+                            <div class="fraction-big">${fractionStr}</div>
+                            <div style="font-size:0.75rem; color:var(--text-secondary);">${totalVal.toFixed(3)} Hexagon Wholes</div>
+                        </div>
+                    </div>
+                `;
+            } else if (state.mode === 'puzzle') {
+                html = `
+                    <div class="panel-section">
+                        <div class="panel-title">🎯 Puzzle Challenges</div>
+                        <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:10px;">Select a puzzle template and fit pattern blocks inside the silhouette outline!</p>
+                        <select class="btn" id="select-puzzle" style="width:100%; margin-bottom:10px;">
+                            ${PUZZLE_TEMPLATES.map(p => `<option value="${p.id}" ${state.activePuzzle?.id === p.id ? 'selected' : ''}>${p.name}</option>`).join('')}
+                        </select>
+                        <button class="btn btn-primary" onclick="loadPuzzle(document.getElementById('select-puzzle').value)" style="width:100%;">Start Challenge</button>
+                    </div>
+                `;
+            } else if (state.mode === 'symmetry') {
+                html = `
+                    <div class="panel-section">
+                        <div class="panel-title">🪞 Reflective Symmetry</div>
+                        <p style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:10px;">Build a balanced design across the center line of symmetry.</p>
+                        <button class="btn btn-primary" onclick="autoMirrorSymmetry()" style="width:100%;">Auto-Mirror Pattern 🪞</button>
+                    </div>
+                `;
+            }
+
+            inspectorContent.innerHTML = html;
+        }
+
+        // Global Shape Actions
+        window.duplicateSelected = function() {
+            if (!state.selectedShapeId) return;
+            const shape = state.shapes.find(s => s.id === state.selectedShapeId);
+            if (shape) {
+                addShapeToCanvas(shape.type, shape.x + 25, shape.y + 25);
+            }
+        };
+
+        window.deleteSelected = function() {
+            if (!state.selectedShapeId) return;
+            state.shapes = state.shapes.filter(s => s.id !== state.selectedShapeId);
+            state.selectedShapeId = null;
+            audio.play('delete');
+            renderCanvas();
+            saveStateToHistory();
+        };
+
+        window.rotateSelected = function(angle) {
+            if (!state.selectedShapeId) return;
+            const shape = state.shapes.find(s => s.id === state.selectedShapeId);
+            if (shape) {
+                shape.rotation = (shape.rotation + angle + 360) % 360;
+                audio.play('rotate');
+                renderCanvas();
+                saveStateToHistory();
+            }
+        };
+
+        // Auto Mirror Symmetry Creation
+        window.autoMirrorSymmetry = function() {
+            const rect = svgCanvas.getBoundingClientRect();
+            const centerX = (rect.width / 2 - state.pan.x) / state.zoom;
+
+            const mirroredShapes = [];
+            state.shapes.forEach(shape => {
+                const distFromCenter = shape.x - centerX;
+                const newX = centerX - distFromCenter;
+
+                mirroredShapes.push({
+                    id: state.nextId++,
+                    type: shape.type,
+                    x: newX,
+                    y: shape.y,
+                    rotation: (360 - shape.rotation) % 360,
+                    color: shape.color,
+                    flipH: shape.flipH * -1,
+                    flipV: shape.flipV
+                });
+            });
+
+            state.shapes = state.shapes.concat(mirroredShapes);
+            renderCanvas();
+            saveStateToHistory();
+            showToast('Reflected design across line of symmetry!');
+        };
+
+        // Load Puzzle Challenge Silhouette
+        window.loadPuzzle = function(puzzleId) {
+            const template = PUZZLE_TEMPLATES.find(p => p.id === puzzleId) || PUZZLE_TEMPLATES[0];
+            state.activePuzzle = template;
+            state.puzzleCompleted = false;
+
+            layerPuzzle.innerHTML = '';
+            template.shapes.forEach(s => {
+                const def = SHAPE_DEFINITIONS[s.type];
+                const dummy = { ...s, flipH: 1, flipV: 1 };
+                const points = getTransformedPoints(dummy);
+                const pointsString = points.map(p => `${p.x},${p.y}`).join(' ');
+
+                const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                poly.setAttribute('points', pointsString);
+                poly.setAttribute('fill', 'rgba(148, 163, 184, 0.2)');
+                poly.setAttribute('stroke', '#64748b');
+                poly.setAttribute('stroke-width', '2');
+                poly.setAttribute('stroke-dasharray', '4,4');
+                layerPuzzle.appendChild(poly);
+            });
+
+            showToast(`Loaded: ${template.name}`);
+        };
+
+        // Check if Puzzle Challenge is solved
+        function checkPuzzleCompletion() {
+            if (state.mode !== 'puzzle' || !state.activePuzzle || state.puzzleCompleted) return;
+
+            // Simple distance check between canvas shapes and puzzle target slots
+            let matched = 0;
+            state.activePuzzle.shapes.forEach(target => {
+                const found = state.shapes.some(s => {
+                    return s.type === target.type &&
+                        Math.hypot(s.x - target.x, s.y - target.y) < 15;
+                });
+                if (found) matched++;
+            });
+
+            if (matched === state.activePuzzle.shapes.length && matched > 0) {
+                state.puzzleCompleted = true;
+                audio.play('win');
+                launchConfetti();
+                showToast('🎉 Congratulations! Puzzle Completed!');
+            }
+        }
+
+        // Celebration Confetti
+        function launchConfetti() {
+            const canvas = document.getElementById('fx-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = Array.from({ length: 80 }).map(() => ({
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                vx: (Math.random() - 0.5) * 12,
+                vy: (Math.random() - 0.7) * 14,
+                color: ['#facc15', '#ef4444', '#3b82f6', '#22c55e', '#a855f7'][Math.floor(Math.random() * 5)],
+                size: Math.random() * 8 + 4
+            }));
+
+            function frame() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.3; // Gravity
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                if (particles.some(p => p.y < canvas.height)) {
+                    requestAnimationFrame(frame);
+                }
+            }
+            frame();
+        }
+
+        // Undo / Redo History
+        function saveStateToHistory() {
+            if (state.historyIndex < state.history.length - 1) {
+                state.history = state.history.slice(0, state.historyIndex + 1);
+            }
+            state.history.push(JSON.stringify(state.shapes));
+            state.historyIndex++;
+        }
+
+        function undo() {
+            if (state.historyIndex > 0) {
+                state.historyIndex--;
+                state.shapes = JSON.parse(state.history[state.historyIndex]);
+                renderCanvas();
+                showToast('Undo');
+            }
+        }
+
+        function redo() {
+            if (state.historyIndex < state.history.length - 1) {
+                state.historyIndex++;
+                state.shapes = JSON.parse(state.history[state.historyIndex]);
+                renderCanvas();
+                showToast('Redo');
+            }
+        }
+
+        // Toast Notification
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // Event Listeners Setup
+        function setupEventListeners() {
+            // Mode switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    state.mode = e.target.dataset.mode;
+
+                    // Show/hide mode layers
+                    layerSymmetry.style.display = state.mode === 'symmetry' ? 'block' : 'none';
+                    if (state.mode !== 'puzzle') layerPuzzle.innerHTML = '';
+
+                    updateInspector();
+                });
+            });
+
+            // Grid dropdown
+            document.getElementById('select-grid').addEventListener('change', (e) => {
+                state.grid = e.target.value;
+                if (state.grid === 'none') {
+                    gridRect.style.display = 'none';
+                } else {
+                    gridRect.style.display = 'block';
+                    gridRect.setAttribute('fill', `url(#grid-${state.grid})`);
+                }
+            });
+
+            // Snap Toggle
+            const snapBtn = document.getElementById('btn-snap');
+            snapBtn.addEventListener('click', () => {
+                state.snapEnabled = !state.snapEnabled;
+                snapBtn.classList.toggle('btn-active', state.snapEnabled);
+                snapBtn.textContent = state.snapEnabled ? '🧲 Snap: ON' : '🧲 Snap: OFF';
+            });
+
+            // Recolor dots
+            document.querySelectorAll('.color-dot').forEach(dot => {
+                dot.addEventListener('click', (e) => {
+                    const color = e.target.dataset.color;
+                    if (state.selectedShapeId) {
+                        const shape = state.shapes.find(s => s.id === state.selectedShapeId);
+                        if (shape) {
+                            shape.color = color;
+                            renderCanvas();
+                            saveStateToHistory();
+                        }
+                    }
+                });
+            });
+
+            // Toolbar buttons
+            document.getElementById('btn-undo').addEventListener('click', undo);
+            document.getElementById('btn-redo').addEventListener('click', redo);
+            document.getElementById('btn-clear').addEventListener('click', () => {
+                state.shapes = [];
+                state.selectedShapeId = null;
+                renderCanvas();
+                saveStateToHistory();
+                showToast('Canvas Cleared');
+            });
+            document.getElementById('btn-duplicate').addEventListener('click', window.duplicateSelected);
+            document.getElementById('btn-rotate-cw').addEventListener('click', () => window.rotateSelected(30));
+            document.getElementById('btn-flip-h').addEventListener('click', () => {
+                if (state.selectedShapeId) {
+                    const shape = state.shapes.find(s => s.id === state.selectedShapeId);
+                    shape.flipH *= -1;
+                    renderCanvas();
+                }
+            });
+            document.getElementById('btn-flip-v').addEventListener('click', () => {
+                if (state.selectedShapeId) {
+                    const shape = state.shapes.find(s => s.id === state.selectedShapeId);
+                    shape.flipV *= -1;
+                    renderCanvas();
+                }
+            });
+
+            // Save / Load JSON Design
+            document.getElementById('btn-save').addEventListener('click', () => {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.shapes));
+                const dlAnchor = document.createElement('a');
+                dlAnchor.setAttribute("href", dataStr);
+                dlAnchor.setAttribute("download", "pattern_block_design.json");
+                dlAnchor.click();
+            });
+
+            document.getElementById('btn-load').addEventListener('click', () => {
+                document.getElementById('file-input').click();
+            });
+
+            document.getElementById('file-input').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    try {
+                        state.shapes = JSON.parse(evt.target.result);
+                        renderCanvas();
+                        saveStateToHistory();
+                        showToast('Design Loaded Successfully');
+                    } catch (err) {
+                        alert('Invalid Pattern Block file!');
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            // Theme toggle
+            document.getElementById('btn-theme').addEventListener('click', () => {
+                state.theme = state.theme === 'light' ? 'dark' : 'light';
+                document.body.setAttribute('data-theme', state.theme);
+            });
+
+            // Help Modal
+            const modal = document.getElementById('help-modal');
+            document.getElementById('btn-help').addEventListener('click', () => modal.classList.add('open'));
+            document.getElementById('close-modal').addEventListener('click', () => modal.classList.remove('open'));
+
+            // Click workspace background to deselect
+            svgCanvas.addEventListener('pointerdown', (e) => {
+                if (e.target === svgCanvas || e.target === gridRect) {
+                    state.selectedShapeId = null;
+                    renderCanvas();
+                }
+            });
+        }
+
+        function handleResize() {
+            renderCanvas();
+        }
+
+        // Initialize on DOM load
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>

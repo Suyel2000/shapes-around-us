@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🧭 Virtual Geometry Compass – Draw Perfect Circles</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary: #0ea5e9;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --border: #cbd5e1;
+            --sidebar-width: 360px;
+            --radius-scale: 25; /* 1cm = 25px */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header Navigation */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-container h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .unit-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px;
+            border-radius: 30px;
+            gap: 4px;
+        }
+
+        .unit-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .unit-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Main Workspace Layout */
+        .main-container {
+            flex: 1;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Interactive Canvas Area */
+        .workspace-container {
+            flex: 1;
+            position: relative;
+            background-color: white;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        .workspace-container:active {
+            cursor: grabbing;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+
+        /* Side Control Panel */
+        sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            box-shadow: -4px 0 15px rgba(0, 0, 0, 0.05);
+            z-index: 9;
+            overflow-y: auto;
+        }
+
+        .panel-section {
+            padding: 18px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .panel-section h2 {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Universal Grid Control Layout */
+        .grid-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .grid-buttons.three-cols {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        button.btn {
+            background-color: var(--light);
+            color: var(--dark);
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+            touch-action: manipulation;
+        }
+
+        button.btn:hover {
+            background-color: #e2e8f0;
+            border-color: #94a3b8;
+        }
+
+        button.btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        button.btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        button.btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Radius Controller Specifics */
+        .radius-display-box {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 14px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .radius-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            outline: none;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Real-time Math Dashboard */
+        .math-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .math-card {
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .math-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .math-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-top: 2px;
+        }
+
+        /* Instructions & Practice UI */
+        .instruction-box {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 12px;
+            border-radius: 0 12px 12px 0;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .practice-card {
+            background-color: #fffbeb;
+            border: 1px solid #fef3c7;
+            padding: 14px;
+            border-radius: 14px;
+        }
+
+        .feedback-badge {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .feedback-badge.success {
+            background-color: #d1fae5;
+            color: var(--success);
+            display: inline-block;
+        }
+
+        .feedback-badge.error {
+            background-color: #fee2e2;
+            color: var(--danger);
+            display: inline-block;
+        }
+
+        /* Quick Action Toolbar Floating On Canvas */
+        .floating-toolbar {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 6px;
+            z-index: 8;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .zoom-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 8px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        /* Smart Board Adaptations & Optimization */
+        @media (max-width: 1024px) {
+            body {
+                flex-direction: column;
+            }
+            .main-container {
+                flex-direction: column-reverse;
+            }
+            sidebar {
+                width: 100%;
+                height: 40vh;
+                border-left: none;
+                border-top: 1px solid var(--border);
+            }
+            .floating-toolbar {
+                top: auto;
+                bottom: calc(40vh + 20px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 1rem; }
+            sidebar { height: 50vh; }
+            .floating-toolbar { bottom: calc(50vh + 10px); left: 10px; }
+        }
+    </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JSVKBDWEV5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-JSVKBDWEV5');
+</script>
+<body>
+
+    <header>
+        <div class="brand-container">
+            <span style="font-size: 1.8rem;">🧭</span>
+            <div>
+                <h1>Virtual Geometry Compass</h1>
+                <p style="font-size: 0.75rem; opacity: 0.9;">Draw Perfect Circles & Explore Constructions</p>
+            </div>
+        </div>
+        <div class="unit-toggle">
+            <button class="unit-btn active" id="unit-cm-btn" onclick="setUnit('cm')">cm</button>
+            <button class="unit-btn" id="unit-mm-btn" onclick="setUnit('mm')">mm</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        
+        <div class="workspace-container" id="canvas-frame">
+            <div class="floating-toolbar">
+                <button class="btn" onclick="adjustZoom(0.1)" title="Zoom In">➕</button>
+                <div class="zoom-badge" id="zoom-txt">100%</div>
+                <button class="btn" onclick="adjustZoom(-0.1)" title="Zoom Out">➖</button>
+                <button class="btn" onclick="resetPanZoom()" title="Reset Position">🎯</button>
+                <div style="width: 1px; background: var(--border); margin: 0 4px;"></div>
+                <button class="btn" onclick="undo()" title="Undo Action">↩️</button>
+                <button class="btn" onclick="redo()" title="Redo Action">↪️</button>
+            </div>
+            <canvas id="geometry-canvas"></canvas>
+        </div>
+
+        <sidebar>
+            <div class="panel-section">
+                <h2>📐 Interactive Radius Control</h2>
+                <div class="radius-display-box">
+                    <div class="radius-value" id="radius-val-display">5.0 cm</div>
+                    <div class="slider-container">
+                        <button class="btn" onclick="incrementRadius(-0.1)">-</button>
+                        <input type="range" id="radius-slider" min="1" max="20" step="0.1" value="5">
+                        <button class="btn" onclick="incrementRadius(0.1)">+</button>
+                    </div>
+                </div>
+
+                <div class="math-grid">
+                    <div class="math-card">
+                        <div class="math-label">Diameter</div>
+                        <div class="math-value" id="math-dia">10.00 cm</div>
+                    </div>
+                    <div class="math-card">
+                        <div class="math-label">Circumference</div>
+                        <div class="math-value" id="math-circ">31.42 cm</div>
+                    </div>
+                    <div class="math-card" style="grid-column: span 2;">
+                        <div class="math-label">Circle Area</div>
+                        <div class="math-value" id="math-area">78.54 cm²</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h2>⚙️ Mechanics & Actions</h2>
+                <div class="grid-buttons unique-layout" style="margin-bottom: 8px; grid-template-columns: 1fr; gap: 6px;">
+                    <button class="btn btn-primary" style="background-color: var(--success);" onclick="triggerInstantCircle()">🪄 Instantly Form Complete Circle</button>
+                    <button class="btn btn-primary" style="background-color: var(--primary);" onclick="triggerManualRotationCircle()">✏️ Rotate Pencil to Form Circle</button>
+                </div>
+                <div class="grid-buttons standard-layout" style="margin-bottom: 8px;">
+                    <button class="btn" onclick="rotateCompassManual(-15)">🔄 Rotate L</button>
+                    <button class="btn" onclick="rotateCompassManual(15)">🔄 Rotate R</button>
+                </div>
+                <div class="grid-buttons standard-layout">
+                    <button class="btn" id="lock-btn" onclick="toggleRadiusLock()">🔓 Radius Unlocked</button>
+                    <button class="btn" id="draw-mode-btn" onclick="toggleDrawingState()">✏️ Trace Arc: OFF</button>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h2>🌐 Environment & Grid</h2>
+                <div class="grid-buttons three-cols" style="margin-bottom: 8px;">
+                    <button class="btn active" id="grid-toggle" onclick="toggleGridStyle('lines')">Grid</button>
+                    <button class="btn" id="dot-toggle" onclick="toggleGridStyle('dots')">Dots</button>
+                    <button class="btn" id="snap-toggle" onclick="toggleSnap()">Snap</button>
+                </div>
+                <div class="grid-buttons">
+                    <button class="btn active" id="center-lbl-toggle" onclick="toggleVisualLabels('center')">Center Mark</button>
+                    <button class="btn active" id="anatomy-lbl-toggle" onclick="toggleVisualLabels('anatomy')">Labels</button>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <h2>📖 Learning Studio</h2>
+                    <button class="btn" style="padding: 4px 10px; font-size:0.8rem;" onclick="toggleLearningMode()" id="learn-mode-toggle">Toggle Mode</button>
+                </div>
+                <div id="learning-instruction-container" class="instruction-box">
+                    <strong>Step 1:</strong> Drag the center point (needle handle) to position your canvas point structure anywhere.
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h2>🤖 Automated Demos</h2>
+                <div class="grid-buttons">
+                    <button class="btn" onclick="startAutoDemo('circle')">🎥 Circle Demo</button>
+                    <button class="btn" onclick="startAutoDemo('concentric')">🎯 Concentric</button>
+                    <button class="btn" onclick="startAutoDemo('intersect')">✖️ Intersecting</button>
+                    <button class="btn" onclick="startAutoDemo('arc')">🌙 Arc Demo</button>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h2>🎯 Active Practice Lab</h2>
+                <div class="practice-card">
+                    <div id="practice-task" style="font-weight:600; font-size:0.95rem; color:#92400e;">Draw a circle with radius 6.0 cm.</div>
+                    <div style="margin-top:10px; display:flex; gap:6px;">
+                        <button class="btn" style="flex:1; background:white;" onclick="verifyUserPractice()">Verify Setup</button>
+                        <button class="btn" style="flex:1; background:white;" onclick="generatePracticeTask()">Next Task</button>
+                    </div>
+                    <div id="practice-feedback" class="feedback-badge">✅ Excellent Work!</div>
+                </div>
+            </div>
+
+            <div class="panel-section" style="margin-top:auto; background:#fff1f2;">
+                <button class="btn" style="width:100%; background:var(--danger); color:white; border:none;" onclick="clearEntireWorkspace()">🗑️ Clear Drawing Board</button>
+            </div>
+        </sidebar>
+    </div>
+
+    <script>
+        // --- Core Engine Architectural State Setup ---
+        const canvas = document.getElementById('geometry-canvas');
+        const ctx = canvas.getContext('2d');
+        const frame = document.getElementById('canvas-frame');
+
+        let appState = {
+            unit: 'cm', // 'cm' or 'mm'
+            scale: 25, // 1cm = 25px
+            radius: 5.0, // in selected units
+            radiusLocked: false,
+            isTracing: false,
+            gridStyle: 'lines', // 'lines', 'dots', 'none'
+            snapToGrid: false,
+            showCenterMark: true,
+            showAnatomyLabels: true,
+            learningModeActive: true,
+            currentStep: 1,
+            
+            // Interaction Transforms Frame
+            zoom: 1.0,
+            panX: 0,
+            panY: 0,
+            
+            // Compass Structural Parameters Matrix
+            compass: {
+                cx: 0, // Assigned inside initializers dynamically
+                cy: 0,
+                angle: -Math.PI / 4, // Radians rotation track
+                isDraggingCenter: false,
+                isRotatingPencil: false,
+                isPanningWorkspace: false
+            },
+            
+            // Persistent Vector Space History
+            shapes: [],
+            undoStack: [],
+            redoStack: [],
+            
+            // Realtime Practice Validation Tracking Target Matrix
+            currentTarget: { type: 'circle', field: 'radius', val: 6.0 },
+            
+            // Animation Engine Register
+            isAnimating: false,
+            animationTimeline: null
+        };
+
+        // Initialize Coordinates and Setup Lifecycle Hooks
+        function initApp() {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Place compass natively center screen
+            appState.compass.cx = canvas.width / 2;
+            appState.compass.cy = canvas.height / 2;
+            
+            setupPointerInteractions();
+            syncUIElements();
+            generatePracticeTask();
+            drawLoop();
+        }
+
+        function resizeCanvas() {
+            const rect = frame.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            drawLoop();
+        }
+
+        // --- Core Math Utilities ---
+        function getCanvasMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        function transformScreenToLogical(screenX, screenY) {
+            const lx = (screenX - appState.panX) / appState.zoom;
+            const ly = (screenY - appState.panY) / appState.zoom;
+            return { x: lx, y: ly };
+        }
+
+        function syncUIElements() {
+            // Units updates
+            const isCm = appState.unit === 'cm';
+            document.getElementById('radius-val-display').innerText = `${appState.radius.toFixed(1)} ${appState.unit}`;
+            document.getElementById('radius-slider').value = appState.radius;
+            
+            // Calculations Matrix Updates
+            const r_cm = isCm ? appState.radius : appState.radius / 10;
+            const d_cm = r_cm * 2;
+            const circ_cm = 2 * Math.PI * r_cm;
+            const area_cm = Math.PI * Math.pow(r_cm, 2);
+            
+            const displayUnit = appState.unit;
+            const displayUnitSq = appState.unit === 'cm' ? 'cm²' : 'mm²';
+            const multiplier = isCm ? 1 : 10;
+
+            document.getElementById('math-dia').innerText = `${(d_cm * multiplier).toFixed(2)} ${displayUnit}`;
+            document.getElementById('math-circ').innerText = `${(circ_cm * multiplier).toFixed(2)} ${displayUnit}`;
+            document.getElementById('math-area').innerText = `${(area_cm * (isCm ? 1 : 100)).toFixed(2)} ${displayUnitSq}`;
+            
+            // Locks and Modes styling
+            document.getElementById('lock-btn').innerText = appState.radiusLocked ? "🔒 Radius Locked" : "🔓 Radius Unlocked";
+            document.getElementById('lock-btn').className = appState.radiusLocked ? "btn active" : "btn";
+            
+            document.getElementById('draw-mode-btn').innerText = appState.isTracing ? "✏️ Trace Arc: ON" : "✏️ Trace Arc: OFF";
+            document.getElementById('draw-mode-btn').className = appState.isTracing ? "btn active" : "btn";
+            
+            document.getElementById('zoom-txt').innerText = `${Math.round(appState.zoom * 100)}%`;
+            
+            updateLearningPrompt();
+        }
+
+        // --- UI Events Handlers ---
+        function setUnit(u) {
+            if(u === appState.unit) return;
+            if(u === 'mm') {
+                appState.radius = appState.radius * 10;
+                document.getElementById('radius-slider').max = 200;
+            } else {
+                appState.radius = appState.radius / 10;
+                document.getElementById('radius-slider').max = 20;
+            }
+            appState.unit = u;
+            document.getElementById('unit-cm-btn').classList.toggle('active', u === 'cm');
+            document.getElementById('unit-mm-btn').classList.toggle('active', u === 'mm');
+            syncUIElements();
+            drawLoop();
+        }
+
+        // --- Mechanical Rotation Process Hook ---
+        function triggerManualRotationCircle() {
+            if(appState.isAnimating) return;
+            appState.isAnimating = true;
+            recordState();
+            
+            let startTime = null;
+            const duration = 2000; 
+            const startAngle = appState.compass.angle;
+            
+            traceHistory = null;
+            
+            function animManualTrace(timestamp) {
+                if(!startTime) startTime = timestamp;
+                const elapsed = timestamp - startTime;
+                const pct = Math.min(1, elapsed / duration);
+                
+                appState.compass.angle = startAngle + (pct * Math.PI * 2);
+                
+                if(!traceHistory) {
+                    traceHistory = {
+                        type: 'arc',
+                        cx: appState.compass.cx,
+                        cy: appState.compass.cy,
+                        r: getRadiusInPx(),
+                        angles: [appState.compass.angle],
+                        color: '#475569'
+                    };
+                    appState.shapes.push(traceHistory);
+                } else {
+                    traceHistory.angles.push(appState.compass.angle);
+                }
+                
+                syncUIElements();
+                drawLoop();
+                
+                if(pct < 1) {
+                    appState.animationTimeline = requestAnimationFrame(animManualTrace);
+                } else {
+                    traceHistory = null;
+                    appState.isAnimating = false;
+                    appState.currentStep = 5;
+                    syncUIElements();
+                    drawLoop();
+                }
+            }
+            requestAnimationFrame(animManualTrace);
+        }
+
+        function incrementRadius(amt) {
+            if(appState.radiusLocked) return;
+            const minVal = 1;
+            const maxVal = appState.unit === 'cm' ? 20 : 200;
+            appState.radius = Math.max(minVal, Math.min(maxVal, appState.radius + amt));
+            syncUIElements();
+            drawLoop();
+        }
+
+        document.getElementById('radius-slider').addEventListener('input', (e) => {
+            if(appState.radiusLocked) {
+                e.target.value = appState.radius; // Force revert UI
+                return;
+            }
+            appState.radius = parseFloat(e.target.value);
+            syncUIElements();
+            drawLoop();
+        });
+
+        function toggleRadiusLock() {
+            appState.radiusLocked = !appState.radiusLocked;
+            syncUIElements();
+        }
+
+        function toggleDrawingState() {
+            appState.isTracing = !appState.isTracing;
+            syncUIElements();
+        }
+
+        function rotateCompassManual(deg) {
+            appState.compass.angle += (deg * Math.PI) / 180;
+            if(appState.isTracing) {
+                commitTraceStep();
+            }
+            drawLoop();
+        }
+
+        function toggleGridStyle(style) {
+            if(appState.gridStyle === style) {
+                appState.gridStyle = 'none';
+            } else {
+                appState.gridStyle = style;
+            }
+            document.getElementById('grid-toggle').classList.toggle('active', appState.gridStyle === 'lines');
+            document.getElementById('dot-toggle').classList.toggle('active', appState.gridStyle === 'dots');
+            drawLoop();
+        }
+
+        function toggleSnap() {
+            appState.snapToGrid = !appState.snapToGrid;
+            document.getElementById('snap-toggle').classList.toggle('active', appState.snapToGrid);
+        }
+
+        // --- Structural Visibility State Router ---
+        function toggleVisualLabels(target) {
+            if(target === 'center') {
+                appState.showCenterMark = !appState.showCenterMark;
+                document.getElementById('center-lbl-toggle').classList.toggle('active', appState.showCenterMark);
+            } else {
+                appState.showAnatomyLabels = !appState.showAnatomyLabels;
+                document.getElementById('anatomy-lbl-toggle').classList.toggle('active', appState.showAnatomyLabels);
+            }
+            drawLoop();
+        }
+
+        function toggleLearningMode() {
+            appState.learningModeActive = !appState.learningModeActive;
+            document.getElementById('learning-instruction-container').style.display = appState.learningModeActive ? 'block' : 'none';
+        }
+
+        function adjustZoom(amt) {
+            appState.zoom = Math.max(0.4, Math.min(3.0, appState.zoom + amt));
+            syncUIElements();
+            drawLoop();
+        }
+
+        function resetPanZoom() {
+            appState.zoom = 1.0;
+            appState.panX = 0;
+            appState.panY = 0;
+            syncUIElements();
+            drawLoop();
+        }
+
+        // --- Drawing Workspace Array Stack Vectors Mechanics ---
+        function recordState() {
+            appState.undoStack.push(JSON.stringify(appState.shapes));
+            appState.redoStack = []; // Break forward chain
+        }
+
+        function undo() {
+            if(appState.undoStack.length === 0) return;
+            appState.redoStack.push(JSON.stringify(appState.shapes));
+            appState.shapes = JSON.parse(appState.undoStack.pop());
+            drawLoop();
+        }
+
+        function redo() {
+            if(appState.redoStack.length === 0) return;
+            appState.undoStack.push(JSON.stringify(appState.shapes));
+            appState.shapes = JSON.parse(appState.redoStack.pop());
+            drawLoop();
+        }
+
+        function clearEntireWorkspace() {
+            recordState();
+            appState.shapes = [];
+            drawLoop();
+        }
+
+        function triggerInstantCircle() {
+            recordState();
+            const radiusInPx = getRadiusInPx();
+            appState.shapes.push({
+                type: 'circle',
+                cx: appState.compass.cx,
+                cy: appState.compass.cy,
+                r: radiusInPx,
+                color: '#475569'
+            });
+            appState.currentStep = 5;
+            syncUIElements();
+            drawLoop();
+        }
+
+        function getRadiusInPx() {
+            // Standardizes calculation to uniform layout output sizing
+            const valInCm = appState.unit === 'cm' ? appState.radius : appState.radius / 10;
+            return valInCm * appState.scale;
+        }
+
+        // Trace management dynamically computed while interacting via pointers
+        let traceHistory = null;
+        function commitTraceStep() {
+            const radPx = getRadiusInPx();
+            if(!traceHistory) {
+                recordState();
+                traceHistory = {
+                    type: 'arc',
+                    cx: appState.compass.cx,
+                    cy: appState.compass.cy,
+                    r: radPx,
+                    angles: [appState.compass.angle],
+                    color: '#e11d48'
+                };
+                appState.shapes.push(traceHistory);
+            } else {
+                traceHistory.angles.push(appState.compass.angle);
+            }
+        }
+
+        // --- Unified Vector Interaction Mapping Engine (PointerEvents Matrix) ---
+        let lastPointerPos = {x:0, y:0};
+
+        function setupPointerInteractions() {
+            canvas.addEventListener('pointerdown', (e) => {
+                if(appState.isAnimating) return;
+                const sPos = getCanvasMousePos(e);
+                const lPos = transformScreenToLogical(sPos.x, sPos.y);
+                lastPointerPos = sPos;
+
+                // Hit tests mapping metrics configurations
+                const needleDist = Math.hypot(lPos.x - appState.compass.cx, lPos.y - appState.compass.cy);
+                
+                const radPx = getRadiusInPx();
+                const pencilX = appState.compass.cx + radPx * Math.cos(appState.compass.angle);
+                const pencilY = appState.compass.cy + radPx * Math.sin(appState.compass.angle);
+                const pencilDist = Math.hypot(lPos.x - pencilX, lPos.y - pencilY);
+
+                canvas.setPointerCapture(e.pointerId);
+
+                // Check interactions hierarchies priority targets
+                if (needleDist < 25) {
+                    appState.compass.isDraggingCenter = true;
+                    appState.currentStep = 2;
+                    syncUIElements();
+                } else if (pencilDist < 30) {
+                    appState.compass.isRotatingPencil = true;
+                    if(appState.isTracing) commitTraceStep();
+                    appState.currentStep = 4;
+                    syncUIElements();
+                } else {
+                    appState.compass.isPanningWorkspace = true;
+                }
+            });
+
+            canvas.addEventListener('pointermove', (e) => {
+                if(appState.isAnimating) return;
+                const sPos = getCanvasMousePos(e);
+                const lPos = transformScreenToLogical(sPos.x, sPos.y);
+                
+                if (appState.compass.isDraggingCenter) {
+                    let tx = lPos.x;
+                    let ty = lPos.y;
+                    if(appState.snapToGrid) {
+                        const spacing = 40;
+                        tx = Math.round(tx / spacing) * spacing;
+                        ty = Math.round(ty / spacing) * spacing;
+                    }
+                    appState.compass.cx = tx;
+                    appState.compass.cy = ty;
+                    drawLoop();
+                } 
+                else if (appState.compass.isRotatingPencil) {
+                    const dx = lPos.x - appState.compass.cx;
+                    const dy = lPos.y - appState.compass.cy;
+                    const calculatedAngle = Math.atan2(dy, dx);
+                    
+                    if(!appState.radiusLocked) {
+                        const calculatedRadiusPx = Math.hypot(dx, dy);
+                        let calculatedRadiusUnits = calculatedRadiusPx / appState.scale;
+                        if(appState.unit === 'mm') calculatedRadiusUnits *= 10;
+                        
+                        const maxVal = appState.unit === 'cm' ? 20 : 200;
+                        appState.radius = Math.max(1, Math.min(maxVal, calculatedRadiusUnits));
+                    }
+                    
+                    appState.compass.angle = calculatedAngle;
+                    if(appState.isTracing) {
+                        commitTraceStep();
+                    }
+                    syncUIElements();
+                    drawLoop();
+                } 
+                else if (appState.compass.isPanningWorkspace) {
+                    appState.panX += (sPos.x - lastPointerPos.x);
+                    appState.panY += (sPos.y - lastPointerPos.y);
+                    drawLoop();
+                }
+                
+                lastPointerPos = sPos;
+            });
+
+            const stopInteraction = (e) => {
+                appState.compass.isDraggingCenter = false;
+                appState.compass.isRotatingPencil = false;
+                appState.compass.isPanningWorkspace = false;
+                traceHistory = null;
+                drawLoop();
+            };
+
+            canvas.addEventListener('pointerup', stopInteraction);
+            canvas.addEventListener('pointercancel', stopInteraction);
+        }
+
+        // --- Pedagogical Training Direct Instructions Router ---
+        function updateLearningPrompt() {
+            const container = document.getElementById('learning-instruction-container');
+            if(!appState.learningModeActive) return;
+
+            const steps = {
+                1: "<strong>Step 1:</strong> Drag the needle hub (center dot point) to anchor your position securely on your sheet matrix.",
+                2: "<strong>Step 2:</strong> Use the sidebar slider or click and pull the metallic legs layout structure to configure your accurate target opening radius.",
+                3: "<strong>Step 3:</strong> Enable <strong>Trace Arc</strong> or use the <strong>Instantly Form Complete Circle</strong> module feature sets.",
+                4: "<strong>Step 4:</strong> Drag the pencil leg tip assembly uniformly to swing paths seamlessly around coordinates.",
+                5: "<strong>Step 5:</strong> Excellent! Your geometric construction layout vectors have verified successfully. Feel free to spawn additional instances natively."
+            };
+
+            if(appState.isTracing && appState.currentStep < 4) appState.currentStep = 4;
+            container.innerHTML = steps[appState.currentStep] || steps[1];
+        }
+
+        // --- Generative Gamified Evaluation Lab ---
+        function generatePracticeTask() {
+            document.getElementById('practice-feedback').className = "feedback-badge";
+            
+            const tasks = [
+                { type: 'circle', field: 'radius', val: 4.0, text: "Draw a circle with radius 4.0 cm." },
+                { type: 'circle', field: 'radius', val: 7.5, text: "Draw a circle with radius 7.5 cm." },
+                { type: 'circle', field: 'diameter', val: 10.0, text: "Construct a system with target diameter 10.0 cm." },
+                { type: 'circle', field: 'radius', val: 2.0, text: "Draw a small concentric seed circle with radius 2.0 cm." },
+                { type: 'circle', field: 'radius', val: 8.0, text: "Build a sweeping structure with radius 8.0 cm." }
+            ];
+
+            const select = tasks[Math.floor(Math.random() * tasks.length)];
+            appState.currentTarget = select;
+            
+            // Adjust label presentation for specific configured dynamic string
+            let taskString = select.text;
+            if(appState.unit === 'mm') {
+                if(select.field === 'radius') {
+                    taskString = `Draw a circle with radius ${select.val * 10} mm.`;
+                } else {
+                    taskString = `Construct a system with target diameter ${select.val * 10} mm.`;
+                }
+            }
+            document.getElementById('practice-task').innerText = taskString;
+        }
+
+        function verifyUserPractice() {
+            const fb = document.getElementById('practice-feedback');
+            if(appState.shapes.length === 0) {
+                fb.innerText = "❌ No structural shapes detected on board!";
+                fb.className = "feedback-badge error";
+                return;
+            }
+
+            // Read absolute final drawn structure item matrix configuration parameters
+            const lastShape = appState.shapes[appState.shapes.length - 1];
+            const activeRadiusCm = lastShape.r / appState.scale;
+            
+            let targetRadiusCm = appState.currentTarget.val;
+            if(appState.currentTarget.field === 'diameter') targetRadiusCm = appState.currentTarget.val / 2;
+
+            const variance = Math.abs(activeRadiusCm - targetRadiusCm);
+            
+            if(variance < 0.25) {
+                fb.innerText = "✅ Excellent Construction Metric Accuracy!";
+                fb.className = "feedback-badge success";
+                appState.currentStep = 5;
+                syncUIElements();
+            } else {
+                fb.innerText = `❌ Inaccurate! Expected ~${(targetRadiusCm * (appState.unit==='cm'?1:10)).toFixed(1)} ${appState.unit}. Got ${(activeRadiusCm * (appState.unit==='cm'?1:10)).toFixed(1)}.`;
+                fb.className = "feedback-badge error";
+            }
+        }
+
+        // --- Scripted Teacher Demonstration Automation Runtime Framework Engine ---
+        function startAutoDemo(mode) {
+            if(appState.isAnimating) return;
+            appState.isAnimating = true;
+            clearEntireWorkspace();
+            resetPanZoom();
+
+            let startTime = null;
+            const duration = 2500; // time window variables mapping metrics allocation
+            
+            const originX = canvas.width / 2;
+            const originY = canvas.height / 2;
+            
+            appState.compass.cx = originX - 100;
+            appState.compass.cy = originY - 50;
+            appState.radius = 3.0;
+            if(appState.unit === 'mm') appState.radius = 30;
+            appState.compass.angle = 0;
+            
+            syncUIElements();
+
+            function animCircleDemo(timestamp) {
+                if(!startTime) startTime = timestamp;
+                const elapsed = timestamp - startTime;
+                
+                if(elapsed < 800) {
+                    // Phase 1: Slide Compass Into Optimal Screen Position Setup Coordinate Points
+                    const pct = elapsed / 800;
+                    appState.compass.cx = (originX - 100) + (100 * pct);
+                    appState.compass.cy = (originY - 50) + (50 * pct);
+                } 
+                else if (elapsed >= 800 && elapsed < 1500) {
+                    // Phase 2: Open Arm Structural Assemblies out to Target Value Dimensions
+                    const pct = (elapsed - 800) / 700;
+                    const targetRad = appState.unit === 'cm' ? 6.5 : 65;
+                    const initialRad = appState.unit === 'cm' ? 3.0 : 30;
+                    appState.radius = initialRad + (targetRad - initialRad) * pct;
+                } 
+                else if (elapsed >= 1500 && elapsed <= 3500) {
+                    // Phase 3: Trace Circle Perimeter Path 360 Degrees Vector Loops Arc Paths
+                    const pct = (elapsed - 1500) / 2000;
+                    appState.compass.angle = pct * Math.PI * 2;
+                    
+                    // Direct programmatic trace recording insertion array values injection logic
+                    if(!traceHistory) {
+                        traceHistory = {
+                            type: 'arc',
+                            cx: appState.compass.cx,
+                            cy: appState.compass.cy,
+                            r: getRadiusInPx(),
+                            angles: [appState.compass.angle],
+                            color: '#2563eb'
+                        };
+                        appState.shapes.push(traceHistory);
+                    } else {
+                        traceHistory.angles.push(appState.compass.angle);
+                    }
+                }
+
+                syncUIElements();
+                drawLoop();
+
+                if(elapsed < 3500) {
+                    appState.animationTimeline = requestAnimationFrame(animCircleDemo);
+                } else {
+                    traceHistory = null;
+                    appState.isAnimating = false;
+                    drawLoop();
+                }
+            }
+
+            function animConcentricDemo(timestamp) {
+                if(!startTime) startTime = timestamp;
+                const elapsed = timestamp - startTime;
+
+                appState.compass.cx = originX;
+                appState.compass.cy = originY;
+
+                if(elapsed < 1500) {
+                    const pct = elapsed / 1500;
+                    appState.radius = (appState.unit === 'cm' ? 3.5 : 35);
+                    appState.compass.angle = pct * Math.PI * 2;
+                    if(pct < 0.02) { appState.shapes = []; traceHistory = null; }
+                    if(!traceHistory) {
+                        traceHistory = { type: 'arc', cx: originX, cy: originY, r: getRadiusInPx(), angles: [], color: '#0ea5e9' };
+                        appState.shapes.push(traceHistory);
+                    }
+                    traceHistory.angles.push(appState.compass.angle);
+                } 
+                else if(elapsed >= 1500 && elapsed < 2000) {
+                    traceHistory = null;
+                    const pct = (elapsed - 1500) / 500;
+                    const startR = (appState.unit === 'cm' ? 3.5 : 35);
+                    const endR = (appState.unit === 'cm' ? 6.5 : 65);
+                    appState.radius = startR + (endR - startR) * pct;
+                }
+                else if(elapsed >= 2000 && elapsed <= 3500) {
+                    const pct = (elapsed - 2000) / 1500;
+                    appState.compass.angle = pct * Math.PI * 2;
+                    if(!traceHistory) {
+                        traceHistory = { type: 'arc', cx: originX, cy: originY, r: getRadiusInPx(), angles: [], color: '#2563eb' };
+                        appState.shapes.push(traceHistory);
+                    }
+                    traceHistory.angles.push(appState.compass.angle);
+                }
+
+                syncUIElements();
+                drawLoop();
+
+                if(elapsed < 3500) {
+                    appState.animationTimeline = requestAnimationFrame(animConcentricDemo);
+                } else {
+                    traceHistory = null;
+                    appState.isAnimating = false;
+                    drawLoop();
+                }
+            }
+
+            function animIntersectDemo(timestamp) {
+                if(!startTime) startTime = timestamp;
+                const elapsed = timestamp - startTime;
+                const rVal = appState.unit === 'cm' ? 5.0 : 50;
+                appState.radius = rVal;
+
+                if(elapsed < 1500) {
+                    const pct = elapsed / 1500;
+                    appState.compass.cx = originX - 50;
+                    appState.compass.cy = originY;
+                    appState.compass.angle = pct * Math.PI * 2;
+                    if(pct < 0.02) { appState.shapes = []; traceHistory = null; }
+                    if(!traceHistory) {
+                        traceHistory = { type: 'arc', cx: appState.compass.cx, cy: appState.compass.cy, r: getRadiusInPx(), angles: [], color: '#10b981' };
+                        appState.shapes.push(traceHistory);
+                    }
+                    traceHistory.angles.push(appState.compass.angle);
+                }
+                else if(elapsed >= 1500 && elapsed < 2000) {
+                    traceHistory = null;
+                    const pct = (elapsed - 1500) / 500;
+                    appState.compass.cx = (originX - 50) + (100 * pct);
+                }
+                else if(elapsed >= 2000 && elapsed <= 3500) {
+                    const pct = (elapsed - 2000) / 1500;
+                    appState.compass.angle = pct * Math.PI * 2;
+                    if(!traceHistory) {
+                        traceHistory = { type: 'arc', cx: appState.compass.cx, cy: appState.compass.cy, r: getRadiusInPx(), angles: [], color: '#f59e0b' };
+                        appState.shapes.push(traceHistory);
+                    }
+                    traceHistory.angles.push(appState.compass.angle);
+                }
+
+                syncUIElements();
+                drawLoop();
+
+                if(elapsed < 3500) {
+                    appState.animationTimeline = requestAnimationFrame(animIntersectDemo);
+                } else {
+                    traceHistory = null;
+                    appState.isAnimating = false;
+                    drawLoop();
+                }
+            }
+
+            function animArcDemo(timestamp) {
+                if(!startTime) startTime = timestamp;
+                const elapsed = timestamp - startTime;
+                appState.compass.cx = originX;
+                appState.compass.cy = originY;
+                appState.radius = appState.unit === 'cm' ? 6.0 : 60;
+
+                const pct = Math.min(1, elapsed / 2000);
+                appState.compass.angle = -Math.PI/2 + (pct * Math.PI); // Half sweep setup configuration
+
+                if(!traceHistory) {
+                    traceHistory = { type: 'arc', cx: originX, cy: originY, r: getRadiusInPx(), angles: [], color: '#ef4444' };
+                    appState.shapes.push(traceHistory);
+                }
+                traceHistory.angles.push(appState.compass.angle);
+
+                syncUIElements();
+                drawLoop();
+
+                if(elapsed < 2000) {
+                    appState.animationTimeline = requestAnimationFrame(animArcDemo);
+                } else {
+                    traceHistory = null;
+                    appState.isAnimating = false;
+                    drawLoop();
+                }
+            }
+
+            // Router execution selection matrix branches maps
+            if(mode === 'circle') requestAnimationFrame(animCircleDemo);
+            if(mode === 'concentric') requestAnimationFrame(animConcentricDemo);
+            if(mode === 'intersect') requestAnimationFrame(animIntersectDemo);
+            if(mode === 'arc') requestAnimationFrame(animArcDemo);
+        }
+
+        // --- Core Render Pipeline Engine Layout Layer Architecture ---
+        function drawLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            // Apply workspace navigation pan and zoom transforms matrix configurations
+            ctx.translate(appState.panX, appState.panY);
+            ctx.scale(appState.zoom, appState.zoom);
+
+            renderBackgroundGrid();
+            renderVectorShapes();
+            renderPhysicalCompass();
+
+            ctx.restore();
+        }
+
+        function renderBackgroundGrid() {
+            if(appState.gridStyle === 'none') return;
+            
+            const spacing = 40;
+            // Calculate boundaries relative to logical viewport transformations array values
+            const left = -appState.panX / appState.zoom;
+            const top = -appState.panY / appState.zoom;
+            const right = (canvas.width - appState.panX) / appState.zoom;
+            const bottom = (canvas.height - appState.panY) / appState.zoom;
+
+            const startX = Math.floor(left / spacing) * spacing;
+            const startY = Math.floor(top / spacing) * spacing;
+
+            ctx.save();
+            ctx.strokeStyle = "#e2e8f0";
+            ctx.fillStyle = "#cbd5e1";
+            ctx.lineWidth = 0.5;
+
+            for(let x = startX; x < right; x += spacing) {
+                for(let y = startY; y < bottom; y += spacing) {
+                    if(appState.gridStyle === 'lines') {
+                        if(x === startX) { ctx.beginPath(); ctx.moveTo(startX, y); ctx.lineTo(right, y); ctx.stroke(); }
+                        ctx.beginPath(); ctx.moveTo(x, startY); ctx.lineTo(x, bottom); ctx.stroke();
+                    } else if (appState.gridStyle === 'dots') {
+                        ctx.beginPath();
+                        ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+            }
+            ctx.restore();
+        }
+
+        function renderVectorShapes() {
+            ctx.save();
+            appState.shapes.forEach(shape => {
+                ctx.strokeStyle = shape.color || '#334155';
+                ctx.lineWidth = 3 / appState.zoom;
+                ctx.lineCap = 'round';
+
+                if(shape.type === 'circle') {
+                    ctx.beginPath();
+                    ctx.arc(shape.cx, shape.cy, shape.r, 0, Math.PI * 2);
+                    ctx.stroke();
+                } 
+                else if (shape.type === 'arc' && shape.angles.length > 0) {
+                    // Render segmented points array elements paths trace logs
+                    ctx.beginPath();
+                    ctx.arc(shape.cx, shape.cy, shape.r, shape.angles[0], shape.angles[shape.angles.length - 1], shape.angles[0] > shape.angles[shape.angles.length-1]);
+                    ctx.stroke();
+                }
+            });
+            ctx.restore();
+        }
+
+        function renderPhysicalCompass() {
+            const { cx, cy, angle } = appState.compass;
+            const radPx = getRadiusInPx();
+
+            ctx.save();
+
+            // 1. Draw Anchor Center Target Markers points
+            if(appState.showCenterMark) {
+                ctx.strokeStyle = varColor('--danger');
+                ctx.lineWidth = 1.5 / appState.zoom;
+                ctx.beginPath();
+                ctx.moveTo(cx - 10, cy); ctx.lineTo(cx + 10, cy);
+                ctx.moveTo(cx, cy - 10); ctx.lineTo(cx, cy + 10);
+                ctx.stroke();
+                
+                ctx.fillStyle = varColor('--danger');
+                ctx.beginPath();
+                ctx.arc(cx, cy, 3, 0, Math.PI*2);
+                ctx.fill();
+            }
+
+            // Calculations vectors mapping legs distribution configurations
+            const hingeYOffset = -140; 
+            
+            // Core component space transformations layout mappings matrices
+            ctx.translate(cx, cy);
+            ctx.rotate(angle);
+
+            // Coordinates now relative to local anchor point space mapping structures
+            const needleLegX = 0;
+            const needleLegY = 0;
+            const hingeX = radPx / 2;
+            const hingeY = hingeYOffset;
+            const pencilLegX = radPx;
+            const pencilLegY = 0;
+
+            // Render Metallic Connective Hinge Bars Structures Assemblies
+            ctx.strokeStyle = "#94a3b8"; 
+            ctx.lineWidth = 8;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Left Anchor Leg Frame Layout
+            ctx.beginPath();
+            ctx.moveTo(needleLegX, needleLegY);
+            ctx.lineTo(hingeX, hingeY);
+            ctx.stroke();
+
+            // Right Drafting Pencil Leg Frame Layout
+            ctx.beginPath();
+            ctx.moveTo(pencilLegX, pencilLegY);
+            ctx.lineTo(hingeX, hingeY);
+            ctx.stroke();
+
+            // Needle Core Tool Tip Rendering Style elements
+            ctx.strokeStyle = "#475569";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, 12);
+            ctx.lineTo(0, 0);
+            ctx.stroke();
+
+            // Draw Pencil Element Core Tool Blocks Assemblages 
+            ctx.fillStyle = varColor('--warning');
+            ctx.beginPath();
+            ctx.moveTo(pencilLegX - 6, pencilLegY - 25);
+            ctx.lineTo(pencilLegX + 6, pencilLegY - 25);
+            ctx.lineTo(pencilLegX + 4, pencilLegY - 6);
+            ctx.lineTo(pencilLegX, pencilLegY); // Tip node point interface
+            ctx.lineTo(pencilLegX - 4, pencilLegY - 6);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Graphite Point Tool Fill Tip Render Frame Layer Blocks
+            ctx.fillStyle = "#334155";
+            ctx.beginPath();
+            ctx.moveTo(pencilLegX - 3, pencilLegY - 4);
+            ctx.lineTo(pencilLegX, pencilLegY);
+            ctx.lineTo(pencilLegX + 3, pencilLegY - 4);
+            ctx.closePath();
+            ctx.fill();
+
+            // Central Mechanical Metallic Hinge Control Node Caps
+            ctx.fillStyle = "#64748b";
+            ctx.strokeStyle = "#cbd5e1";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(hingeX, hingeY, 12, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Interactive Selection Hit Handles Handles Target Badges Overlay
+            ctx.fillStyle = "rgba(37, 99, 235, 0.15)";
+            ctx.beginPath(); ctx.arc(needleLegX, needleLegY, 16, 0, Math.PI*2); ctx.fill(); // Pivot handle core
+            ctx.fillStyle = "rgba(225, 29, 72, 0.15)";
+            ctx.beginPath(); ctx.arc(pencilLegX, pencilLegY, 18, 0, Math.PI*2); ctx.fill(); // Drag handle swing core
+
+            // Optional On-Screen Informative Label Overlay Array Graphics Nodes Mapping
+            if(appState.showAnatomyLabels) {
+                ctx.restore(); // Drop local stack temporary to print screens pace fixed coordinates directly relative to center points mappings matrix configurations
+                ctx.save();
+                ctx.translate(cx, cy);
+
+                ctx.fillStyle = varColor('--dark');
+                ctx.font = "bold 11px sans-serif";
+                
+                // Static structural position metrics layouts printing matrices
+                ctx.fillText("NEEDLE (Center)", -45, 25);
+                
+                const pRotX = radPx * Math.cos(angle);
+                const pRotY = radPx * Math.sin(angle);
+                ctx.fillText("PENCIL (Radius)", pRotX + 12, pRotY + 4);
+
+                // Dimension line dynamic structural annotation print values
+                ctx.strokeStyle = "rgba(37, 99, 235, 0.4)";
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(pRotX, pRotY);
+                ctx.stroke();
+                
+                ctx.fillStyle = varColor('--primary');
+                ctx.fillText(`${appState.radius.toFixed(1)} ${appState.unit}`, pRotX / 2 - 15, pRotY / 2 - 8);
+            }
+
+            ctx.restore();
+        }
+
+        function varColor(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        // Start initialization sequence upon load completion event triggers
+        window.onload = initApp;
+    </script>
+</body>
+</html>
