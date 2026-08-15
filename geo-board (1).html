@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<!-- Primary SEO Meta Tags -->
+<title>Virtual Geoboard - Interactive Geometry Manipulative & Math Learning Tool</title>
+<meta name="description" content="An interactive online virtual geoboard manipulative for geometry learning. Create shapes, polygons, and explore area, perimeter, and coordinate geometry concepts. Perfect for Primary Maths, Class 3-5, NCERT, and KVS curriculum.">
+<meta name="keywords" content="Geoboard, Virtual Geoboard, Interactive Geoboard, Online Geoboard, Digital Geoboard, Geometry Manipulative, Virtual Geometry Board, Shape Builder, Polygon Maker, Geometry Learning Tool, Area and Perimeter Tool, Coordinate Geometry Tool, Math Manipulative, Interactive Math Tool, Primary Maths, Class 3 Maths, Class 4 Maths, Class 5 Maths, NCERT Maths, KVS Maths, Digital Classroom Hub">
+<meta name="author" content="Digital Classroom Hub">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#1a1a2e">
+<link rel="canonical" href="https://example.com/geoboard">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://example.com/geoboard">
+<meta property="og:title" content="Virtual Geoboard - Interactive Geometry Manipulative">
+<meta property="og:description" content="Explore geometry interactively with this digital geoboard shape builder. Perfect for learning area, perimeter, and coordinate systems in primary mathematics classrooms.">
+<meta property="og:image" content="https://example.com/geoboard-preview.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://example.com/geoboard">
+<meta name="twitter:title" content="Virtual Geoboard - Interactive Geometry Manipulative">
+<meta name="twitter:description" content="Explore geometry interactively with this digital geoboard shape builder. Perfect for learning area, perimeter, and coordinate systems in primary mathematics classrooms.">
+<meta name="twitter:image" content="https://example.com/geoboard-preview.png">
+
+<!-- Performance Optimization (Preconnect) -->
+<link rel="preconnect" href="https://www.googletagmanager.com">
+
+<!-- Inline Favicon SVG to prevent 404 and ensure stand-alone completeness -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📐</text></svg>">
+
+<!-- Google Analytics (GA4) Tracking Code -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JSVKBDWEV5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-JSVKBDWEV5');
+</script>
+
+<!-- Structured Data (JSON-LD) - Schema.org -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "@id": "https://example.com/geoboard#webapp",
+      "url": "https://example.com/geoboard",
+      "name": "Virtual Geoboard - Interactive Geometry Manipulative",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires HTML5 Canvas support.",
+      "author": {
+        "@type": "Organization",
+        "name": "Digital Classroom Hub"
+      },
+      "description": "An interactive online virtual geoboard manipulative for geometry learning. Create shapes, polygons, and explore area, perimeter, and coordinate geometry concepts."
+    },
+    {
+      "@type": "EducationalApplication",
+      "@id": "https://example.com/geoboard#eduapp",
+      "url": "https://example.com/geoboard",
+      "name": "Interactive Digital Geoboard Tool",
+      "applicationCategory": "EducationalApplication",
+      "educationalUse": "Geometry Manipulative, Math Learning, Shape Building",
+      "interactivityType": "active",
+      "learningResourceType": "Interactive Tool",
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "Students, Teachers, Class 3 Maths, Class 4 Maths, Class 5 Maths, NCERT Maths, KVS Maths"
+      },
+      "description": "A digital geometry board and shape builder designed for primary mathematics, helping students learn coordinate geometry, area, and perimeter interactively."
+    }
+  ]
+}
+</script>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%; width: 100%;
+  overflow: hidden;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #1a1a2e;
+  color: #fff;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── LAYOUT ── */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ── TOP BAR ── */
+#topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(0,0,0,0.45);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+#topbar h1 {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  margin-right: 4px;
+  white-space: nowrap;
+}
+.sep { width: 1px; height: 26px; background: rgba(255,255,255,0.12); margin: 0 2px; }
+
+/* ── BUTTONS ── */
+.tb-btn {
+  display: flex; align-items: center; justify-content: center;
+  height: 34px; min-width: 34px; padding: 0 10px;
+  border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.07);
+  color: #fff; font-size: 14px; font-weight: 600;
+  cursor: pointer; white-space: nowrap; gap: 5px;
+  transition: background 0.12s, transform 0.1s;
+  touch-action: manipulation;
+}
+.tb-btn:hover { background: rgba(255,255,255,0.16); }
+.tb-btn:active { transform: scale(0.95); }
+.tb-btn.active {
+  background: #4fc3f7;
+  border-color: #4fc3f7;
+  color: #001a2c;
+}
+
+/* ── COLOUR SWATCHES ── */
+.swatch-row { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+.swatch {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 2.5px solid transparent;
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.12s;
+  flex-shrink: 0;
+}
+.swatch:hover { transform: scale(1.18); }
+.swatch.active { border-color: #fff; transform: scale(1.22); }
+
+/* ── GRID SIZE PILLS ── */
+.grid-pill {
+  padding: 4px 9px; border-radius: 20px; font-size: 12px; font-weight: 700;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.7);
+  cursor: pointer; transition: background 0.12s;
+  touch-action: manipulation;
+}
+.grid-pill.active { background: rgba(255,195,0,0.22); border-color: #ffd740; color: #ffd740; }
+
+/* ── CANVAS AREA ── */
+#board-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 10px;
+}
+#board {
+  touch-action: none;
+  cursor: crosshair;
+  display: block;
+  border-radius: 14px;
+  /* shadow handled in JS drawBoard */
+}
+
+/* ── INFO BAR ── */
+#infobar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 6px 14px;
+  background: rgba(0,0,0,0.35);
+  border-top: 1px solid rgba(255,255,255,0.07);
+  font-size: 13px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.info-chip {
+  display: flex; align-items: center; gap: 5px;
+  color: rgba(255,255,255,0.55);
+}
+.info-chip b { color: #fff; font-size: 14px; }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%) translateY(10px);
+  background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 30px; padding: 7px 18px; font-size: 13px;
+  pointer-events: none; opacity: 0; transition: opacity 0.25s, transform 0.25s;
+  white-space: nowrap; z-index: 999;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- TOP BAR (Upgraded to semantic header without structural visual change) -->
+  <header id="topbar">
+    <h1>📐 Geoboard</h1>
+    <div class="sep"></div>
+
+    <!-- Band colours -->
+    <div class="swatch-row" id="swatches">
+      <span style="font-size:12px;opacity:0.5;margin-right:2px">Band:</span>
+      <!-- filled by JS -->
+    </div>
+    <div class="sep"></div>
+
+    <!-- Grid size -->
+    <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:12px;opacity:0.5">Grid:</span>
+      <button class="grid-pill" onclick="setGrid(5)" aria-label="Set grid size to 5 by 5">5×5</button>
+      <button class="grid-pill active" onclick="setGrid(7)" aria-label="Set grid size to 7 by 7">7×7</button>
+      <button class="grid-pill" onclick="setGrid(10)" aria-label="Set grid size to 10 by 10">10×10</button>
+      <button class="grid-pill" onclick="setGrid(15)" aria-label="Set grid size to 15 by 15">15×15</button>
+    </div>
+    <div class="sep"></div>
+
+    <!-- Actions -->
+    <button class="tb-btn" onclick="undo()" title="Undo (Ctrl+Z)" aria-label="Undo last action">↩ Undo</button>
+    <button class="tb-btn" onclick="clearAll()" title="Clear board" aria-label="Clear all bands from board">🗑 Clear</button>
+    <button class="tb-btn" onclick="exportPNG()" title="Save image" aria-label="Save board visualization as PNG image">💾 Save</button>
+  </header>
+
+  <!-- BOARD (Upgraded to semantic main layout wrapper) -->
+  <main id="board-wrap">
+    <canvas id="board" aria-label="Interactive virtual geometry board canvas grid" role="img"></canvas>
+  </main>
+
+  <!-- INFO BAR (Upgraded to semantic footer layout element) -->
+  <footer id="infobar">
+    <div class="info-chip">Drag between pegs to stretch a band &nbsp;·&nbsp; Click a band to delete it</div>
+    <div class="info-chip">Bands: <b id="stat-bands">0</b></div>
+    <div class="info-chip" id="stat-shape-wrap" style="display:none">Shape: <b id="stat-shape">–</b></div>
+  </footer>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ============================================================
+   CONFIG
+   ============================================================ */
+const COLOURS = [
+  '#ef5350', // red
+  '#ff9100', // orange
+  '#ffd740', // yellow
+  '#69f0ae', // green
+  '#4fc3f7', // blue
+  '#ce93d8', // purple
+  '#f48fb1', // pink
+  '#ffffff', // white
+];
+
+const PEG_R   = 5;   // peg radius px
+const SNAP_R  = 0.5; // fraction of cellSize for snap
+const BAND_W  = 3;   // default band stroke width
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const G = {
+  canvas: null, ctx: null,
+  gridN: 7,
+  cellSize: 60,
+  ox: 0, oy: 0,          // board top-left offset inside canvas
+  pegs: [],              // [r][c] → {x,y}
+  bands: [],             // [{from:{r,c}, to:{r,c}, col, w}]  (line segments)
+  colour: '#ef5350',
+  // drag state
+  dragging: false,
+  dragFrom: null,        // {r,c}
+  dragX: 0, dragY: 0,   // live mouse/touch pos
+  snapTarget: null,      // peg we're snapping to
+  // hover for delete
+  hoverBand: -1,
+  // undo
+  history: [],
+};
+
+/* ============================================================
+   COLOUR SWATCHES
+   ============================================================ */
+function buildSwatches() {
+  const container = document.getElementById('swatches');
+  // keep the label span
+  const label = container.querySelector('span');
+  container.innerHTML = '';
+  container.appendChild(label);
+  COLOURS.forEach(col => {
+    const d = document.createElement('div');
+    d.className = 'swatch' + (col === G.colour ? ' active' : '');
+    d.style.background = col;
+    d.style.boxShadow = col === '#ffffff' ? 'inset 0 0 0 1px rgba(0,0,0,0.3)' : '';
+    d.title = col;
+    d.setAttribute('aria-label', `Select ${col} colored rubber band`);
+    d.setAttribute('role', 'button');
+    d.addEventListener('pointerdown', e => {
+      e.stopPropagation();
+      G.colour = col;
+      document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+      d.classList.add('active');
+    });
+    container.appendChild(d);
+  });
+}
+
+/* ============================================================
+   GRID
+   ============================================================ */
+function setGrid(n) {
+  G.gridN = n;
+  document.querySelectorAll('.grid-pill').forEach(b => {
+    b.classList.toggle('active', parseInt(b.textContent) === n);
+  });
+  pushHistory();
+  G.bands = [];
+  resizeAndDraw();
+  updateStats();
+}
+
+function buildPegs() {
+  G.pegs = [];
+  for (let r = 0; r < G.gridN; r++) {
+    G.pegs[r] = [];
+    for (let c = 0; c < G.gridN; c++) {
+      G.pegs[r][c] = {
+        x: G.ox + c * G.cellSize,
+        y: G.oy + r * G.cellSize,
+      };
+    }
+  }
+}
+
+/* ============================================================
+   CANVAS SIZING
+   ============================================================ */
+function resizeAndDraw() {
+  const wrap = document.getElementById('board-wrap');
+  const W = wrap.clientWidth  - 20;
+  const H = wrap.clientHeight - 20;
+  const size = Math.min(W, H, 920);
+  G.canvas.width  = size;
+  G.canvas.height = size;
+  // Leave a nice border inside
+  const pad = Math.max(24, size * 0.045);
+  G.cellSize = (size - pad * 2) / (G.gridN - 1);
+  G.ox = pad;
+  G.oy = pad;
+  buildPegs();
+  draw();
+}
+
+/* ============================================================
+   NEAREST PEG  (returns peg or null)
+   ============================================================ */
+function nearestPeg(x, y) {
+  const threshold = G.cellSize * SNAP_R;
+  let best = null, bestD = Infinity;
+  for (let r = 0; r < G.gridN; r++) {
+    for (let c = 0; c < G.gridN; c++) {
+      const p = G.pegs[r][c];
+      const d = Math.hypot(p.x - x, p.y - y);
+      if (d < bestD) { bestD = d; best = { r, c, d }; }
+    }
+  }
+  return best && best.d < threshold ? best : null;
+}
+
+/* ============================================================
+   HIT-TEST A BAND  (returns index or -1)
+   ============================================================ */
+function hitBand(x, y) {
+  const HIT = 8;
+  for (let i = G.bands.length - 1; i >= 0; i--) {
+    const b = G.bands[i];
+    const ax = G.pegs[b.from.r][b.from.c].x;
+    const ay = G.pegs[b.from.r][b.from.c].y;
+    const bx = G.pegs[b.to.r][b.to.c].x;
+    const by = G.pegs[b.to.r][b.to.c].y;
+    if (distToSeg(x, y, ax, ay, bx, by) < HIT) return i;
+  }
+  return -1;
+}
+
+function distToSeg(px, py, ax, ay, bx, by) {
+  const dx = bx - ax, dy = by - ay;
+  const l2 = dx * dx + dy * dy;
+  if (l2 === 0) return Math.hypot(px - ax, py - ay);
+  const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / l2));
+  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+}
+
+/* ============================================================
+   CANVAS COORDINATE FROM EVENT
+   ============================================================ */
+function evPos(e) {
+  const r = G.canvas.getBoundingClientRect();
+  const sx = G.canvas.width  / r.width;
+  const sy = G.canvas.height / r.height;
+  const src = e.touches ? e.touches[0] : e;
+  return { x: (src.clientX - r.left) * sx, y: (src.clientY - r.top) * sy };
+}
+
+/* ============================================================
+   POINTER EVENTS
+   ============================================================ */
+function onDown(e) {
+  e.preventDefault();
+  const { x, y } = evPos(e);
+  const peg = nearestPeg(x, y);
+
+  if (peg) {
+    // Start dragging a new band from this peg
+    G.dragging  = true;
+    G.dragFrom  = { r: peg.r, c: peg.c };
+    G.dragX     = x;
+    G.dragY     = y;
+    G.snapTarget = peg;
+    playSound('peg');
+    draw();
+  } else {
+    // Click on a band → delete it
+    const bi = hitBand(x, y);
+    if (bi >= 0) {
+      pushHistory();
+      G.bands.splice(bi, 1);
+      updateStats();
+      draw();
+      playSound('snap');
+    }
+  }
+}
+
+function onMove(e) {
+  e.preventDefault();
+  const { x, y } = evPos(e);
+
+  if (G.dragging) {
+    G.dragX = x;
+    G.dragY = y;
+    G.snapTarget = nearestPeg(x, y);
+    draw();
+    return;
+  }
+
+  // Hover highlight band
+  const bi = hitBand(x, y);
+  if (bi !== G.hoverBand) {
+    G.hoverBand = bi;
+    G.canvas.style.cursor = bi >= 0 ? 'pointer' : 'crosshair';
+    draw();
+  }
+}
+
+function onUp(e) {
+  e.preventDefault();
+  if (!G.dragging) return;
+  G.dragging = false;
+
+  const { x, y } = evPos(e);
+  const target = nearestPeg(x, y) || G.snapTarget;
+
+  if (target &&
+      !(target.r === G.dragFrom.r && target.c === G.dragFrom.c)) {
+    // Check duplicate
+    const dup = G.bands.some(b =>
+      (b.from.r === G.dragFrom.r && b.from.c === G.dragFrom.c &&
+       b.to.r   === target.r     && b.to.c   === target.c) ||
+      (b.from.r === target.r     && b.from.c === target.c &&
+       b.to.r   === G.dragFrom.r && b.to.c   === G.dragFrom.c)
+    );
+    if (!dup) {
+      pushHistory();
+      G.bands.push({
+        from: { r: G.dragFrom.r, c: G.dragFrom.c },
+        to:   { r: target.r,     c: target.c },
+        col:  G.colour,
+        w:    BAND_W,
+      });
+      playSound('snap');
+      updateStats();
+    }
+  }
+
+  G.dragFrom   = null;
+  G.snapTarget = null;
+  draw();
+}
+
+/* ============================================================
+   DRAW
+   ============================================================ */
+function draw() {
+  const ctx = G.ctx;
+  const W = G.canvas.width, H = G.canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // ── Board background (wood frame + felt surface)
+  drawBoard(ctx, W, H);
+
+  // ── Grid lines (subtle)
+  ctx.strokeStyle = 'rgba(255,255,255,0.055)';
+  ctx.lineWidth = 0.8;
+  for (let r = 0; r < G.gridN; r++) {
+    for (let c = 0; c < G.gridN; c++) {
+      if (c < G.gridN - 1) {
+        const a = G.pegs[r][c], b = G.pegs[r][c + 1];
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      }
+      if (r < G.gridN - 1) {
+        const a = G.pegs[r][c], b = G.pegs[r + 1][c];
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      }
+    }
+  }
+
+  // ── Placed bands
+  G.bands.forEach((band, i) => {
+    const ax = G.pegs[band.from.r][band.from.c].x;
+    const ay = G.pegs[band.from.r][band.from.c].y;
+    const bx = G.pegs[band.to.r  ][band.to.c  ].x;
+    const by = G.pegs[band.to.r  ][band.to.c  ].y;
+    const hover = (i === G.hoverBand);
+
+    ctx.save();
+    if (hover) {
+      ctx.shadowColor = band.col;
+      ctx.shadowBlur  = 14;
+    }
+    // subtle fill region for hover
+    if (hover) {
+      ctx.strokeStyle = 'rgba(255,80,80,0.5)';
+      ctx.lineWidth   = band.w + 6;
+      ctx.lineCap     = 'round';
+      ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+    }
+    ctx.strokeStyle = band.col;
+    ctx.lineWidth   = hover ? band.w + 1.5 : band.w;
+    ctx.lineCap     = 'round';
+    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+    ctx.restore();
+
+    // tiny dots at endpoints
+    [{ x: ax, y: ay }, { x: bx, y: by }].forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = band.col;
+      ctx.fill();
+    });
+
+    // Delete hint on hover
+    if (hover) {
+      const mx = (ax + bx) / 2, my = (ay + by) / 2;
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.75)';
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(mx - 26, my - 11, 52, 22, 6)
+                    : ctx.rect(mx - 26, my - 11, 52, 22);
+      ctx.fill();
+      ctx.fillStyle = '#ff6b6b';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('✕ click', mx, my);
+      ctx.restore();
+    }
+  });
+
+  // ── Live drag rubber band
+  if (G.dragging && G.dragFrom) {
+    const fp = G.pegs[G.dragFrom.r][G.dragFrom.c];
+    // end point: snap to nearest peg if close, otherwise follow cursor
+    let ex = G.dragX, ey = G.dragY;
+    if (G.snapTarget && !(G.snapTarget.r === G.dragFrom.r && G.snapTarget.c === G.dragFrom.c)) {
+      ex = G.pegs[G.snapTarget.r][G.snapTarget.c].x;
+      ey = G.pegs[G.snapTarget.r][G.snapTarget.c].y;
+    }
+
+    ctx.save();
+    ctx.shadowColor = G.colour;
+    ctx.shadowBlur  = 10;
+    ctx.strokeStyle = G.colour;
+    ctx.lineWidth   = BAND_W;
+    ctx.lineCap     = 'round';
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(fp.x, fp.y);
+    ctx.lineTo(ex, ey);
+    ctx.stroke();
+    ctx.restore();
+
+    // Glow ring on start peg
+    ctx.beginPath();
+    ctx.arc(fp.x, fp.y, PEG_R + 4, 0, Math.PI * 2);
+    ctx.strokeStyle = G.colour;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Snap ring on target peg
+    if (G.snapTarget && !(G.snapTarget.r === G.dragFrom.r && G.snapTarget.c === G.dragFrom.c)) {
+      const tp = G.pegs[G.snapTarget.r][G.snapTarget.c];
+      ctx.beginPath();
+      ctx.arc(tp.x, tp.y, PEG_R + 6, 0, Math.PI * 2);
+      ctx.strokeStyle = G.colour;
+      ctx.lineWidth   = 2.5;
+      ctx.stroke();
+    }
+  }
+
+  // ── Pegs (drawn last so always on top)
+  for (let r = 0; r < G.gridN; r++) {
+    for (let c = 0; c < G.gridN; c++) {
+      const p = G.pegs[r][c];
+      const isDragSrc = G.dragging && G.dragFrom && G.dragFrom.r === r && G.dragFrom.c === c;
+      const isSnap    = G.snapTarget && G.snapTarget.r === r && G.snapTarget.c === c && G.dragging
+                        && !(G.dragFrom.r === r && G.dragFrom.c === c);
+
+      // Shadow / glow on active pegs
+      ctx.save();
+      if (isDragSrc || isSnap) {
+        ctx.shadowColor = isDragSrc ? G.colour : '#ffd740';
+        ctx.shadowBlur  = 16;
+      }
+
+      // Outer ring
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, PEG_R + 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#2a1800';
+      ctx.fill();
+
+      // Peg body
+      const gr = ctx.createRadialGradient(p.x - 1.5, p.y - 1.5, 0.5, p.x, p.y, PEG_R);
+      gr.addColorStop(0, isSnap ? '#ffe082' : '#d4a55a');
+      gr.addColorStop(1, isSnap ? '#c8900a' : '#7a4010');
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, PEG_R, 0, Math.PI * 2);
+      ctx.fillStyle = gr;
+      ctx.fill();
+
+      // Specular
+      ctx.beginPath();
+      ctx.arc(p.x - 1.2, p.y - 1.2, 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.45)';
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+}
+
+/* ── Wood frame + felt ── */
+function drawBoard(ctx, W, H) {
+  // Outer wood
+  const wood = ctx.createLinearGradient(0, 0, W, H);
+  wood.addColorStop(0,   '#6b3e1e');
+  wood.addColorStop(0.3, '#9b6035');
+  wood.addColorStop(0.7, '#8a5228');
+  wood.addColorStop(1,   '#5a3015');
+  ctx.fillStyle = wood;
+  drawRR(ctx, 0, 0, W, H, 18);
+  ctx.fill();
+
+  // Wood grain
+  ctx.save();
+  ctx.globalAlpha = 0.07;
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 1;
+  for (let y = 6; y < H; y += 11) {
+    ctx.beginPath();
+    ctx.moveTo(0,   y + Math.sin(y / 30) * 3);
+    ctx.lineTo(W,   y + Math.sin(y / 30) * 3);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Felt inset
+  const pad = 12;
+  const felt = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, W * 0.6);
+  felt.addColorStop(0, '#163b22');
+  felt.addColorStop(1, '#0c2514');
+  ctx.fillStyle = felt;
+  drawRR(ctx, pad, pad, W - pad * 2, H - pad * 2, 10);
+  ctx.fill();
+
+  // Subtle inner shadow
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.6)';
+  ctx.shadowBlur  = 20;
+  ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 4;
+  ctx.strokeStyle = 'rgba(0,0,0,0.0)';
+  ctx.lineWidth = 1;
+  drawRR(ctx, pad, pad, W - pad * 2, H - pad * 2, 10);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawRR(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);       ctx.quadraticCurveTo(x + w, y,     x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);   ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);       ctx.quadraticCurveTo(x, y + h,     x, y + h - r);
+  ctx.lineTo(x, y + r);           ctx.quadraticCurveTo(x, y,         x + r, y);
+  ctx.closePath();
+}
+
+/* ============================================================
+   UNDO / CLEAR
+   ============================================================ */
+function pushHistory() {
+  G.history.push(JSON.stringify(G.bands));
+  if (G.history.length > 80) G.history.shift();
+}
+
+function undo() {
+  if (!G.history.length) return;
+  G.bands = JSON.parse(G.history.pop());
+  updateStats(); draw();
+  playSound('snap');
+}
+
+function clearAll() {
+  if (!G.bands.length) return;
+  pushHistory();
+  G.bands = [];
+  updateStats(); draw();
+}
+
+/* ============================================================
+   EXPORT PNG
+   ============================================================ */
+function exportPNG() {
+  const link = document.createElement('a');
+  link.download = 'geoboard.png';
+  link.href = G.canvas.toDataURL('image/png');
+  link.click();
+  toast('Saved as geoboard.png');
+}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+function updateStats() {
+  document.getElementById('stat-bands').textContent = G.bands.length;
+  // Simple shape detection from closed polygons would need graph analysis;
+  // for now just show band count
+  document.getElementById('stat-shape-wrap').style.display = 'none';
+}
+
+/* ============================================================
+   SOUND  (Web Audio, no speech)
+   ============================================================ */
+let AC = null;
+function getAC() {
+  if (!AC) try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  return AC;
+}
+function playSound(type) {
+  const ac = getAC(); if (!ac) return;
+  const o = ac.createOscillator();
+  const g = ac.createGain();
+  o.connect(g); g.connect(ac.destination);
+  const now = ac.currentTime;
+  if (type === 'peg') {
+    o.type = 'sine'; o.frequency.value = 700;
+    g.gain.setValueAtTime(0.12, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+    o.start(now); o.stop(now + 0.07);
+  } else {
+    o.type = 'triangle'; o.frequency.value = 420;
+    g.gain.setValueAtTime(0.1, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    o.start(now); o.stop(now + 0.1);
+  }
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+let _toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* ============================================================
+   KEYBOARD
+   ============================================================ */
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
+  if (e.key === 'Delete' || e.key === 'Backspace') {
+    if (G.hoverBand >= 0) {
+      pushHistory();
+      G.bands.splice(G.hoverBand, 1);
+      G.hoverBand = -1;
+      updateStats(); draw();
+    }
+  }
+});
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', () => {
+  G.canvas = document.getElementById('board');
+  G.ctx    = G.canvas.getContext('2d');
+
+  buildSwatches();
+  resizeAndDraw();
+
+  // Pointer events on canvas
+  G.canvas.addEventListener('pointerdown', onDown, { passive: false });
+  G.canvas.addEventListener('pointermove', onMove, { passive: false });
+  G.canvas.addEventListener('pointerup',   onUp,   { passive: false });
+  G.canvas.addEventListener('pointercancel', () => {
+    G.dragging = false; G.dragFrom = null; G.snapTarget = null; draw();
+  });
+
+  // Touch fallback (for older iOS)
+  G.canvas.addEventListener('touchstart', onDown, { passive: false });
+  G.canvas.addEventListener('touchmove',  onMove, { passive: false });
+  G.canvas.addEventListener('touchend',   onUp,   { passive: false });
+
+  // Resize
+  window.addEventListener('resize', () => resizeAndDraw());
+
+  toast('Drag between pegs to stretch a rubber band 🎈');
+});
+</script>
+</body>
+</html>

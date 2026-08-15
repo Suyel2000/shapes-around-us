@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Optimized SEO Meta Tags -->
+    <title>Interactive Angle Maker & Virtual Protractor | Online Geometry Tool</title>
+    <meta name="description" content="Discover an interactive online Angle Maker and virtual protractor tool. Perfect for primary school maths (Class 3, 4, 5, NCERT, and KVS). Learn, draw, and measure acute, right, obtuse, reflex, and straight angles instantly with our dynamic geometry manipulative.">
+    <meta name="keywords" content="Angle Maker, Interactive Angle Maker, Virtual Protractor, Online Protractor, Measure Angles Online, Draw Angles, Angle Measurement Tool, Interactive Geometry Tool, Geometry Manipulative, Angle Manipulative, Types of Angles, Acute Angle, Right Angle, Obtuse Angle, Reflex Angle, Straight Angle, Full Angle, Primary Maths, Class 3 Maths, Class 4 Maths, Class 5 Maths, NCERT Maths, KVS Maths, Digital Classroom Hub">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Digital Classroom Hub">
+    <meta name="theme-color" content="#f8fafc">
+    <link rel="canonical" href="https://digitalclassroomhub.com/angle-maker">
+
+    <!-- Core Web Vitals Optimization: Resource Hints -->
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="preconnect" href="https://www.google-analytics.com">
+
+    <!-- Universal SVG Favicon Representation -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📐</text></svg>">
+
+    <!-- Open Graph / Facebook Social Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Interactive Angle Maker & Virtual Protractor | Geometry Tool">
+    <meta property="og:description" content="Explore types of angles interactively with this anti-clockwise virtual protractor tool. Excellent for primary classroom mathematics and digital learning hubs.">
+    <meta property="og:url" content="https://digitalclassroomhub.com/angle-maker">
+    <meta property="og:site_name" content="Digital Classroom Hub">
+    <meta property="og:image" content="https://digitalclassroomhub.com/assets/angle-maker-preview.jpg">
+
+    <!-- Twitter Card Social Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Interactive Angle Maker & Virtual Protractor">
+    <meta name="twitter:description" content="Explore types of angles interactively with this anti-clockwise virtual protractor manipulative.">
+    <meta name="twitter:image" content="https://digitalclassroomhub.com/assets/angle-maker-preview.jpg">
+
+    <!-- Google Analytics GA4 Setup (Single Global Tag Instance) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JSVKBDWEV5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JSVKBDWEV5');
+    </script>
+
+    <!-- Structured Data JSON-LD Schema (Educational & Web Application Combination) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": ["WebApplication", "EducationalApplication"],
+          "@id": "https://digitalclassroomhub.com/angle-maker#webapp",
+          "url": "https://digitalclassroomhub.com/angle-maker",
+          "name": "Interactive Angle Maker & Virtual Protractor",
+          "description": "An interactive digital classroom manipulative and online angle measurement tool to explore acute, right, obtuse, and reflex angles using an anti-clockwise protractor model.",
+          "applicationCategory": "EducationalApplication",
+          "operatingSystem": "All",
+          "browserRequirements": "Requires an HTML5, SVG, and JavaScript compliant web browser.",
+          "interactivityType": "active",
+          "educationalUse": "Instruction, Practice",
+          "learningResourceType": "Concept Manipulative",
+          "audience": {
+            "@type": "Audience",
+            "audienceType": "Students, Teachers"
+          },
+          "educationalLevel": ["Class 3 Maths", "Class 4 Maths", "Class 5 Maths", "Primary Maths", "NCERT Maths", "KVS Maths"],
+          "keywords": "Angle Maker, Virtual Protractor, Online Protractor, Measure Angles Online, Geometry Tool, Types of Angles, Digital Classroom Hub",
+          "author": {
+            "@type": "Organization",
+            "name": "Digital Classroom Hub"
+          }
+        }
+      ]
+    }
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            
+            /* Curated High-Contrast Educational Colors */
+            --color-zero: #64748b;
+            --color-acute: #2ecc71;
+            --color-right: #3498db;
+            --color-obtuse: #e67e22;
+            --color-straight: #e74c3c;
+            --color-reflex: #9b59b6;
+            --color-complete: #f1c40f;
+            
+            --active-color: var(--color-zero);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: #0f172a;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            gap: 30px;
+            width: 100%;
+            max-width: 1200px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .workspace {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #f1f5f9;
+            border-radius: 16px;
+            padding: 20px;
+            min-height: 480px;
+        }
+
+        .svg-container {
+            width: 100%;
+            max-width: 440px;
+            aspect-ratio: 1;
+            position: relative;
+            touch-action: none;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .interactive-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+            border-radius: 50%;
+        }
+
+        .interactive-overlay:active {
+            cursor: grabbing;
+        }
+
+        .controls-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Information Panels */
+        .info-card {
+            background: #f8fafc;
+            border: 3px solid var(--active-color);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: border-color 0.2s ease;
+        }
+
+        .info-card h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .info-card p {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Classroom Layout Toggles */
+        .mode-toggles {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .toggle-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-main);
+        }
+
+        .toggle-btn.active {
+            background: #0f172a;
+            color: white;
+        }
+
+        /* Grid Configuration Elements */
+        .button-group-title {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+        }
+
+        .btn {
+            background: white;
+            border: 2px solid var(--border-color);
+            padding: 14px 10px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Dynamic Category Borders */
+        .btn-zero { border-color: var(--color-zero); color: var(--color-zero); }
+        .btn-acute { border-color: var(--color-acute); color: var(--color-acute); }
+        .btn-right { border-color: var(--color-right); color: var(--color-right); }
+        .btn-obtuse { border-color: var(--color-obtuse); color: var(--color-obtuse); }
+        .btn-straight { border-color: var(--color-straight); color: var(--color-straight); }
+        .btn-reflex { border-color: var(--color-reflex); color: var(--color-reflex); }
+        .btn-complete { border-color: var(--color-complete); color: var(--color-complete); }
+
+        .btn-zero.active-preset { background: var(--color-zero); color: white; }
+        .btn-acute.active-preset { background: var(--color-acute); color: white; }
+        .btn-right.active-preset { background: var(--color-right); color: white; }
+        .btn-obtuse.active-preset { background: var(--color-obtuse); color: white; }
+        .btn-straight.active-preset { background: var(--color-straight); color: white; }
+        .btn-reflex.active-preset { background: var(--color-reflex); color: white; }
+        .btn-complete.active-preset { background: var(--color-complete); color: white; }
+
+        .action-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 14px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+        }
+
+        .action-btn:hover { background: #1d4ed8; }
+        .action-btn.running { background: #dc2626; box-shadow: 0 4px 10px rgba(220, 38, 38, 0.2); }
+
+        /* Quiz Practice View Frame */
+        .quiz-panel {
+            background: #f8fafc;
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .quiz-panel.active { display: flex; }
+        
+        .quiz-prompt {
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .quiz-option-btn {
+            background: white;
+            border: 2px solid var(--border-color);
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.15s;
+        }
+
+        .quiz-option-btn:active {
+            background: #f1f5f9;
+        }
+
+        .quiz-feedback {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            min-height: 32px;
+        }
+
+        /* Label Visibility Overrides */
+        .hide-labels .svg-label {
+            display: none !important;
+        }
+
+        /* Responsive Breakpoints Optimization */
+        @media (max-width: 900px) {
+            .container { flex-direction: column; }
+            .workspace { min-height: 420px; }
+        }
+
+        @media (max-width: 480px) {
+            header h1 { font-size: 1.8rem; }
+            .info-card h2 { font-size: 2.2rem; }
+            .preset-grid { grid-template-columns: 1fr 1fr; }
+            .quiz-options { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header role="banner">
+        <h1>📐 Angle Maker</h1>
+        <p>Learn & Explore Angles (Standard Anti-Clockwise Model)</p>
+    </header>
+
+    <main class="container" id="appContainer">
+        <section class="workspace" aria-label="Interactive Geometry Workspace">
+            <div class="svg-container">
+                <svg viewBox="0 0 400 400" id="angleSvg" role="img" aria-label="Interactive geometric protractor diagram displaying dynamic anti-clockwise angle dimensions.">
+                    <title>Interactive Protractor Chart</title>
+                    <desc>A virtual geometry learning aid charting baseline and rotating vector arms across zero, acute, right, obtuse, straight, reflex, and complete angles.</desc>
+                    
+                    <circle cx="200" cy="200" r="180" fill="none" stroke="#cbd5e1" stroke-width="2" />
+                    <circle cx="200" cy="200" r="174" fill="none" stroke="#e2e8f0" stroke-width="1" />
+                    
+                    <g id="ticksGroup"></g>
+
+                    <circle cx="200" cy="200" r="40" fill="none" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="4 4" />
+
+                    <path id="angleArc" fill="var(--active-color)" fill-opacity="0.15" stroke="var(--active-color)" stroke-width="4" stroke-linejoin="round" d="" />
+                    
+                    <path id="rightAngleSquare" fill="none" stroke="var(--color-right)" stroke-width="3" d="" style="display:none;" />
+
+                    <line x1="200" y1="200" x2="370" y2="200" stroke="#1e293b" stroke-width="6" stroke-linecap="round" />
+                    <polygon points="370,193 385,200 370,207" fill="#1e293b" />
+
+                    <g id="rotatingArmGroup">
+                        <line x1="200" y1="200" x2="370" y2="200" stroke="#2563eb" stroke-width="6" stroke-linecap="round" id="movingLine" />
+                        <polygon points="370,193 385,200 370,207" fill="#2563eb" id="movingArrow" />
+                    </g>
+
+                    <circle cx="200" cy="200" r="10" fill="#0f172a" />
+
+                    <g class="svg-label">
+                        <text x="200" y="230" text-anchor="middle" font-size="14" font-weight="bold" fill="#64748b">Vertex</text>
+                        <text x="280" y="218" text-anchor="middle" font-size="13" font-weight="600" fill="#64748b">Baseline Arm</text>
+                        <text id="rotatingArmLabel" x="200" y="180" text-anchor="middle" font-size="13" font-weight="600" fill="#2563eb">Rotating Arm</text>
+                    </g>
+                </svg>
+                <div class="interactive-overlay" id="touchSurface" role="slider" aria-label="Angle Maker adjustment slider controller" aria-valuemin="0" aria-valuemax="360" aria-valuenow="0" tabindex="0"></div>
+            </div>
+        </section>
+
+        <section class="controls-panel" aria-label="Interactive Controls and Dashboard">
+            <div class="info-card" id="infoCard" aria-live="polite">
+                <h2 id="angleDisplay">0°</h2>
+                <p id="typeDisplay"><span>⚪</span> Zero Angle</p>
+            </div>
+
+            <div class="mode-toggles">
+                <button class="toggle-btn active" id="labelToggle" onclick="toggleLabels()" aria-pressed="true">Labels: ON</button>
+                <button class="toggle-btn" id="quizToggle" onclick="toggleQuizMode()" aria-pressed="false">Practice: OFF</button>
+            </div>
+
+            <div id="exploreControls">
+                <div class="button-group-title" role="heading" aria-level="3">Angle Presets & Types</div>
+                <div class="preset-grid">
+                    <button class="btn btn-zero" onclick="setAnglePreset(0)" aria-label="Set angle measurement to Zero degrees (0°)"><span>⚪</span>Zero (0°)</button>
+                    <button class="btn btn-acute" onclick="setAnglePreset(45)" aria-label="Set angle measurement to Acute degree configuration (45°)"><span>🟢</span>Acute (45°)</button>
+                    <button class="btn btn-right" onclick="setAnglePreset(90)" aria-label="Set angle measurement to Right degree configuration (90°)"><span>🔵</span>Right (90°)</button>
+                    <button class="btn btn-obtuse" onclick="setAnglePreset(135)" aria-label="Set angle measurement to Obtuse degree configuration (135°)"><span>🟠</span>Obtuse (135°)</button>
+                    <button class="btn btn-straight" onclick="setAnglePreset(180)" aria-label="Set angle measurement to Straight degree configuration (180°)"><span>🔴</span>Straight (180°)</button>
+                    <button class="btn btn-reflex" onclick="setAnglePreset(240)" aria-label="Set angle measurement to Reflex degree configuration (240°)"><span>🟣</span>Reflex (240°)</button>
+                    <button class="btn btn-complete" onclick="setAnglePreset(360)" aria-label="Set angle measurement to Complete degree configuration (360°)"><span>⭐</span>Complete (360°)</button>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button class="action-btn" id="autoRotateBtn" onclick="toggleAutoRotate()" aria-label="Toggle automated geometric rotation demonstration framework">🤖 Start Auto-Rotate Demo</button>
+                </div>
+            </div>
+
+            <div class="quiz-panel" id="quizPanel" aria-live="assertive">
+                <div class="quiz-prompt" role="heading" aria-level="3">What type of angle is shown above?</div>
+                <div class="quiz-options">
+                    <button class="quiz-option-btn" onclick="submitAnswer('Acute Angle')">Acute Angle</button>
+                    <button class="quiz-option-btn" onclick="submitAnswer('Right Angle')">Right Angle</button>
+                    <button class="quiz-option-btn" onclick="submitAnswer('Obtuse Angle')">Obtuse Angle</button>
+                    <button class="quiz-option-btn" onclick="submitAnswer('Straight Angle')">Straight Angle</button>
+                    <button class="quiz-option-btn" onclick="submitAnswer('Reflex Angle')">Reflex Angle</button>
+                    <button class="quiz-option-btn" onclick="submitAnswer('Complete Angle')">Complete Angle</button>
+                </div>
+                <div class="quiz-feedback" id="quizFeedback"></div>
+                <button class="action-btn" id="nextQuizBtn" onclick="generateQuizQuestion()" style="display: none;">Next Challenge ➔</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // System Application State Variables
+        let currentAngle = 0; 
+        let isDragging = false;
+        let showLabels = true;
+        let isQuizMode = false;
+        let isAutoRotating = false;
+        let autoRotateTimer = null;
+        let activeQuizType = "";
+
+        // UI Object Targets
+        const touchSurface = document.getElementById('touchSurface');
+        const rotatingArmGroup = document.getElementById('rotatingArmGroup');
+        const rotatingArmLabel = document.getElementById('rotatingArmLabel');
+        const angleArc = document.getElementById('angleArc');
+        const rightAngleSquare = document.getElementById('rightAngleSquare');
+        const angleDisplay = document.getElementById('angleDisplay');
+        const typeDisplay = document.getElementById('typeDisplay');
+        const infoCard = document.getElementById('infoCard');
+        const appContainer = document.getElementById('appContainer');
+        const ticksGroup = document.getElementById('ticksGroup');
+
+        // Layout Mapping Definitions Dictionary
+        const angleConfig = {
+            'Zero Angle': { emoji: '⚪', color: 'var(--color-zero)' },
+            'Acute Angle': { emoji: '🟢', color: 'var(--color-acute)' },
+            'Right Angle': { emoji: '🔵', color: 'var(--color-right)' },
+            'Obtuse Angle': { emoji: '🟠', color: 'var(--color-obtuse)' },
+            'Straight Angle': { emoji: '🔴', color: 'var(--color-straight)' },
+            'Reflex Angle': { emoji: '🟣', color: 'var(--color-reflex)' },
+            'Complete Angle': { emoji: '⭐', color: 'var(--color-complete)' }
+        };
+
+        // Application Pipeline Initialization Execution
+        function init() {
+            generateAntiClockwiseProtractor();
+            updateApplicationLayout();
+            setupEventHandlers();
+        }
+
+        // Generate ticks and labels anti-clockwise (0 right, 90 top, 180 left, 270 bottom)
+        function generateAntiClockwiseProtractor() {
+            let htmlContent = '';
+            for (let i = 0; i < 360; i += 5) {
+                const isMajor = i % 30 === 0;
+                const isQuadrant = i % 90 === 0;
+                const tickLength = isQuadrant ? 15 : (isMajor ? 10 : 5);
+                const strokeColor = isQuadrant ? '#1e293b' : (isMajor ? '#64748b' : '#cbd5e1');
+                const strokeWidth = isQuadrant ? 2 : 1;
+
+                // Base tick line generated at standard 3 o'clock position (0° baseline), rotated counter-clockwise (-i)
+                htmlContent += `<line x1="380" y1="200" x2="${380 - tickLength}" y2="200" stroke="${strokeColor}" stroke-width="${strokeWidth}" transform="rotate(${-i} 200 200)" />`;
+                
+                // Print explicit text labels on major numeric intervals cleanly
+                if (i % 30 === 0) {
+                    // Standard geometric coordinates (anti-clockwise parsing)
+                    const rad = (i * Math.PI) / 180;
+                    const tx = 200 + 151 * Math.cos(rad);
+                    const ty = 200 - 151 * Math.sin(rad); // Invert Y vector coordinates
+                    
+                    let labelText = `${i}°`;
+                    if (i === 0) labelText = "0°/360°"; // Clear unified label indicator at origin
+                    
+                    // Keep text orientation at 0° tilt so students never read upside down on smartboards
+                    htmlContent += `<text x="${tx}" y="${ty + 4}" text-anchor="middle" font-size="11" font-weight="bold" fill="#475569">${labelText}</text>`;
+                }
+            }
+            ticksGroup.innerHTML = htmlContent;
+        }
+
+        // Establish Unified Input Tracking
+        function setupEventHandlers() {
+            const startDrag = () => { 
+                if (isAutoRotating) stopAutoRotate();
+                isDragging = true; 
+            };
+            const stopDrag = () => { isDragging = false; };
+
+            touchSurface.addEventListener('mousedown', startDrag);
+            window.addEventListener('mouseup', stopDrag);
+            window.addEventListener('mousemove', handleInteractionMove);
+
+            touchSurface.addEventListener('touchstart', (e) => {
+                startDrag();
+                handleInteractionMove(e.touches[0]);
+                e.preventDefault();
+            }, { passive: false });
+            window.addEventListener('touchend', stopDrag);
+            window.addEventListener('touchmove', (e) => {
+                if (isDragging) {
+                    handleInteractionMove(e.touches[0]);
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            // Keyboard Fine Control Accessibility Override
+            window.addEventListener('keydown', (e) => {
+                if (isQuizMode) return;
+                if (e.key === 'ArrowUp' || e.key === 'ArrowRight') {
+                    setAngleValue((currentAngle + 1) % 361);
+                } else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') {
+                    setAngleValue(currentAngle - 1 < 0 ? 360 : currentAngle - 1);
+                }
+            });
+        }
+
+        // Calculate angular vector values counter-clockwise relative to coordinate center
+        function handleInteractionMove(e) {
+            if (!isDragging) return;
+
+            const rect = touchSurface.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            const mouseX = e.clientX - centerX;
+            const mouseY = e.clientY - centerY;
+
+            // Invert the standard Y system coordinate map to force natural math anti-clockwise parsing
+            let radians = Math.atan2(-mouseY, mouseX);
+            let degrees = radians * (180 / Math.PI);
+
+            if (degrees < 0) {
+                degrees += 360;
+            }
+
+            let finalAngle = Math.round(degrees);
+            
+            // Snap lock boundary zones at horizontal line to make 0° and 360° stable
+            if (finalAngle <= 1 || finalAngle >= 359) {
+                finalAngle = (mouseX >= 0 && Math.abs(mouseY) < 15) ? (currentAngle > 180 ? 360 : 0) : finalAngle;
+            }
+
+            setAngleValue(finalAngle);
+        }
+
+        // Mathematical Angle Classification Logic
+        function getAngleClassification(angle) {
+            if (angle === 0) return 'Zero Angle';
+            if (angle > 0 && angle < 90) return 'Acute Angle';
+            if (angle === 90) return 'Right Angle';
+            if (angle > 90 && angle < 180) return 'Obtuse Angle';
+            if (angle === 180) return 'Straight Angle';
+            if (angle > 180 && angle < 360) return 'Reflex Angle';
+            if (angle === 360) return 'Complete Angle';
+            return 'Acute Angle';
+        }
+
+        function setAngleValue(angle) {
+            currentAngle = angle;
+            updateApplicationLayout();
+        }
+
+        // Central Dynamic State Sync Engine
+        function updateApplicationLayout() {
+            // Negative rotation forces SVG group element counter-clockwise up into quadrant 1
+            rotatingArmGroup.setAttribute('transform', `rotate(${-currentAngle} 200 200)`);
+            
+            // Reposition text labels safely to keep pace near moving vectors
+            const radLabel = (currentAngle * Math.PI) / 180;
+            const lx = 200 + 115 * Math.cos(radLabel);
+            const ly = 200 - 115 * Math.sin(radLabel);
+            rotatingArmLabel.setAttribute('x', lx);
+            rotatingArmLabel.setAttribute('y', ly - 12);
+
+            const type = getAngleClassification(currentAngle);
+            const config = angleConfig[type];
+
+            document.documentElement.style.setProperty('--active-color', config.color);
+
+            // Update ARIA Slider Node Value dynamically for accessibility mapping
+            touchSurface.setAttribute('aria-valuenow', currentAngle);
+
+            if (isQuizMode) {
+                angleDisplay.textContent = "??°";
+                typeDisplay.innerHTML = `<span>❓</span> Guess the Type!`;
+                infoCard.style.borderColor = "var(--border-color)";
+            } else {
+                angleDisplay.textContent = `${currentAngle}°`;
+                typeDisplay.innerHTML = `<span>${config.emoji}</span> ${type}`;
+                infoCard.style.borderColor = config.color;
+                highlightPresetButton(type);
+            }
+
+            drawVisualArc(currentAngle);
+        }
+
+        // High Fidelity Geometric Pathway Render Matrix
+        function drawVisualArc(angle) {
+            if (angle === 0) {
+                angleArc.setAttribute('d', '');
+                rightAngleSquare.style.display = 'none';
+                return;
+            }
+
+            // Render absolute right angle squares efficiently in top-right quadrant
+            if (angle === 90) {
+                rightAngleSquare.setAttribute('d', 'M 235,200 L 235,165 L 200,165');
+                rightAngleSquare.style.display = showLabels ? 'block' : 'none';
+                angleArc.setAttribute('d', '');
+                return;
+            } else {
+                rightAngleSquare.style.display = 'none';
+            }
+
+            const radius = 55;
+            const startX = 200 + radius;
+            const startY = 200;
+            
+            const rad = (angle * Math.PI) / 180;
+            const endX = 200 + radius * Math.cos(rad);
+            const endY = 200 - radius * Math.sin(rad); // Anti-clockwise up coordinate adjustment
+
+            const largeArcFlag = angle > 180 ? 1 : 0;
+            const sweepFlag = 0; // Use clean SVG coordinate sweep profiles
+
+            let pathData = `M 200,200 L ${startX},${startY} A ${radius},${radius} 0 ${largeArcFlag},${sweepFlag} ${endX},${endY} Z`;
+            
+            if (angle === 360) {
+                pathData = `M 200,200 M 145,200 A 55,55 0 1,0 255,200 A 55,55 0 1,0 145,200 Z`;
+            }
+
+            angleArc.setAttribute('d', pathData);
+        }
+
+        function setAnglePreset(angle) {
+            if (isAutoRotating) stopAutoRotate();
+            setAngleValue(angle);
+        }
+
+        function highlightPresetButton(activeType) {
+            const buttons = document.querySelectorAll('.preset-grid .btn');
+            buttons.forEach(btn => {
+                if (btn.textContent.includes(activeType.split(' ')[0])) {
+                    btn.classList.add('active-preset');
+                } else {
+                    btn.classList.remove('active-preset');
+                }
+            });
+        }
+
+        // Labels Feature Component Switch Toggle
+        function toggleLabels() {
+            showLabels = !showLabels;
+            const labelToggle = document.getElementById('labelToggle');
+            if (showLabels) {
+                labelToggle.classList.add('active');
+                labelToggle.setAttribute('aria-pressed', 'true');
+                labelToggle.textContent = "Labels: ON";
+                appContainer.classList.remove('hide-labels');
+            } else {
+                labelToggle.classList.remove('active');
+                labelToggle.setAttribute('aria-pressed', 'false');
+                labelToggle.textContent = "Labels: OFF";
+                appContainer.classList.add('hide-labels');
+            }
+            updateApplicationLayout();
+        }
+
+        // Practice Feature Quiz Control Logic Module
+        function toggleQuizMode() {
+            isQuizMode = !isQuizMode;
+            if (isAutoRotating) stopAutoRotate();
+            
+            const quizToggle = document.getElementById('quizToggle');
+            const exploreControls = document.getElementById('exploreControls');
+            const quizPanel = document.getElementById('quizPanel');
+
+            if (isQuizMode) {
+                quizToggle.classList.add('active');
+                quizToggle.setAttribute('aria-pressed', 'true');
+                quizToggle.textContent = "Practice: ON";
+                exploreControls.style.display = 'none';
+                quizPanel.classList.add('active');
+                generateQuizQuestion();
+            } else {
+                quizToggle.classList.remove('active');
+                quizToggle.setAttribute('aria-pressed', 'false');
+                quizToggle.textContent = "Practice: OFF";
+                exploreControls.style.display = 'block';
+                quizPanel.classList.remove('active');
+                updateApplicationLayout();
+            }
+        }
+
+        function generateQuizQuestion() {
+            const sampleAngles = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 240, 270, 300, 330, 360];
+            let randomAngle = sampleAngles[Math.floor(Math.random() * sampleAngles.length)];
+            
+            if (randomAngle !== 0 && randomAngle !== 90 && randomAngle !== 180 && randomAngle !== 360) {
+                randomAngle += Math.floor(Math.random() * 11) - 5; // Introduce safe numeric variations
+            }
+
+            activeQuizType = getAngleClassification(randomAngle);
+            currentAngle = randomAngle;
+            
+            document.getElementById('quizFeedback').textContent = "";
+            document.getElementById('nextQuizBtn').style.display = 'none';
+            
+            updateApplicationLayout();
+        }
+
+        function submitAnswer(chosenType) {
+            const feedback = document.getElementById('quizFeedback');
+            const nextBtn = document.getElementById('nextQuizBtn');
+
+            if (chosenType === activeQuizType) {
+                feedback.innerHTML = "<span style='color: #2ecc71;'>✅ Correct! Outstanding job!</span>";
+                nextBtn.style.display = 'block';
+                
+                // Temporarily expose geometric dimension readouts as clear visual confirmation feedback
+                angleDisplay.textContent = `${currentAngle}°`;
+                typeDisplay.innerHTML = `<span>${angleConfig[activeQuizType].emoji}</span> ${activeQuizType}`;
+                infoCard.style.borderColor = angleConfig[activeQuizType].color;
+            } else {
+                feedback.innerHTML = "<span style='color: #e74c3c;'>❌ Try again! Check the direction.</span>";
+            }
+        }
+
+        // Classroom Demonstration Automation Module
+        function toggleAutoRotate() {
+            if (isAutoRotating) {
+                stopAutoRotate();
+            } else {
+                startAutoRotate();
+            }
+        }
+
+        function startAutoRotate() {
+            isAutoRotating = true;
+            const btn = document.getElementById('autoRotateBtn');
+            btn.textContent = "⏹️ Stop Demonstration";
+            btn.classList.add('running');
+            
+            let targetAngle = currentAngle >= 360 ? 0 : currentAngle;
+            let holdsRemaining = 0;
+
+            autoRotateTimer = setInterval(() => {
+                if (holdsRemaining > 0) {
+                    holdsRemaining--;
+                    return;
+                }
+
+                targetAngle += 1;
+                
+                // Programmatic execution pause markers directly at important historical benchmarks
+                if ([0, 90, 180, 270, 360].includes(targetAngle)) {
+                    holdsRemaining = 25; // Continuous pause lock delay (~1 second duration)
+                }
+
+                if (targetAngle > 360) {
+                    targetAngle = 0;
+                }
+
+                setAngleValue(targetAngle);
+            }, 40);
+        }
+
+        function stopAutoRotate() {
+            isAutoRotating = false;
+            const btn = document.getElementById('autoRotateBtn');
+            btn.textContent = "🤖 Start Auto-Rotate Demo";
+            btn.classList.remove('running');
+            clearInterval(autoRotateTimer);
+        }
+
+        // Core initialization entry execution
+        window.onload = init;
+    </script>
+</body>
+</html>

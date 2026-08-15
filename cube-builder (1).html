@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <!-- SEO Meta Tags -->
+  <title>Virtual Cube Builder | Interactive 3D Unit Cube Manipulative</title>
+  <meta name="description" content="Build, stack, and explore volume with this interactive 3D Cube Builder. An ideal unit cube manipulative for visualising spatial reasoning, surface area, and primary school maths (Class 3, 4, 5 NCERT/KVS).">
+  <meta name="keywords" content="Cube Builder, Virtual Cube Builder, Interactive Cube Builder, Online Cube Builder, Unit Cube Manipulative, 3D Cube Builder, Build Cubes Online, Cube Manipulative, Volume Manipulative, Surface Area Manipulative, 3D Math Manipulative, Interactive Geometry Tool, Spatial Reasoning Tool, Math Manipulative, Primary Maths, Class 3 Maths, Class 4 Maths, Class 5 Maths, NCERT Maths, KVS Maths, Digital Classroom Hub">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="Digital Classroom Hub">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="language" content="English">
+  <link rel="canonical" href="https://digitalclassroomhub.com/tools/cube-builder">
+
+  <!-- Open Graph / Facebook Meta Tags -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Virtual Cube Builder | Interactive 3D Unit Cube Manipulative">
+  <meta property="og:description" content="Explore volume, surface area, and 3D shapes with this interactive unit cube manipulative. Built for modern digital classrooms.">
+  <meta property="og:url" content="https://digitalclassroomhub.com/tools/cube-builder">
+  <meta property="og:site_name" content="Digital Classroom Hub">
+  <meta property="og:image" content="https://digitalclassroomhub.com/tools/cube-builder/assets/og-image.png">
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Virtual Cube Builder | Interactive 3D Unit Cube Manipulative">
+  <meta name="twitter:description" content="Interactive unit cube builder for teaching volume, layers, and 3D geometry in primary maths classrooms.">
+  <meta name="twitter:image" content="https://digitalclassroomhub.com/tools/cube-builder/assets/og-image.png">
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+  <!-- Performance Preconnects -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preconnect" href="https://www.googletagmanager.com">
+
+  <!-- Google Tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JSVKBDWEV5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-JSVKBDWEV5');
+  </script>
+
+  <!-- Structured Data: WebApplication & EducationalApplication JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Virtual Cube Builder",
+    "description": "An interactive 3D unit cube manipulative designed to help primary students explore spatial reasoning, surface area, and volume.",
+    "url": "https://digitalclassroomhub.com/tools/cube-builder",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "All",
+    "browserRequirements": "Requires WebGL support.",
+    "author": {
+      "@type": "Organization",
+      "name": "Digital Classroom Hub",
+      "url": "https://digitalclassroomhub.com"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --panel-bg:#ffffff;
+      --border:#e2e8f0;
+      --ink:#1e293b;
+      --ink-soft:#64748b;
+      --blue:#2f6fed;
+      --blue-soft:#eaf1ff;
+      --danger:#ef4444;
+      --danger-soft:#fef2f2;
+      --shadow: 0 8px 24px rgba(30,41,59,0.08);
+    }
+    *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+    html,body{
+      margin:0; padding:0; width:100%; height:100%;
+      background:var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow:hidden;
+      overscroll-behavior:none;
+      touch-action:none;
+      color:var(--ink);
+    }
+    #app{ position:fixed; inset:0; }
+    #scene-container{ position:absolute; inset:0; }
+    canvas{ display:block; touch-action:none; }
+
+    /* ---------- Top bar ---------- */
+    #topbar{
+      position:absolute; top:0; left:0; right:0;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 18px;
+      pointer-events:none;
+    }
+    #brand{
+      font-weight:700; font-size:15px; letter-spacing:0.02em;
+      color:var(--ink-soft);
+      display:flex; align-items:center; gap:8px;
+      pointer-events:auto;
+      user-select:none;
+      margin:0; font-family:inherit; /* Explicit heading resets to keep look identical */
+    }
+    #brand .dot{ width:10px; height:10px; border-radius:3px; background:var(--blue); display:inline-block; }
+
+    /* ---------- Stats panel ---------- */
+    #stats{
+      pointer-events:auto;
+      background:var(--panel-bg);
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      border-radius:16px;
+      padding:10px 16px;
+      display:flex;
+      gap:18px;
+      font-size:13px;
+      user-select:none;
+    }
+    #stats.hidden {
+      display: none !important;
+    }
+    #stats .stat{ display:flex; flex-direction:column; align-items:center; min-width:38px; }
+    #stats .stat .val{ font-size:16px; font-weight:700; color:var(--ink); line-height:1.3; }
+    #stats .stat .lbl{ font-size:10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.04em; }
+
+    /* ---------- Mode toolbar (bottom) ---------- */
+    #toolbar{
+      position:absolute; left:50%; bottom:20px; transform:translateX(-50%);
+      display:flex; align-items:center; gap:10px;
+      background:var(--panel-bg);
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      border-radius:22px;
+      padding:10px;
+      pointer-events:auto;
+    }
+    .btn{
+      appearance:none; border:none; outline:none;
+      background:transparent;
+      color:var(--ink);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:2px;
+      width:64px; height:56px;
+      border-radius:16px;
+      cursor:pointer;
+      font-family:inherit;
+      font-size:10px;
+      font-weight:600;
+      letter-spacing:0.01em;
+      transition: background 0.15s ease, transform 0.08s ease, color 0.15s ease;
+      user-select:none;
+    }
+    .btn .icon{ font-size:22px; line-height:1; }
+    .btn:hover{ background:var(--blue-soft); }
+    .btn:active{ transform:scale(0.94); }
+    .btn.active{ background:var(--blue); color:#fff; }
+    .btn.active:hover{ background:var(--blue); }
+    .btn.danger.active{ background:var(--danger); color:#fff; }
+    .sep{ width:1px; height:36px; background:var(--border); margin:0 2px; }
+
+    /* ---------- Color Picker ---------- */
+    .color-picker-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    #cube-color-input {
+      appearance: none;
+      -webkit-appearance: none;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      background: none;
+      padding: 0;
+    }
+    #cube-color-input::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+    #cube-color-input::-webkit-color-swatch {
+      border: 2px solid var(--border);
+      border-radius: 50%;
+    }
+    #cube-color-input::-moz-color-swatch {
+      border: 2px solid var(--border);
+      border-radius: 50%;
+    }
+
+    /* ---------- View buttons (right side) ---------- */
+    #viewbar{
+      position:absolute; right:18px; top:50%; transform:translateY(-50%);
+      display:flex; flex-direction:column; gap:8px;
+      pointer-events:auto;
+    }
+    .view-btn{
+      appearance:none; border:1px solid var(--border); outline:none;
+      background:var(--panel-bg);
+      color:var(--ink-soft);
+      box-shadow:var(--shadow);
+      width:52px; height:52px;
+      border-radius:16px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      cursor:pointer;
+      font-size:9px; font-weight:700; letter-spacing:0.02em;
+      gap:2px;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease;
+    }
+    .view-btn .icon{ font-size:18px; }
+    .view-btn:hover{ background:var(--blue-soft); color:var(--blue); }
+    .view-btn:active{ transform:scale(0.94); }
+
+    /* ---------- Reset & Toggle Stats (top right) ---------- */
+    #resetbtn, #togglestatsbtn{
+      pointer-events:auto;
+      appearance:none; border:1px solid var(--border); outline:none;
+      background:var(--panel-bg);
+      color:var(--ink-soft);
+      box-shadow:var(--shadow);
+      width:44px; height:44px;
+      border-radius:14px;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer;
+      font-size:18px;
+      transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease;
+    }
+    #resetbtn:hover{ background:var(--danger-soft); color:var(--danger); }
+    #resetbtn:active{ transform:scale(0.92) rotate(-40deg); }
+    
+    #togglestatsbtn:hover{ background:var(--blue-soft); color:var(--blue); }
+    #togglestatsbtn:active{ transform:scale(0.92); }
+    #togglestatsbtn.active{ background:var(--blue-soft); color:var(--blue); border-color:var(--blue); }
+
+    #topright{ display:flex; align-items:center; gap:10px; }
+
+    /* ---------- Hint text ---------- */
+    #hint{
+      position:absolute; left:50%; top:20px; transform:translateX(-50%);
+      background:rgba(47,111,237,0.95);
+      color:#fff;
+      padding:8px 18px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:600;
+      box-shadow:var(--shadow);
+      pointer-events:none;
+      opacity:0;
+      transition: opacity 0.25s ease;
+      white-space:nowrap;
+      z-index:10;
+    }
+    #hint.show{ opacity:1; }
+
+    /* ---------- Confirm dialog ---------- */
+    #confirm-overlay{
+      position:absolute; inset:0;
+      background:rgba(30,41,59,0.28);
+      display:none;
+      align-items:center; justify-content:center;
+      z-index:50;
+      pointer-events:auto;
+    }
+    #confirm-overlay.show{ display:flex; }
+    #confirm-box{
+      background:#fff; border-radius:20px; box-shadow:0 16px 48px rgba(30,41,59,0.22);
+      padding:26px 28px; max-width:300px; text-align:center;
+    }
+    #confirm-box p{ margin:0 0 18px 0; font-size:15px; color:var(--ink); line-height:1.4; }
+    #confirm-box .row{ display:flex; gap:10px; justify-content:center; }
+    #confirm-box button{
+      appearance:none; border:none; outline:none; cursor:pointer;
+      padding:10px 20px; border-radius:12px; font-weight:700; font-size:14px;
+      font-family:inherit;
+    }
+    #confirm-box .cancel{ background:#f1f5f9; color:var(--ink); }
+    #confirm-box .ok{ background:var(--danger); color:#fff; }
+
+    @media (max-width: 700px){
+      #brand span.label{ display:none; }
+      #stats{ gap:12px; padding:8px 12px; }
+      #stats .stat{ min-width:30px; }
+      #stats .stat .val{ font-size:14px; }
+      .btn{ width:54px; height:50px; }
+      .view-btn{ width:44px; height:44px; }
+      #toolbar{ bottom:14px; padding:8px; gap:6px; }
+      .color-picker-wrapper { width: 38px; height: 38px; }
+      #cube-color-input { width: 26px; height: 26px; }
+    }
+  </style>
+</head>
+<body>
+<main id="app">
+  <section id="scene-container" aria-label="3D viewport environment"></section>
+
+  <header id="topbar">
+    <!-- Brand converted to Semantic H1 styled identically to guarantee styling safety -->
+    <h1 id="brand"><span class="dot"></span><span class="label">Cube Builder</span></h1>
+    <div id="topright">
+      <section id="stats" aria-label="Lattice dimension statistics">
+        <div class="stat"><div class="val" id="stat-total">1</div><div class="lbl">Cubes</div></div>
+        <div class="stat"><div class="val" id="stat-w">1</div><div class="lbl">Width</div></div>
+        <div class="stat"><div class="val" id="stat-h">1</div><div class="lbl">Height</div></div>
+        <div class="stat"><div class="val" id="stat-d">1</div><div class="lbl">Depth</div></div>
+        <div class="stat"><div class="val" id="stat-layers">1</div><div class="lbl">Layers</div></div>
+      </section>
+      <button id="togglestatsbtn" class="active" title="Show/Hide Stats" aria-label="Toggle statistics overlay">📊</button>
+      <button id="resetbtn" title="Reset" aria-label="Reset the cube workspace">🔄</button>
+    </div>
+  </header>
+
+  <div id="hint"></div>
+
+  <nav id="viewbar" aria-label="Camera presets">
+    <button class="view-btn" data-view="front" aria-label="Switch camera view to front"><span class="icon">📷</span>Front</button>
+    <button class="view-btn" data-view="top" aria-label="Switch camera view to top"><span class="icon">📷</span>Top</button>
+    <button class="view-btn" data-view="side" aria-label="Switch camera view to side"><span class="icon">📷</span>Side</button>
+  </nav>
+
+  <nav id="toolbar" aria-label="Main editing actions">
+    <button class="btn active" id="mode-add" title="Add Cube" aria-label="Switch to add cube mode"><span class="icon">➕</span>Add</button>
+    <button class="btn danger" id="mode-remove" title="Remove Cube" aria-label="Switch to remove cube mode"><span class="icon">➖</span>Remove</button>
+    <div class="sep"></div>
+    <button class="btn active" id="toggle-grid" title="Show/Hide Grid" aria-label="Toggle structural grid visibility"><span class="icon">👁</span>Grid</button>
+    <div class="sep"></div>
+    <div class="color-picker-wrapper" title="Choose Color">
+      <input type="color" id="cube-color-input" value="#6ea3f5" aria-label="Choose customizable cube color">
+    </div>
+  </nav>
+
+  <div id="confirm-overlay" aria-modal="true" role="dialog">
+    <div id="confirm-box">
+      <p>Remove the last cube and start empty?</p>
+      <div class="row">
+        <button class="cancel" id="confirm-cancel" aria-label="Cancel removal">Cancel</button>
+        <button class="ok" id="confirm-ok" aria-label="Confirm clear and remove the last cube">Remove</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* =========================================================================
+   CUBE BUILDER — a virtual manipulative for exploring volume, layers,
+   arrays and 3D structure with unit cubes.
+
+   Structure of this file:
+   1. Scene / camera / renderer setup
+   2. Lighting
+   3. Grid floor
+   4. Cube data model (a Map of "x,y,z" -> mesh) + cube factory
+   5. Placement / removal raycasting logic (mouse + touch)
+   6. Orbit-style camera controls (rotate / zoom / pan) with dynamic damping
+   7. UI wiring (buttons, stats, hint text, confirm dialog, camera views)
+   ========================================================================= */
+
+(function(){
+  "use strict";
+
+  // ---------------------------------------------------------------------
+  // 1. SCENE / CAMERA / RENDERER
+  // ---------------------------------------------------------------------
+  const container = document.getElementById('scene-container');
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xffffff);
+  scene.fog = new THREE.Fog(0xffffff, 40, 90);
+
+  const camera = new THREE.PerspectiveCamera(
+    45, container.clientWidth / container.clientHeight, 0.1, 500
+  );
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  container.appendChild(renderer.domElement);
+
+  // Camera "rig": orbits target using spherical coordinates.
+  // Includes current* variables to smoothly damp/lerp towards targeted values.
+  const cameraRig = {
+    target: new THREE.Vector3(0.5, 0.5, 0.5),
+    radius: 10,
+    theta: Math.PI * 0.28,
+    phi: Math.PI * 0.36,
+    
+    currentTarget: new THREE.Vector3(0.5, 0.5, 0.5),
+    currentRadius: 10,
+    currentTheta: Math.PI * 0.28,
+    currentPhi: Math.PI * 0.36,
+
+    minRadius: 3,
+    maxRadius: 60,
+    minPhi: 0.12,
+    maxPhi: Math.PI - 0.12
+  };
+
+  function updateCameraFromRig(){
+    const { currentTarget, currentRadius, currentTheta, currentPhi } = cameraRig;
+    const x = currentTarget.x + currentRadius * Math.sin(currentPhi) * Math.sin(currentTheta);
+    const y = currentTarget.y + currentRadius * Math.cos(currentPhi);
+    const z = currentTarget.z + currentRadius * Math.sin(currentPhi) * Math.cos(currentTheta);
+    camera.position.set(x, y, z);
+    camera.lookAt(currentTarget);
+  }
+  updateCameraFromRig();
+
+  // ---------------------------------------------------------------------
+  // 2. LIGHTING — soft, classroom-friendly, no harsh shadows
+  // ---------------------------------------------------------------------
+  const hemi = new THREE.HemisphereLight(0xffffff, 0xdfe8f5, 0.75);
+  scene.add(hemi);
+
+  const key = new THREE.DirectionalLight(0xffffff, 0.65);
+  key.position.set(12, 18, 10);
+  key.castShadow = true;
+  key.shadow.mapSize.set(1024, 1024);
+  key.shadow.camera.left = -20;
+  key.shadow.camera.right = 20;
+  key.shadow.camera.top = 20;
+  key.shadow.camera.bottom = -20;
+  key.shadow.camera.near = 1;
+  key.shadow.camera.far = 60;
+  key.shadow.bias = -0.0015;
+  scene.add(key);
+
+  const fillLight = new THREE.DirectionalLight(0xbfd4ff, 0.25);
+  fillLight.position.set(-10, 8, -8);
+  scene.add(fillLight);
+
+  // ---------------------------------------------------------------------
+  // 3. GRID FLOOR
+  // ---------------------------------------------------------------------
+  const GRID_EXTENT = 40;
+  const gridHelper = new THREE.GridHelper(GRID_EXTENT, GRID_EXTENT, 0xbcd0f0, 0xe7edf7);
+  scene.add(gridHelper);
+
+  const floorGeo = new THREE.PlaneGeometry(GRID_EXTENT, GRID_EXTENT);
+  const floorMat = new THREE.ShadowMaterial({ opacity: 0.12 });
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.receiveShadow = true;
+  scene.add(floor);
+
+  let gridVisible = true;
+
+  // ---------------------------------------------------------------------
+  // 4. CUBE DATA MODEL
+  // ---------------------------------------------------------------------
+  // Cubes live on an integer lattice. Each occupied cell is keyed "x,y,z"
+  // (y >= 0 sits on/above the floor). We keep a Map from key to mesh for
+  // O(1) neighbor / face lookups.
+
+  const cubes = new Map(); // key -> mesh
+  const cubeGroup = new THREE.Group();
+  scene.add(cubeGroup);
+
+  function keyOf(x, y, z){ return x + ',' + y + ',' + z; }
+
+  // Shared geometry reused across every cube instance for performance
+  // at 500-1000 cubes.
+  const boxGeo = new THREE.BoxGeometry(0.96, 0.96, 0.96); // slight gap for clear boundaries
+  const edgesGeo = new THREE.EdgesGeometry(boxGeo);
+
+  let currentCubeColor = new THREE.Color(0x6ea3f5);
+
+  function makeCubeMesh(colorVal){
+    const mat = new THREE.MeshStandardMaterial({
+      color: colorVal || currentCubeColor,
+      roughness: 0.55,
+      metalness: 0.05,
+    });
+    const mesh = new THREE.Mesh(boxGeo, mat);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+
+    const edges = new THREE.LineSegments(
+      edgesGeo,
+      new THREE.LineBasicMaterial({ color: 0x2c4a7c, transparent: true, opacity: 0.35 })
+    );
+    mesh.add(edges);
+    mesh.userData.isCube = true;
+    mesh.userData.customColor = (colorVal || currentCubeColor).clone();
+    return mesh;
+  }
+
+  function addCubeAt(x, y, z, animate, colorVal){
+    const k = keyOf(x, y, z);
+    if (cubes.has(k)) return null;
+    const mesh = makeCubeMesh(colorVal);
+    mesh.position.set(x + 0.5, y + 0.5, z + 0.5);
+    mesh.userData.gridPos = { x, y, z };
+    if (animate){
+      mesh.scale.setScalar(0.001);
+    }
+    cubeGroup.add(mesh);
+    cubes.set(k, mesh);
+    if (animate) animateCubeIn(mesh);
+    updateStats();
+    return mesh;
+  }
+
+  function removeCubeAt(x, y, z){
+    const k = keyOf(x, y, z);
+    const mesh = cubes.get(k);
+    if (!mesh) return;
+    cubes.delete(k); // instantly purge from coordinate map so clicks don't map to it
+    
+    if (hoveredMesh === mesh) hoveredMesh = null;
+    updateStats();
+
+    // Start removal shrink animation
+    mesh.userData.shrinkStart = performance.now();
+    animating.delete(mesh);
+    shrinking.add(mesh);
+  }
+
+  // Spawning (grow-in) & deleting (shrink-out) animations
+  const animating = new Set();
+  const shrinking = new Set();
+
+  function animateCubeIn(mesh){
+    mesh.userData.animStart = performance.now();
+    animating.add(mesh);
+  }
+
+  // Nice physical elastic bounce out
+  function easeOutElastic(t) {
+    const c4 = (2 * Math.PI) / 3;
+    return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+  }
+
+  function stepAnimations(now){
+    // Scale Up Spawning
+    animating.forEach(mesh => {
+      const t = Math.min(1, (now - mesh.userData.animStart) / 350);
+      const eased = easeOutElastic(t);
+      mesh.scale.setScalar(0.001 + eased * 0.999);
+      if (t >= 1) {
+        mesh.scale.setScalar(1);
+        animating.delete(mesh);
+      }
+    });
+
+    // Scale Down Removing
+    shrinking.forEach(mesh => {
+      const t = Math.min(1, (now - mesh.userData.shrinkStart) / 160);
+      const eased = 1 - t * t; // Fast quadratic scale out
+      mesh.scale.setScalar(eased);
+      if (t >= 1) {
+        cubeGroup.remove(mesh);
+        // Safely dispose of materials & geometry
+        mesh.material.dispose();
+        if (mesh.children && mesh.children[0]) {
+          mesh.children[0].geometry.dispose();
+          mesh.children[0].material.dispose();
+        }
+        shrinking.delete(mesh);
+      }
+    });
+  }
+
+  // Seed: one cube at the origin cell (0,0,0)
+  addCubeAt(0, 0, 0, false);
+
+  // ---------------------------------------------------------------------
+  // STATS PANEL
+  // ---------------------------------------------------------------------
+  function updateStats(){
+    const total = cubes.size;
+    let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity,minZ=Infinity,maxZ=-Infinity;
+    cubes.forEach(mesh => {
+      const p = mesh.userData.gridPos;
+      minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
+      minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
+      minZ = Math.min(minZ, p.z); maxZ = Math.max(maxZ, p.z);
+    });
+    const width = total ? (maxX - minX + 1) : 0;
+    const height = total ? (maxY - minY + 1) : 0;
+    const depth = total ? (maxZ - minZ + 1) : 0;
+
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-w').textContent = width;
+    document.getElementById('stat-h').textContent = height;
+    document.getElementById('stat-d').textContent = depth;
+    document.getElementById('stat-layers').textContent = height; // layers = vertical levels occupied
+  }
+
+  // ---------------------------------------------------------------------
+  // 5. PLACEMENT / REMOVAL — raycasting against cube faces
+  // ---------------------------------------------------------------------
+  const raycaster = new THREE.Raycaster();
+  const pointerNDC = new THREE.Vector2();
+
+  // Preview (ghost) cube shown before confirming placement
+  const previewMat = new THREE.MeshBasicMaterial({
+    color: 0x6ea3f5, transparent: true, opacity: 0.28, depthWrite: false
+  });
+  const previewMesh = new THREE.Mesh(new THREE.BoxGeometry(0.96,0.96,0.96), previewMat);
+  previewMesh.visible = false;
+  scene.add(previewMesh);
+  const previewEdges = new THREE.LineSegments(
+    edgesGeo, new THREE.LineBasicMaterial({ color: 0x6ea3f5, transparent:true, opacity:0.7 })
+  );
+  previewMesh.add(previewEdges);
+
+  let mode = 'add'; // 'add' | 'remove'
+  let hoveredMesh = null;
+
+  function setHover(mesh){
+    if (hoveredMesh === mesh) return;
+    if (hoveredMesh){
+      hoveredMesh.material.color.copy(hoveredMesh.userData.customColor);
+    }
+    hoveredMesh = mesh;
+    if (hoveredMesh){
+      // Brighten hover cube to give beautiful feedback
+      const hoverCol = hoveredMesh.userData.customColor.clone().offsetHSL(0, 0, 0.15);
+      hoveredMesh.material.color.copy(hoverCol);
+    }
+  }
+
+  function getPointerCubeIntersection(clientX, clientY){
+    const rect = renderer.domElement.getBoundingClientRect();
+    pointerNDC.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    pointerNDC.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(pointerNDC, camera);
+    const meshes = Array.from(cubes.values());
+    const hits = raycaster.intersectObjects(meshes, false);
+    return hits.length ? hits[0] : null;
+  }
+
+  function faceNormalToGridOffset(face, mesh){
+    const n = face.normal.clone();
+    n.transformDirection(mesh.matrixWorld);
+    return {
+      x: Math.round(n.x),
+      y: Math.round(n.y),
+      z: Math.round(n.z)
+    };
+  }
+
+  function clearPreview(){
+    previewMesh.visible = false;
+  }
+
+  function updatePreviewMesh(clientX, clientY) {
+    if (mode !== 'add') {
+      previewMesh.visible = false;
+      return;
+    }
+    const hit = getPointerCubeIntersection(clientX, clientY);
+    if (hit) {
+      const p = hit.object.userData.gridPos;
+      const offset = faceNormalToGridOffset(hit.face, hit.object);
+      const target = { x: p.x + offset.x, y: p.y + offset.y, z: p.z + offset.z };
+      if (target.y >= 0) {
+        previewMesh.position.set(target.x + 0.5, target.y + 0.5, target.z + 0.5);
+        previewMesh.visible = true;
+        return;
+      }
+    }
+    previewMesh.visible = false;
+  }
+
+  function showHintText(msg){
+    const el = document.getElementById('hint');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(showHintText._t);
+    showHintText._t = setTimeout(() => el.classList.remove('show'), 1600);
+  }
+
+  function handlePrimaryAction(clientX, clientY){
+    const hit = getPointerCubeIntersection(clientX, clientY);
+
+    if (mode === 'remove'){
+      if (!hit) return;
+      const p = hit.object.userData.gridPos;
+      if (cubes.size <= 1){
+        openConfirm();
+        return;
+      }
+      removeCubeAt(p.x, p.y, p.z);
+      clearPreview();
+      return;
+    }
+
+    // ADD MODE (Instant Single Click)
+    if (!hit){
+      clearPreview();
+      return;
+    }
+    const p = hit.object.userData.gridPos;
+    const offset = faceNormalToGridOffset(hit.face, hit.object);
+    const target = { x: p.x + offset.x, y: p.y + offset.y, z: p.z + offset.z };
+    if (target.y < 0) { clearPreview(); return; } // don't build below the floor
+
+    // Placed on single click
+    addCubeAt(target.x, target.y, target.z, true);
+    
+    // Smoothly reposition the preview block instantly to match the new face
+    setTimeout(() => {
+      updatePreviewMesh(clientX, clientY);
+    }, 0);
+  }
+
+  // ---------------------------------------------------------------------
+  // 6. CAMERA CONTROLS — rotate / zoom / pan with beautiful inertia/damping
+  // ---------------------------------------------------------------------
+  const dom = renderer.domElement;
+
+  const pointers = new Map(); // pointerId -> {x,y}
+  let dragMode = null;        // 'rotate' | 'pan' | 'pinch' | null
+  let lastSingle = null;
+  let lastPinchDist = null;
+  let lastPinchMid = null;
+  let dragMoved = false;
+  let downPos = null;
+
+  function getPinchInfo(){
+    const pts = Array.from(pointers.values());
+    if (pts.length < 2) return null;
+    const dx = pts[0].x - pts[1].x, dy = pts[0].y - pts[1].y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    const mid = { x:(pts[0].x+pts[1].x)/2, y:(pts[0].y+pts[1].y)/2 };
+    return { dist, mid };
+  }
+
+  function panCamera(dxPx, dyPx){
+    const scale = cameraRig.radius * 0.0015;
+    const upVec = new THREE.Vector3(0,1,0);
+    const camRight = new THREE.Vector3();
+    camera.matrixWorld.extractBasis(camRight, new THREE.Vector3(), new THREE.Vector3());
+    cameraRig.target.addScaledVector(camRight, -dxPx * scale);
+    cameraRig.target.addScaledVector(upVec, dyPx * scale);
+  }
+
+  dom.addEventListener('contextmenu', e => e.preventDefault());
+
+  dom.addEventListener('pointerdown', (e) => {
+    dom.setPointerCapture(e.pointerId);
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    dragMoved = false;
+    downPos = { x: e.clientX, y: e.clientY };
+
+    if (pointers.size === 1){
+      dragMode = (e.pointerType === 'mouse' && e.button === 2) ? 'pan' : 'rotate';
+      lastSingle = { x: e.clientX, y: e.clientY };
+    } else if (pointers.size === 2){
+      dragMode = 'pinch';
+      const info = getPinchInfo();
+      lastPinchDist = info.dist;
+      lastPinchMid = info.mid;
+    }
+  });
+
+  dom.addEventListener('pointermove', (e) => {
+    if (!pointers.has(e.pointerId)) {
+      if (pointers.size === 0 && mode === 'add'){
+        const hit = getPointerCubeIntersection(e.clientX, e.clientY);
+        setHover(hit ? hit.object : null);
+        updatePreviewMesh(e.clientX, e.clientY);
+      }
+      return;
+    }
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (downPos){
+      const dd = Math.hypot(e.clientX - downPos.x, e.clientY - downPos.y);
+      if (dd > 6) {
+        dragMoved = true;
+        clearPreview(); // Hide ghost blocks immediately while moving camera
+      }
+    }
+
+    if (dragMode === 'rotate' && pointers.size === 1){
+      const dx = e.clientX - lastSingle.x;
+      const dy = e.clientY - lastSingle.y;
+      lastSingle = { x: e.clientX, y: e.clientY };
+      cameraRig.theta -= dx * 0.006;
+      cameraRig.phi -= dy * 0.006;
+      cameraRig.phi = Math.max(cameraRig.minPhi, Math.min(cameraRig.maxPhi, cameraRig.phi));
+    } else if (dragMode === 'pan' && pointers.size === 1){
+      const dx = e.clientX - lastSingle.x;
+      const dy = e.clientY - lastSingle.y;
+      lastSingle = { x: e.clientX, y: e.clientY };
+      panCamera(dx, dy);
+    } else if (dragMode === 'pinch' && pointers.size === 2){
+      const info = getPinchInfo();
+      const distDelta = info.dist - lastPinchDist;
+      cameraRig.radius -= distDelta * 0.03;
+      cameraRig.radius = Math.max(cameraRig.minRadius, Math.min(cameraRig.maxRadius, cameraRig.radius));
+      const mdx = info.mid.x - lastPinchMid.x;
+      const mdy = info.mid.y - lastPinchMid.y;
+      panCamera(mdx, mdy);
+      lastPinchDist = info.dist;
+      lastPinchMid = info.mid;
+    }
+
+    if (mode === 'add' && pointers.size === 1 && !dragMoved){
+      const hit = getPointerCubeIntersection(e.clientX, e.clientY);
+      setHover(hit ? hit.object : null);
+      updatePreviewMesh(e.clientX, e.clientY);
+    }
+  });
+
+  function endPointer(e){
+    const wasTap = pointers.has(e.pointerId) && !dragMoved && pointers.size === 1;
+    pointers.delete(e.pointerId);
+    if (pointers.size === 0){
+      if (wasTap){
+        handlePrimaryAction(e.clientX, e.clientY);
+      }
+      dragMode = null;
+      lastSingle = null;
+      lastPinchDist = null;
+    } else if (pointers.size === 1){
+      const remaining = Array.from(pointers.values())[0];
+      dragMode = 'rotate';
+      lastSingle = { x: remaining.x, y: remaining.y };
+    }
+  }
+  dom.addEventListener('pointerup', endPointer);
+  dom.addEventListener('pointercancel', endPointer);
+  dom.addEventListener('pointerleave', () => {
+    if (pointers.size === 0){ setHover(null); clearPreview(); }
+  });
+
+  dom.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    cameraRig.radius += e.deltaY * 0.01;
+    cameraRig.radius = Math.max(cameraRig.minRadius, Math.min(cameraRig.maxRadius, cameraRig.radius));
+  }, { passive: false });
+
+  // ---------------------------------------------------------------------
+  // 7. UI WIRING
+  // ---------------------------------------------------------------------
+  const addBtn = document.getElementById('mode-add');
+  const removeBtn = document.getElementById('mode-remove');
+  const gridBtn = document.getElementById('toggle-grid');
+  const resetBtn = document.getElementById('resetbtn');
+  const toggleStatsBtn = document.getElementById('togglestatsbtn');
+  const statsPanel = document.getElementById('stats');
+  const colorInput = document.getElementById('cube-color-input');
+
+  function setMode(m){
+    mode = m;
+    addBtn.classList.toggle('active', m === 'add');
+    removeBtn.classList.toggle('active', m === 'remove');
+    clearPreview();
+    setHover(null);
+    showHintText(m === 'add' ? 'Tap a face to add a cube' : 'Tap a cube to remove it');
+  }
+  addBtn.addEventListener('click', () => setMode('add'));
+  removeBtn.addEventListener('click', () => setMode('remove'));
+
+  gridBtn.addEventListener('click', () => {
+    gridVisible = !gridVisible;
+    gridHelper.visible = gridVisible;
+    gridBtn.classList.toggle('active', gridVisible);
+    showHintText(gridVisible ? 'Grid shown' : 'Grid hidden');
+  });
+
+  toggleStatsBtn.addEventListener('click', () => {
+    const isHidden = statsPanel.classList.toggle('hidden');
+    toggleStatsBtn.classList.toggle('active', !isHidden);
+    showHintText(isHidden ? 'Stats hidden' : 'Stats shown');
+  });
+
+  colorInput.addEventListener('input', (e) => {
+    const hex = e.target.value;
+    currentCubeColor.set(hex);
+    previewMesh.material.color.set(hex);
+    previewEdges.material.color.set(hex);
+  });
+
+  resetBtn.addEventListener('click', () => {
+    Array.from(cubes.keys()).forEach(k => {
+      const [x,y,z] = k.split(',').map(Number);
+      removeCubeAt(x,y,z);
+    });
+    addCubeAt(0,0,0,true);
+    cameraRig.target.set(0.5,0.5,0.5);
+    cameraRig.radius = 10;
+    cameraRig.theta = Math.PI * 0.28;
+    cameraRig.phi = Math.PI * 0.36;
+    
+    // Also reset kinetic values so view doesn't slowly slide backward on reset
+    cameraRig.currentTarget.set(0.5,0.5,0.5);
+    cameraRig.currentRadius = 10;
+    cameraRig.currentTheta = Math.PI * 0.28;
+    cameraRig.currentPhi = Math.PI * 0.36;
+    updateCameraFromRig();
+    clearPreview();
+    showHintText('Workspace reset');
+  });
+
+  // Confirm dialog (only shown when trying to remove the very last cube)
+  const overlay = document.getElementById('confirm-overlay');
+  function openConfirm(){ overlay.classList.add('show'); }
+  function closeConfirm(){ overlay.classList.remove('show'); }
+  document.getElementById('confirm-cancel').addEventListener('click', closeConfirm);
+  document.getElementById('confirm-ok').addEventListener('click', () => {
+    const [k] = cubes.keys();
+    if (k){
+      const [x,y,z] = k.split(',').map(Number);
+      removeCubeAt(x,y,z);
+    }
+    closeConfirm();
+  });
+
+  // Camera view presets, animated smoothly by tweening target theta/phi/radius/target
+  const viewButtons = document.querySelectorAll('.view-btn');
+  let camTween = null;
+  let isTweening = false;
+
+  function animateCameraTo(theta, phi, radius, target){
+    const start = {
+      theta: cameraRig.theta, phi: cameraRig.phi, radius: cameraRig.radius,
+      target: cameraRig.target.clone()
+    };
+    const end = { theta, phi, radius, target };
+    const t0 = performance.now();
+    const dur = 550;
+    isTweening = true;
+    if (camTween) cancelAnimationFrame(camTween);
+    function step(){
+      const now = performance.now();
+      const t = Math.min(1, (now - t0) / dur);
+      const eased = t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; // easeInOutCubic
+      
+      cameraRig.theta = start.theta + (end.theta - start.theta) * eased;
+      cameraRig.phi = start.phi + (end.phi - start.phi) * eased;
+      cameraRig.radius = start.radius + (end.radius - start.radius) * eased;
+      cameraRig.target.lerpVectors(start.target, end.target, eased);
+      
+      // Update running smooth values directly during explicit animated view changes
+      cameraRig.currentTheta = cameraRig.theta;
+      cameraRig.currentPhi = cameraRig.phi;
+      cameraRig.currentRadius = cameraRig.radius;
+      cameraRig.currentTarget.copy(cameraRig.target);
+
+      updateCameraFromRig();
+      if (t < 1){ 
+        camTween = requestAnimationFrame(step); 
+      } else {
+        isTweening = false;
+      }
+    }
+    camTween = requestAnimationFrame(step);
+  }
+
+  function centerOfModel(){
+    if (cubes.size === 0) return new THREE.Vector3(0.5,0.5,0.5);
+    let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity,minZ=Infinity,maxZ=-Infinity;
+    cubes.forEach(mesh => {
+      const p = mesh.userData.gridPos;
+      minX=Math.min(minX,p.x); maxX=Math.max(maxX,p.x);
+      minY=Math.min(minY,p.y); maxY=Math.max(maxY,p.y);
+      minZ=Math.min(minZ,p.z); maxZ=Math.max(maxZ,p.z);
+    });
+    return new THREE.Vector3((minX+maxX+1)/2, (minY+maxY+1)/2, (minZ+maxZ+1)/2);
+  }
+
+  viewButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const view = btn.dataset.view;
+      const target = centerOfModel();
+      const dist = Math.max(8, cameraRig.radius);
+      if (view === 'front'){
+        animateCameraTo(0, Math.PI/2, dist, target);
+      } else if (view === 'top'){
+        animateCameraTo(cameraRig.theta, 0.15, dist, target);
+      } else if (view === 'side'){
+        animateCameraTo(Math.PI/2, Math.PI/2, dist, target);
+      }
+      showHintText(view.charAt(0).toUpperCase()+view.slice(1)+' view');
+    });
+  });
+
+  // ---------------------------------------------------------------------
+  // RESIZE + RENDER LOOP
+  // ---------------------------------------------------------------------
+  function onResize(){
+    const w = container.clientWidth, h = container.clientHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+  }
+  window.addEventListener('resize', onResize);
+
+  function tick(now){
+    stepAnimations(now);
+    
+    // Smooth kinetic panning, zooming, and rotating (when not running a menu preset transition)
+    if (!isTweening) {
+      const damping = 0.15; // Lower values = smoother, higher values = sharper
+      cameraRig.currentTheta += (cameraRig.theta - cameraRig.currentTheta) * damping;
+      cameraRig.currentPhi += (cameraRig.phi - cameraRig.currentPhi) * damping;
+      cameraRig.currentRadius += (cameraRig.radius - cameraRig.currentRadius) * damping;
+      cameraRig.currentTarget.lerp(cameraRig.target, damping);
+      updateCameraFromRig();
+    }
+
+    if (previewMesh.visible){
+      previewMesh.rotation.y += 0.015;
+    }
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  setTimeout(() => showHintText('Tap a face to add a cube'), 400);
+  updateStats();
+})();
+</script>
+</body>
+</html>

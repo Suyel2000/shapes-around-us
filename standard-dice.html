@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎲 Standard Dice Explorer | Class 4 Math</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --secondary: #06b6d4;
+            --accent-yellow: #f59e0b;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --bg-grad-1: #e0f2fe;
+            --bg-grad-2: #f0f9ff;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            
+            /* Dice Face Colors */
+            --face-1: #ef4444; /* Red */
+            --face-2: #3b82f6; /* Blue */
+            --face-3: #10b981; /* Green */
+            --face-4: #f59e0b; /* Yellow/Amber */
+            --face-5: #8b5cf6; /* Purple */
+            --face-6: #ec4899; /* Pink */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #fef3c7 50%, #fbcfe8 100%);
+            min-height: 100vh;
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #312e81;
+            text-shadow: 2px 2px 0px #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #0369a1;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 4px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            max-width: 1000px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .tab-btn {
+            background: white;
+            border: 3px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 10px 18px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 0 #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: 0 6px 0 #cbd5e1;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary-dark);
+            box-shadow: 0 4px 0 var(--primary-dark);
+        }
+
+        /* Main App Grid Layout */
+        .app-container {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 20px;
+            max-width: 1100px;
+            width: 100%;
+            align-items: start;
+        }
+
+        @media (max-width: 850px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 3D Dice Display Section */
+        .dice-stage-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 4px solid #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .scene {
+            width: 220px;
+            height: 220px;
+            margin: 20px 0;
+            perspective: 800px;
+            cursor: grab;
+        }
+
+        .scene:active {
+            cursor: grabbing;
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-25deg) rotateY(35deg);
+            transition: transform 0.1s ease-out;
+        }
+
+        .cube.rolling {
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .cube.smooth-rotate {
+            transition: transform 0.8s ease-in-out;
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 28px;
+            border: 5px solid rgba(255, 255, 255, 0.8);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.2), 0 0 10px rgba(0,0,0,0.15);
+            display: grid;
+            grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+            padding: 20px;
+            background-color: #fff;
+            backface-visibility: hidden;
+        }
+
+        /* Faces positioning */
+        .face-1 { transform: rotateY(  0deg) translateZ(110px); background: var(--face-1); }
+        .face-6 { transform: rotateY(180deg) translateZ(110px); background: var(--face-6); }
+        .face-2 { transform: rotateY( 90deg) translateZ(110px); background: var(--face-2); }
+        .face-5 { transform: rotateY(-90deg) translateZ(110px); background: var(--face-5); }
+        .face-3 { transform: rotateX( 90deg) translateZ(110px); background: var(--face-3); }
+        .face-4 { transform: rotateX(-90deg) translateZ(110px); background: var(--face-4); }
+
+        /* Pips styling */
+        .pip {
+            display: block;
+            background-color: #ffffff;
+            border-radius: 50%;
+            box-shadow: inset 0 3px 5px rgba(0,0,0,0.3);
+            width: 32px;
+            height: 32px;
+            margin: auto;
+        }
+
+        /* Pip arrangements */
+        .face-1 .pip:nth-child(1) { grid-area: 2 / 2; }
+
+        .face-2 .pip:nth-child(1) { grid-area: 1 / 1; }
+        .face-2 .pip:nth-child(2) { grid-area: 3 / 3; }
+
+        .face-3 .pip:nth-child(1) { grid-area: 1 / 1; }
+        .face-3 .pip:nth-child(2) { grid-area: 2 / 2; }
+        .face-3 .pip:nth-child(3) { grid-area: 3 / 3; }
+
+        .face-4 .pip:nth-child(1) { grid-area: 1 / 1; }
+        .face-4 .pip:nth-child(2) { grid-area: 1 / 3; }
+        .face-4 .pip:nth-child(3) { grid-area: 3 / 1; }
+        .face-4 .pip:nth-child(4) { grid-area: 3 / 3; }
+
+        .face-5 .pip:nth-child(1) { grid-area: 1 / 1; }
+        .face-5 .pip:nth-child(2) { grid-area: 1 / 3; }
+        .face-5 .pip:nth-child(3) { grid-area: 2 / 2; }
+        .face-5 .pip:nth-child(4) { grid-area: 3 / 1; }
+        .face-5 .pip:nth-child(5) { grid-area: 3 / 3; }
+
+        .face-6 .pip:nth-child(1) { grid-area: 1 / 1; }
+        .face-6 .pip:nth-child(2) { grid-area: 1 / 3; }
+        .face-6 .pip:nth-child(3) { grid-area: 2 / 1; }
+        .face-6 .pip:nth-child(4) { grid-area: 2 / 3; }
+        .face-6 .pip:nth-child(5) { grid-area: 3 / 1; }
+        .face-6 .pip:nth-child(6) { grid-area: 3 / 3; }
+
+        /* Controls under dice */
+        .dice-controls {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-roll {
+            background: #8b5cf6;
+            color: white;
+            box-shadow: 0 4px 0 #6d28d9;
+        }
+        .btn-roll:hover { background: #7c3aed; }
+        .btn-roll:active { transform: translateY(4px); box-shadow: 0 0 0 #6d28d9; }
+
+        .btn-rotate {
+            background: #06b6d4;
+            color: white;
+            box-shadow: 0 4px 0 #0891b2;
+        }
+        .btn-rotate:hover { background: #0891b2; }
+        .btn-rotate:active { transform: translateY(4px); box-shadow: 0 0 0 #0891b2; }
+
+        .btn-reset {
+            background: #64748b;
+            color: white;
+            box-shadow: 0 4px 0 #475569;
+        }
+        .btn-reset:hover { background: #475569; }
+        .btn-reset:active { transform: translateY(4px); box-shadow: 0 0 0 #475569; }
+
+        .drag-hint {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 12px;
+            border-radius: 10px;
+        }
+
+        /* Activity Card Right Area */
+        .activity-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 4px solid #ffffff;
+            min-height: 420px;
+        }
+
+        .module {
+            display: none;
+        }
+
+        .module.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .module-title {
+            font-size: 1.4rem;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .instruction-box {
+            background: #f0f9ff;
+            border-left: 5px solid var(--secondary);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #1e1b4b;
+        }
+
+        /* Number button choices */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .opt-btn {
+            background: #f8fafc;
+            border: 3px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 0 #cbd5e1;
+        }
+
+        .opt-btn:hover {
+            border-color: var(--primary);
+            background: #e0e7ff;
+        }
+
+        .opt-btn.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary-dark);
+            box-shadow: 0 4px 0 var(--primary-dark);
+        }
+
+        .btn-check {
+            background: var(--accent-green);
+            color: white;
+            font-size: 1.1rem;
+            padding: 12px 28px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #059669;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-check:hover { background: #059669; }
+        .btn-check:active { transform: translateY(3px); box-shadow: 0 0 0 #059669; }
+
+        /* Feedback Box */
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            display: none;
+            line-height: 1.4;
+        }
+
+        .feedback-box.correct {
+            display: block;
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #34d399;
+        }
+
+        .feedback-box.try-again {
+            display: block;
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #fcd34d;
+        }
+
+        .discovery-card {
+            background: #fdf2f8;
+            border: 2px dashed #f472b6;
+            border-radius: 16px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .discovery-card h4 {
+            color: #be185d;
+            margin-bottom: 6px;
+            font-size: 1.1rem;
+        }
+
+        /* Challenge styles */
+        .score-badge {
+            background: #fef3c7;
+            color: #b45309;
+            border: 2px solid #f59e0b;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            float: right;
+        }
+
+        .step-dots {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #cbd5e1;
+        }
+
+        .dot.active {
+            background: var(--primary);
+            transform: scale(1.2);
+        }
+
+        .dot.done {
+            background: var(--accent-green);
+        }
+
+        /* Real Dice Activity list */
+        .activity-steps {
+            list-style: none;
+            counter-reset: act-step;
+        }
+
+        .activity-steps li {
+            counter-increment: act-step;
+            position: relative;
+            padding-left: 45px;
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+
+        .activity-steps li::before {
+            content: counter(act-step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 32px;
+            font-weight: bold;
+        }
+
+        /* Face Tag Pill */
+        .face-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .f1 { background: var(--face-1); }
+        .f2 { background: var(--face-2); }
+        .f3 { background: var(--face-3); }
+        .f4 { background: var(--face-4); }
+        .f5 { background: var(--face-5); }
+        .f6 { background: var(--face-6); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🎲 STANDARD DICE EXPLORER</h1>
+        <div class="subtitle">Roll • Turn • Discover</div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('explore', event)">🔍 1. Explore</button>
+        <button class="tab-btn" onclick="switchTab('opposites', event)">↔️ 2. Find Opposites</button>
+        <button class="tab-btn" onclick="switchTab('orientation', event)">👁️ 3. What Can You See?</button>
+        <button class="tab-btn" onclick="switchTab('challenge', event)">⭐ 4. Quick Challenge</button>
+        <button class="tab-btn" onclick="switchTab('real', event)">🎲 5. Real Dice Activity</button>
+    </nav>
+
+    <div class="app-container">
+        <!-- Left Column: Interactive 3D Dice -->
+        <div class="dice-stage-card">
+            <div class="scene" id="diceScene">
+                <div class="cube" id="diceCube">
+                    <!-- Face 1 -->
+                    <div class="cube-face face-1">
+                        <span class="pip"></span>
+                    </div>
+                    <!-- Face 6 (Opposite 1) -->
+                    <div class="cube-face face-6">
+                        <span class="pip"></span><span class="pip"></span>
+                        <span class="pip"></span><span class="pip"></span>
+                        <span class="pip"></span><span class="pip"></span>
+                    </div>
+                    <!-- Face 2 -->
+                    <div class="cube-face face-2">
+                        <span class="pip"></span><span class="pip"></span>
+                    </div>
+                    <!-- Face 5 (Opposite 2) -->
+                    <div class="cube-face face-5">
+                        <span class="pip"></span><span class="pip"></span>
+                        <span class="pip"></span><span class="pip"></span>
+                        <span class="pip"></span>
+                    </div>
+                    <!-- Face 3 -->
+                    <div class="cube-face face-3">
+                        <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+                    </div>
+                    <!-- Face 4 (Opposite 3) -->
+                    <div class="cube-face face-4">
+                        <span class="pip"></span><span class="pip"></span>
+                        <span class="pip"></span><span class="pip"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dice-controls">
+                <button class="btn btn-roll" onclick="rollDice()">🎲 Roll</button>
+                <button class="btn btn-rotate" onclick="autoRotate()">🔄 Turn</button>
+                <button class="btn btn-reset" onclick="resetDice()">↩️ Reset</button>
+            </div>
+            <div class="drag-hint">👆 Drag with mouse or finger to turn the dice!</div>
+        </div>
+
+        <!-- Right Column: Interactive Learning Modules -->
+        <div class="activity-card">
+
+            <!-- MODULE 1: EXPLORE -->
+            <div id="mod-explore" class="module active">
+                <div class="module-title">🔍 Explore the Dice</div>
+                <div class="instruction-box">
+                    <strong>Turn the dice around using your mouse or finger and observe its faces!</strong>
+                </div>
+
+                <div class="question-text">How many faces can you see at the exact same time?</div>
+
+                <div class="options-grid" id="explore-options">
+                    <button class="opt-btn" onclick="selectOpt(this, 'explore')">1</button>
+                    <button class="opt-btn" onclick="selectOpt(this, 'explore')">2</button>
+                    <button class="opt-btn" onclick="selectOpt(this, 'explore')">3</button>
+                    <button class="opt-btn" onclick="selectOpt(this, 'explore')">4</button>
+                    <button class="opt-btn" onclick="selectOpt(this, 'explore')">5</button>
+                    <button class="opt-btn" onclick="selectOpt(this, 'explore')">6</button>
+                </div>
+
+                <button class="btn-check" onclick="checkExplore()">Check Answer</button>
+
+                <div id="explore-feedback" class="feedback-box"></div>
+            </div>
+
+            <!-- MODULE 2: FIND OPPOSITES -->
+            <div id="mod-opposites" class="module">
+                <div class="module-title">↔️ Find the Opposite Face</div>
+                
+                <div class="step-dots">
+                    <div class="dot active" id="opp-dot-1"></div>
+                    <div class="dot" id="opp-dot-2"></div>
+                    <div class="dot" id="opp-dot-3"></div>
+                </div>
+
+                <div class="instruction-box" id="opp-instr">
+                    Every face on a dice has an <strong>opposite face</strong> directly on the other side.
+                </div>
+
+                <div class="question-text" id="opp-question">
+                    What number is opposite <span class="face-pill f1">1</span>?
+                </div>
+
+                <div class="options-grid" id="opp-options">
+                    <button class="opt-btn" onclick="selectOpt(this, 'opp')">2</button>
+                    <button class="opt-btn" onclick="selectOpt(this, 'opp')">3</button>
+                    <button class="opt-btn" onclick="selectOpt(this, 'opp')">4</button>
+                    <button class="opt-btn" onclick="selectOpt(this, 'opp')">5</button>
+                    <button class="opt-btn" onclick="selectOpt(this, 'opp')">6</button>
+                </div>
+
+                <button class="btn-check" onclick="checkOpposite()">Check Answer</button>
+
+                <div id="opp-feedback" class="feedback-box"></div>
+
+                <div id="opp-discovery" class="discovery-card">
+                    <h4>💡 Big Discovery!</h4>
+                    <p id="opp-discovery-text"></p>
+                </div>
+            </div>
+
+            <!-- MODULE 3: WHAT CAN YOU SEE? -->
+            <div id="mod-orientation" class="module">
+                <div class="module-title">👁️ What Can You See?</div>
+                <div class="instruction-box">
+                    Look at the current position of the dice on the left!
+                </div>
+
+                <div class="question-text" id="ori-question">Which face is currently on TOP?</div>
+
+                <div class="options-grid" id="ori-options">
+                    <button class="opt-btn" onclick="selectOpt(this, 'ori')">1</button>
+                    <button class="opt-btn" onclick="selectOpt(this, 'ori')">2</button>
+                    <button class="opt-btn" onclick="selectOpt(this, 'ori')">3</button>
+                    <button class="opt-btn" onclick="selectOpt(this, 'ori')">4</button>
+                    <button class="opt-btn" onclick="selectOpt(this, 'ori')">5</button>
+                    <button class="opt-btn" onclick="selectOpt(this, 'ori')">6</button>
+                </div>
+
+                <button class="btn-check" onclick="checkOrientation()">Check Answer</button>
+                <button class="btn btn-rotate" style="margin-left: 10px;" onclick="newOrientation()">🔀 New Position</button>
+
+                <div id="ori-feedback" class="feedback-box"></div>
+            </div>
+
+            <!-- MODULE 4: QUICK CHALLENGE -->
+            <div id="mod-challenge" class="module">
+                <span class="score-badge" id="score-badge">Score: 0 / 0</span>
+                <div class="module-title">⭐ Quick Challenge</div>
+                
+                <div class="question-text" id="ch-question" style="margin-top: 15px;">Question loading...</div>
+
+                <div class="options-grid" id="ch-options"></div>
+
+                <button class="btn-check" id="ch-check-btn" onclick="checkChallenge()">Submit Answer</button>
+
+                <div id="ch-feedback" class="feedback-box"></div>
+            </div>
+
+            <!-- MODULE 5: REAL DICE CONNECTION -->
+            <div id="mod-real" class="module">
+                <div class="module-title">🎲 Real Dice Connection</div>
+                <div class="instruction-box">
+                    Now pick up a real physical dice and test what you have learned!
+                </div>
+
+                <ol class="activity-steps">
+                    <li>Pick any number on your real dice (e.g. <span class="face-pill f2">2</span>).</li>
+                    <li><strong>Predict:</strong> Before looking, calculate what number should be on the opposite side. <em>(Hint: Remember the sum rule!)</em></li>
+                    <li>Turn the dice over and check if your prediction is correct!</li>
+                    <li>Try with all 3 opposite pairs:
+                        <br>• <strong>1</strong> ↔️ <strong>6</strong>
+                        <br>• <strong>2</strong> ↔️ <strong>5</strong>
+                        <br>• <strong>3</strong> ↔️ <strong>4</strong>
+                    </li>
+                </ol>
+
+                <div style="background: #e0e7ff; padding: 15px; border-radius: 14px; text-align: center; color: #3730a3; font-weight: bold;">
+                    ✨ Standard Dice Secret: Opposite faces ALWAYS add up to 7! (1+6=7, 2+5=7, 3+4=7)
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- 3D Dice Controller ---
+        const cube = document.getElementById('diceCube');
+        const scene = document.getElementById('diceScene');
+
+        let rotX = -25;
+        let rotY = 35;
+        let isDragging = false;
+        let previousMouseX = 0;
+        let previousMouseY = 0;
+
+        function updateCubeTransform() {
+            cube.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+        }
+
+        // Pointer / Mouse / Touch events for dragging
+        function onPointerDown(e) {
+            isDragging = true;
+            previousMouseX = e.clientX || (e.touches && e.touches[0].clientX);
+            previousMouseY = e.clientY || (e.touches && e.touches[0].clientY);
+            cube.classList.remove('smooth-rotate', 'rolling');
+        }
+
+        function onPointerMove(e) {
+            if (!isDragging) return;
+            const currentX = e.clientX || (e.touches && e.touches[0].clientX);
+            const currentY = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            const deltaX = currentX - previousMouseX;
+            const deltaY = currentY - previousMouseY;
+
+            rotY += deltaX * 0.6;
+            rotX -= deltaY * 0.6;
+
+            updateCubeTransform();
+
+            previousMouseX = currentX;
+            previousMouseY = currentY;
+        }
+
+        function onPointerUp() {
+            isDragging = false;
+        }
+
+        scene.addEventListener('mousedown', onPointerDown);
+        document.addEventListener('mousemove', onPointerMove);
+        document.addEventListener('mouseup', onPointerUp);
+
+        scene.addEventListener('touchstart', onPointerDown);
+        document.addEventListener('touchmove', onPointerMove);
+        document.addEventListener('touchend', onPointerUp);
+
+        function resetDice() {
+            cube.classList.add('smooth-rotate');
+            rotX = -25;
+            rotY = 35;
+            updateCubeTransform();
+        }
+
+        function autoRotate() {
+            cube.classList.add('smooth-rotate');
+            rotY += 90;
+            updateCubeTransform();
+        }
+
+        function rollDice() {
+            cube.classList.add('rolling');
+            // Random full rotations plus random target face orientation
+            const extraX = Math.floor(Math.random() * 4) * 90 + 720;
+            const extraY = Math.floor(Math.random() * 4) * 90 + 720;
+            rotX += extraX;
+            rotY += extraY;
+            updateCubeTransform();
+        }
+
+        // Face Orientation Angles (To look straight at a face)
+        const faceOrientations = {
+            1: { x: 0, y: 0 },
+            6: { x: 0, y: 180 },
+            2: { x: 0, y: -90 },
+            5: { x: 0, y: 90 },
+            3: { x: -90, y: 0 },
+            4: { x: 90, y: 0 }
+        };
+
+        function showFace(faceNum) {
+            cube.classList.add('smooth-rotate');
+            const target = faceOrientations[faceNum];
+            if (target) {
+                rotX = target.x;
+                rotY = target.y;
+                updateCubeTransform();
+            }
+        }
+
+        // --- Navigation Tabs ---
+        function switchTab(tabId, event) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
+            document.getElementById('mod-' + tabId).classList.add('active');
+
+            if (tabId === 'orientation') {
+                newOrientation();
+            } else if (tabId === 'challenge') {
+                loadChallengeQuestion();
+            }
+        }
+
+        // --- Selection Helper ---
+        let selectedValue = null;
+
+        function selectOpt(btn, group) {
+            const parent = btn.parentElement;
+            parent.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedValue = btn.innerText.trim();
+        }
+
+        // --- MODULE 1: EXPLORE ---
+        function checkExplore() {
+            const fb = document.getElementById('explore-feedback');
+            if (!selectedValue) {
+                fb.className = 'feedback-box try-again';
+                fb.innerHTML = '🔎 Please select an answer first!';
+                return;
+            }
+
+            if (selectedValue === '1' || selectedValue === '2' || selectedValue === '3') {
+                fb.className = 'feedback-box correct';
+                fb.innerHTML = `✅ <strong>Correct! Great observation!</strong><br>You can see 1, 2, or at most <strong>3 faces</strong> at one time. You can never see 4, 5, or 6 faces at once without moving!`;
+            } else {
+                fb.className = 'feedback-box try-again';
+                fb.innerHTML = `🔎 <strong>Look carefully and try again!</strong><br>💡 Hint: Turn the dice to a corner. Count how many faces meet at that corner. Can you see the back faces?`;
+            }
+        }
+
+        // --- MODULE 2: OPPOSITES ---
+        let currentOppStep = 1;
+        const oppStepsData = [
+            { target: 1, correct: 6, dot: 'opp-dot-1' },
+            { target: 2, correct: 5, dot: 'opp-dot-2' },
+            { target: 3, correct: 4, dot: 'opp-dot-3' }
+        ];
+
+        function checkOpposite() {
+            const fb = document.getElementById('opp-feedback');
+            const step = oppStepsData[currentOppStep - 1];
+
+            if (!selectedValue) {
+                fb.className = 'feedback-box try-again';
+                fb.innerHTML = '🔎 Please select a number first!';
+                return;
+            }
+
+            if (parseInt(selectedValue) === step.correct) {
+                fb.className = 'feedback-box correct';
+                fb.innerHTML = `✅ <strong>Correct! Great observation!</strong><br>The face opposite to <strong>${step.target}</strong> is <strong>${step.correct}</strong>!`;
+                
+                // Visually rotate dice to show the correct opposite face!
+                showFace(step.correct);
+
+                // Update step dot
+                document.getElementById(step.dot).classList.remove('active');
+                document.getElementById(step.dot).classList.add('done');
+
+                setTimeout(() => {
+                    if (currentOppStep < 3) {
+                        currentOppStep++;
+                        setupOppositeStep();
+                    } else {
+                        // Reveal Grand Discovery
+                        document.getElementById('opp-discovery').style.display = 'block';
+                        document.getElementById('opp-discovery-text').innerHTML = 
+                            `Look at the sums:<br>` +
+                            `• 1 + 6 = <strong>7</strong><br>` +
+                            `• 2 + 5 = <strong>7</strong><br>` +
+                            `• 3 + 4 = <strong>7</strong><br><br>` +
+                            `🌟 <strong>Standard Rule:</strong> On a standard dice, opposite faces ALWAYS add up to <strong>7</strong>!`;
+                    }
+                }, 1800);
+
+            } else {
+                fb.className = 'feedback-box try-again';
+                fb.innerHTML = `🔎 <strong>Try again!</strong><br>💡 Hint: Turn the dice around to see what face is hiding on the back side of <strong>${step.target}</strong>.`;
+            }
+        }
+
+        function setupOppositeStep() {
+            const step = oppStepsData[currentOppStep - 1];
+            document.getElementById(step.dot).classList.add('active');
+            
+            document.getElementById('opp-question').innerHTML = 
+                `What number is opposite <span class="face-pill f${step.target}">${step.target}</span>?`;
+
+            // Turn dice to show target face first
+            showFace(step.target);
+
+            // Populate remaining options
+            const optsContainer = document.getElementById('opp-options');
+            optsContainer.innerHTML = '';
+            for (let i = 1; i <= 6; i++) {
+                if (i !== step.target) {
+                    const btn = document.createElement('button');
+                    btn.className = 'opt-btn';
+                    btn.innerText = i;
+                    btn.onclick = function() { selectOpt(this, 'opp'); };
+                    optsContainer.appendChild(btn);
+                }
+            }
+            selectedValue = null;
+            document.getElementById('opp-feedback').style.display = 'none';
+        }
+
+        // --- MODULE 3: ORIENTATION ---
+        let currentOriTop = 1;
+
+        function newOrientation() {
+            // Pick a face to put on top
+            const faces = [1, 2, 3, 4, 5, 6];
+            currentOriTop = faces[Math.floor(Math.random() * faces.length)];
+            
+            // Align dice so currentOriTop is on top
+            cube.classList.add('smooth-rotate');
+            if (currentOriTop === 1) { rotX = -90; rotY = 0; }
+            else if (currentOriTop === 6) { rotX = 90; rotY = 0; }
+            else if (currentOriTop === 2) { rotX = -90; rotY = -90; }
+            else if (currentOriTop === 5) { rotX = -90; rotY = 90; }
+            else if (currentOriTop === 3) { rotX = 0; rotY = 0; }
+            else if (currentOriTop === 4) { rotX = 180; rotY = 0; }
+
+            // Slightly tilt so top face is clearly visible from above
+            rotX += 25;
+            rotY += 20;
+            updateCubeTransform();
+
+            selectedValue = null;
+            document.querySelectorAll('#ori-options .opt-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('ori-feedback').style.display = 'none';
+        }
+
+        function checkOrientation() {
+            const fb = document.getElementById('ori-feedback');
+            if (!selectedValue) {
+                fb.className = 'feedback-box try-again';
+                fb.innerHTML = '🔎 Please select a number first!';
+                return;
+            }
+
+            if (parseInt(selectedValue) === currentOriTop) {
+                fb.className = 'feedback-box correct';
+                fb.innerHTML = `✅ <strong>Correct! Great observation!</strong><br>Face <strong>${currentOriTop}</strong> is indeed on the TOP face!`;
+            } else {
+                fb.className = 'feedback-box try-again';
+                fb.innerHTML = `🔎 <strong>Look carefully and try again!</strong><br>💡 Hint: Rotate the view slightly or look at the pips on the highest top surface.`;
+            }
+        }
+
+        // --- MODULE 4: QUICK CHALLENGE ---
+        const challengeQuestions = [
+            {
+                q: "If the top face of a standard dice is 2, what is on the bottom face?",
+                options: ["3", "4", "5", "6"],
+                answer: "5",
+                hint: "Opposite faces add up to 7! (2 + ? = 7)"
+            },
+            {
+                q: "What is the sum of opposite faces on a standard dice?",
+                options: ["5", "6", "7", "8"],
+                answer: "7",
+                hint: "Think about 1+6, 2+5, 3+4."
+            },
+            {
+                q: "What face is opposite to 3 on a standard dice?",
+                options: ["1", "2", "4", "5"],
+                answer: "4",
+                hint: "3 + ? = 7"
+            },
+            {
+                q: "What is the MAXIMUM number of faces you can see at once on a cube?",
+                options: ["2", "3", "4", "6"],
+                answer: "3",
+                hint: "Look at a corner where 3 faces meet."
+            },
+            {
+                q: "If you can see faces 1, 2, and 3, which faces are HIDDEN on the opposite sides?",
+                options: ["4, 5, 6", "2, 4, 6", "1, 3, 5", "3, 4, 5"],
+                answer: "4, 5, 6",
+                hint: "Find the opposite of 1 (6), 2 (5), and 3 (4)."
+            },
+            {
+                q: "If face 6 is facing towards you (front), what face is at the back?",
+                options: ["1", "2", "3", "5"],
+                answer: "1",
+                hint: "Front and Back are opposite faces!"
+            }
+        ];
+
+        let chIndex = 0;
+        let chScore = 0;
+
+        function loadChallengeQuestion() {
+            if (chIndex >= challengeQuestions.length) {
+                document.getElementById('ch-question').innerHTML = 
+                    `🎉 <strong>Awesome Job! Challenge Completed!</strong><br><br>Final Score: <strong>${chScore} / ${challengeQuestions.length}</strong>`;
+                document.getElementById('ch-options').innerHTML = '';
+                document.getElementById('ch-check-btn').style.display = 'none';
+                document.getElementById('ch-feedback').style.display = 'none';
+                return;
+            }
+
+            const currentQ = challengeQuestions[chIndex];
+            document.getElementById('ch-question').innerHTML = `<strong>Q${chIndex + 1}:</strong> ${currentQ.q}`;
+            
+            const optsContainer = document.getElementById('ch-options');
+            optsContainer.innerHTML = '';
+            currentQ.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'opt-btn';
+                btn.innerText = opt;
+                btn.onclick = function() { selectOpt(this, 'ch'); };
+                optsContainer.appendChild(btn);
+            });
+
+            selectedValue = null;
+            document.getElementById('ch-feedback').style.display = 'none';
+            document.getElementById('score-badge').innerText = `Score: ${chScore} / ${challengeQuestions.length}`;
+        }
+
+        function checkChallenge() {
+            const fb = document.getElementById('ch-feedback');
+            const currentQ = challengeQuestions[chIndex];
+
+            if (!selectedValue) {
+                fb.className = 'feedback-box try-again';
+                fb.innerHTML = '🔎 Please select an answer!';
+                return;
+            }
+
+            if (selectedValue === currentQ.answer) {
+                chScore++;
+                fb.className = 'feedback-box correct';
+                fb.innerHTML = `✅ <strong>Correct! Great job!</strong>`;
+                document.getElementById('score-badge').innerText = `Score: ${chScore} / ${challengeQuestions.length}`;
+                
+                setTimeout(() => {
+                    chIndex++;
+                    loadChallengeQuestion();
+                }, 1200);
+
+            } else {
+                fb.className = 'feedback-box try-again';
+                fb.innerHTML = `🔎 <strong>Try again!</strong><br>💡 Hint: ${currentQ.hint}`;
+            }
+        }
+
+        // Initialize Module 2 first step state
+        setupOppositeStep();
+    </script>
+</body>
+</html>
