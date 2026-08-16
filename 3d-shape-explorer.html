@@ -444,6 +444,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            touch-action: none;
         }
 
         .canvas-container:active {
@@ -488,8 +489,8 @@
         }
 
         .color-dot {
-            width: 26px;
-            height: 26px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             cursor: pointer;
             border: 2px solid white;
@@ -1016,7 +1017,7 @@
                     <h1 class="hero-title">Look • Explore • Discover • Describe</h1>
                     <p class="hero-subtitle">Can you discover what makes each solid special?</p>
                     <p class="hero-text">
-                        Step into the 3D Geometry Lab! Don't just look at solids—turn them, touch and color their faces individually, inspect their edges, find their vertices and discover their properties yourself through interactive investigation.
+                        Step into the 3D Geometry Lab! Don't just look at solids—turn them smoothly, touch and color their faces individually, inspect their edges, find their vertices and discover their properties yourself through interactive investigation.
                     </p>
                     <button class="btn-cta" onclick="switchView('select')">🚀 START EXPLORING</button>
                 </div>
@@ -1029,7 +1030,7 @@
                     <div>
                         <div class="dash-card-icon" style="background:#EFF6FF; color:#2563EB;">🔬</div>
                         <h3 class="dash-card-title">Solid Lab</h3>
-                        <p class="dash-card-desc">Investigate 3D shapes in high quality SVG. Touch faces directly to paint them with custom colors and count edges and vertices.</p>
+                        <p class="dash-card-desc">Investigate 3D shapes in high quality SVG. Touch individual faces directly to paint each one with different colors and easily count faces without double-counting.</p>
                     </div>
                     <span class="dash-card-link">Start Investigating →</span>
                 </div>
@@ -1109,8 +1110,8 @@
                         <span class="badge badge-green" id="solid-category-tag">Polyhedron</span>
                     </div>
 
-                    <p style="font-size: 0.8rem; text-align: center; color: var(--text-muted); margin-bottom: 0.5rem;">
-                        👉 <strong>Touch/Click any face</strong> directly on the shape to color it with your selected palette color!
+                    <p style="font-size: 0.85rem; text-align: center; color: var(--text-muted); margin-bottom: 0.5rem;">
+                        👉 <strong>Drag smoothly to rotate</strong> • <strong>Touch/Click any face</strong> to paint it with different colors!
                     </p>
 
                     <div class="canvas-container" id="main-canvas-container">
@@ -1162,7 +1163,7 @@
                             <button class="btn-check" onclick="checkFaces()">CHECK ANSWER</button>
                         </div>
                         <div id="fb-faces" class="feedback-msg"></div>
-                        <div class="hint-box">Hint: A face is a surface of a solid. Touch faces with different colors to avoid double-counting!</div>
+                        <div class="hint-box">Hint: Touch each face with a different color! Rotate the shape to find hidden faces until the whole solid is colored.</div>
                         <button class="btn-action hidden" id="btn-show-faces-seq" onclick="highlightFacesSequentially()">✨ Highlight Faces One By One</button>
                     </div>
 
@@ -1473,8 +1474,8 @@
 
             <h3 style="font-size: 1rem; font-weight: 700; margin: 1rem 0 0.4rem 0;">Classroom Discovery Sequence:</h3>
             <ol style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; padding-left: 1.2rem;">
-                <li><strong>SEE & ROTATE:</strong> Have students rotate high quality SVG 3D models using drag/touch to realize 3D objects have hidden sides.</li>
-                <li><strong>TOUCH & COLOR FACES:</strong> Allow students to tap individual faces with different colors to count surfaces easily without double counting!</li>
+                <li><strong>SEE & ROTATE:</strong> Have students rotate high quality SVG 3D models using smooth drag gestures to realize 3D objects have hidden sides.</li>
+                <li><strong>TOUCH & COLOR FACES:</strong> Allow students to tap individual faces with different colors to paint each face and count surfaces easily without double counting!</li>
                 <li><strong>COUNT & WRITE:</strong> Students count faces, edges, and vertices on screen and type their answers before checking.</li>
                 <li><strong>VISUAL PROOF:</strong> Clicking "Highlight Faces/Edges/Vertices" runs an animated visual pulse on each 3D element.</li>
                 <li><strong>REAL-LIFE CONNECTION:</strong> Have students classify real-world items or add objects from their classroom.</li>
@@ -1487,7 +1488,7 @@
     <!-- JAVASCRIPT ENGINE -->
     <script>
         /* ==========================================================================
-           1. DATA STRUCTURES & HIGH QUALITY 3D MATHEMATICAL MODELS (ENLARGED)
+           1. DATA STRUCTURES & HIGH QUALITY 3D MATHEMATICAL MODELS
            ========================================================================== */
         const SOLIDS_DATA = {
             cube: {
@@ -1668,7 +1669,7 @@
             }
         };
 
-        // Initialize procedural shapes (Cylinder, Cone, Sphere, Pentagonal Prism)
+        // Initialize procedural meshes (Cylinder, Cone, Sphere, Pentagonal Prism)
         function buildProceduralMeshes() {
             // Cylinder
             const cy = SOLIDS_DATA.cylinder;
@@ -1755,7 +1756,7 @@
         buildProceduralMeshes();
 
         /* ==========================================================================
-           2. HIGH QUALITY SVG 3D RENDER ENGINE (WITH INDIVIDUAL FACE TOUCH COLORING)
+           2. ENHANCED HIGH QUALITY SVG 3D ENGINE (SMOOTH ROTATION & INDIVIDUAL FACE COLORING)
            ========================================================================== */
         let activePaletteColor = '#2563EB';
 
@@ -1764,6 +1765,11 @@
                 this.svg = document.getElementById(svgId);
                 this.rotX = 0.4;
                 this.rotY = 0.6;
+                this.targetRotX = 0.4;
+                this.targetRotY = 0.6;
+                this.velX = 0;
+                this.velY = 0;
+                
                 this.zoom = 1.1;
                 this.autoRotate = false;
                 this.solid = SOLIDS_DATA.cube;
@@ -1776,7 +1782,7 @@
                 this.physicsTime = 0;
 
                 this.isDragging = false;
-                this.hasDragged = false;
+                this.dragStartPos = { x: 0, y: 0 };
                 this.lastMouseX = 0;
                 this.lastMouseY = 0;
 
@@ -1789,40 +1795,62 @@
                 this.highlightIndices = [];
                 this.physicsAnim = null;
                 this.physicsTime = 0;
+                this.velX = 0;
+                this.velY = 0;
             }
 
             initInteraction() {
-                const startDrag = (x, y) => {
-                    this.isDragging = true;
-                    this.hasDragged = false;
-                    this.lastMouseX = x;
-                    this.lastMouseY = y;
-                };
-                const moveDrag = (x, y) => {
-                    if (!this.isDragging) return;
-                    const dx = x - this.lastMouseX;
-                    const dy = y - this.lastMouseY;
-                    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
-                        this.hasDragged = true;
+                const getCoords = (e) => {
+                    if (e.touches && e.touches.length > 0) {
+                        return { x: e.touches[0].clientX, y: e.touches[0].clientY };
                     }
-                    this.rotY += dx * 0.01;
-                    this.rotX += dy * 0.01;
-                    this.lastMouseX = x;
-                    this.lastMouseY = y;
+                    return { x: e.clientX, y: e.clientY };
                 };
-                const endDrag = () => { this.isDragging = false; };
 
-                this.svg.addEventListener('mousedown', e => startDrag(e.clientX, e.clientY));
-                window.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
+                const startDrag = (e) => {
+                    const pos = getCoords(e);
+                    this.isDragging = true;
+                    this.dragStartPos = { x: pos.x, y: pos.y };
+                    this.lastMouseX = pos.x;
+                    this.lastMouseY = pos.y;
+                    this.velX = 0;
+                    this.velY = 0;
+                };
+
+                const moveDrag = (e) => {
+                    if (!this.isDragging) return;
+                    const pos = getCoords(e);
+                    const dx = pos.x - this.lastMouseX;
+                    const dy = pos.y - this.lastMouseY;
+
+                    this.velY = dx * 0.008;
+                    this.velX = dy * 0.008;
+
+                    this.targetRotY += this.velY;
+                    this.targetRotX += this.velX;
+
+                    this.lastMouseX = pos.x;
+                    this.lastMouseY = pos.y;
+                };
+
+                const endDrag = (e) => {
+                    if (!this.isDragging) return;
+                    this.isDragging = false;
+                };
+
+                const container = this.svg.parentElement || this.svg;
+
+                container.addEventListener('mousedown', startDrag);
+                window.addEventListener('mousemove', moveDrag);
                 window.addEventListener('mouseup', endDrag);
 
-                this.svg.addEventListener('touchstart', e => {
-                    if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY);
-                });
-                this.svg.addEventListener('touchmove', e => {
-                    if (e.touches.length === 1) moveDrag(e.touches[0].clientX, e.touches[0].clientY);
-                });
-                this.svg.addEventListener('touchend', endDrag);
+                container.addEventListener('touchstart', (e) => {
+                    if (e.touches.length === 1) startDrag(e);
+                }, { passive: true });
+                window.addEventListener('touchmove', (e) => {
+                    if (this.isDragging && e.touches.length === 1) moveDrag(e);
+                }, { passive: true });
+                window.addEventListener('touchend', endDrag);
             }
 
             project(point) {
@@ -1852,10 +1880,65 @@
                 return { x: px, y: py, z: z2 };
             }
 
-            render() {
-                if (this.autoRotate && !this.isDragging) {
-                    this.rotY += 0.012;
+            // Ray-point polygon check for smooth touch-coloring on faces
+            isPointInPolygon(point, polygon) {
+                let isInside = false;
+                for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+                    const xi = polygon[i].x, yi = polygon[i].y;
+                    const xj = polygon[j].x, yj = polygon[j].y;
+                    const intersect = ((yi > point.y) !== (yj > point.y)) &&
+                        (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+                    if (intersect) isInside = !isInside;
                 }
+                return isInside;
+            }
+
+            handleFaceTouchColor(e) {
+                const rect = this.svg.getBoundingClientRect();
+                const clientX = e.clientX || (e.changedTouches && e.changedTouches[0].clientX);
+                const clientY = e.clientY || (e.changedTouches && e.changedTouches[0].clientY);
+
+                if (clientX === undefined || clientY === undefined) return;
+
+                // SVG viewBox is -250 -250 500 500
+                const svgX = ((clientX - rect.left) / rect.width) * 500 - 250;
+                const svgY = ((clientY - rect.top) / rect.height) * 500 - 250;
+                const touchPt = { x: svgX, y: svgY };
+
+                const projected = this.solid.vertices.map(v => this.project(v));
+
+                // Find top-most front-facing polygon under touch point
+                const faceList = this.solid.faces.map((fVerts, idx) => {
+                    let avgZ = 0;
+                    fVerts.forEach(vi => { if(projected[vi]) avgZ += projected[vi].z; });
+                    avgZ /= fVerts.length;
+                    return { idx, verts: fVerts.map(vi => projected[vi]), z: avgZ };
+                }).sort((a, b) => b.z - a.z);
+
+                for (let i = faceList.length - 1; i >= 0; i--) {
+                    const face = faceList[i];
+                    if (this.isPointInPolygon(touchPt, face.verts)) {
+                        this.faceColors[face.idx] = activePaletteColor;
+                        break;
+                    }
+                }
+            }
+
+            render() {
+                // Smooth rotational physics inertia
+                if (this.autoRotate && !this.isDragging) {
+                    this.targetRotY += 0.012;
+                } else if (!this.isDragging) {
+                    this.velX *= 0.92;
+                    this.velY *= 0.92;
+                    this.targetRotX += this.velX;
+                    this.targetRotY += this.velY;
+                }
+
+                // Interpolate actual rotation towards target rotation smoothly
+                this.rotX += (this.targetRotX - this.rotX) * 0.18;
+                this.rotY += (this.targetRotY - this.rotY) * 0.18;
+
                 if (this.physicsAnim) {
                     this.physicsTime += 1;
                 }
@@ -1889,29 +1972,34 @@
                     polygon.setAttribute('points', pointsStr);
                     polygon.style.cursor = 'pointer';
 
-                    // Individual face color or default
+                    // Individual face color or default blue
                     const customFaceColor = this.faceColors[idx] || '#2563EB';
 
                     if (this.isXRay) {
-                        polygon.setAttribute('fill', isHighlighted ? 'rgba(245, 158, 11, 0.5)' : 'rgba(37, 99, 235, 0.15)');
-                        polygon.setAttribute('stroke', isHighlighted ? '#F59E0B' : 'rgba(37, 99, 235, 0.5)');
+                        polygon.setAttribute('fill', isHighlighted ? 'rgba(245, 158, 11, 0.5)' : (this.faceColors[idx] ? this.faceColors[idx] : 'rgba(37, 99, 235, 0.2)'));
+                        polygon.setAttribute('fill-opacity', this.faceColors[idx] ? '0.7' : '0.2');
+                        polygon.setAttribute('stroke', isHighlighted ? '#F59E0B' : (this.faceColors[idx] ? this.faceColors[idx] : 'rgba(37, 99, 235, 0.6)'));
                         polygon.setAttribute('stroke-width', '2');
                     } else {
                         const shade = Math.min(1.15, Math.max(0.45, 1 + faceData.z / 350));
                         polygon.setAttribute('fill', isHighlighted ? '#F59E0B' : customFaceColor);
-                        polygon.setAttribute('fill-opacity', isHighlighted ? '0.95' : (0.85 * shade).toFixed(2));
+                        polygon.setAttribute('fill-opacity', isHighlighted ? '0.95' : (0.88 * shade).toFixed(2));
                         polygon.setAttribute('stroke', isHighlighted ? '#D97706' : '#FFFFFF');
                         polygon.setAttribute('stroke-width', isHighlighted ? '4' : '2');
                     }
 
-                    // Face Color on Touch / Click Handler
-                    const handleFaceClick = (e) => {
-                        e.stopPropagation();
-                        if (!this.hasDragged) {
-                            this.faceColors[idx] = activePaletteColor;
-                        }
-                    };
-                    polygon.addEventListener('click', handleFaceClick);
+                    // Face Touch / Click Handler
+                    polygon.addEventListener('pointerdown', (e) => {
+                        const startX = e.clientX, startY = e.clientY;
+                        const handlePointerUp = (upEvt) => {
+                            const dist = Math.hypot(upEvt.clientX - startX, upEvt.clientY - startY);
+                            if (dist < 6) {
+                                this.handleFaceTouchColor(upEvt);
+                            }
+                            window.removeEventListener('pointerup', handlePointerUp);
+                        };
+                        window.addEventListener('pointerup', handlePointerUp);
+                    });
 
                     this.svg.appendChild(polygon);
 
@@ -1960,7 +2048,7 @@
                         line.setAttribute('stroke', '#10B981');
                         line.setAttribute('stroke-width', '6');
                     } else {
-                        line.setAttribute('stroke', this.isXRay ? 'rgba(15,23,42,0.4)' : 'rgba(15,23,42,0.25)');
+                        line.setAttribute('stroke', this.isXRay ? 'rgba(15,23,42,0.45)' : 'rgba(15,23,42,0.25)');
                         line.setAttribute('stroke-width', '2');
                     }
                     this.svg.appendChild(line);
@@ -2208,8 +2296,12 @@
         }
 
         function reset3DView() {
+            mainEngine.targetRotX = 0.4;
+            mainEngine.targetRotY = 0.6;
             mainEngine.rotX = 0.4;
             mainEngine.rotY = 0.6;
+            mainEngine.velX = 0;
+            mainEngine.velY = 0;
             mainEngine.zoom = 1.1;
             mainEngine.highlightMode = null;
             mainEngine.isXRay = true;
