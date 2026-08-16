@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Parts of a Circle — Class 4 Mathematics Lab</title>
+<style>
+:root{
+  --paper:#FBF9F4;
+  --ink:#1F2A37;
+  --ink-soft:#5B6B7C;
+  --centre:#E0562B;
+  --radius:#1E7F6E;
+  --diameter:#2A5EA8;
+  --chord:#8E4CB6;
+  --arc:#C8931A;
+  --sector:#E0562B;
+  --circumference:#1F2A37;
+  --card:#FFFFFF;
+  --line:#E4DCC9;
+  --good:#1E7F6E;
+  --bad:#C0392B;
+  --shadow: 0 6px 20px rgba(31,42,55,0.08);
+  --radius-lg:20px;
+  --radius-md:14px;
+  --radius-sm:9px;
+  font-family:'Nunito',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(circle at 8% 12%, #FFF6E8 0, transparent 45%),
+    radial-gradient(circle at 92% 85%, #EAF4F1 0, transparent 45%),
+    var(--paper);
+  color:var(--ink);
+  min-height:100vh;
+  padding:20px;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:'Baloo 2',system-ui,sans-serif; margin:0;}
+
+.wrap{max-width:1280px;margin:0 auto;}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;margin-bottom:18px;
+}
+.brand{display:flex;align-items:center;gap:14px;}
+.brand-mark{
+  width:52px;height:52px;border-radius:50%;
+  background:conic-gradient(from -90deg, var(--centre) 0 25%, var(--diameter) 0 50%, var(--radius) 0 75%, var(--arc) 0 100%);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow);
+  flex-shrink:0;
+}
+.brand-mark::after{content:"";width:20px;height:20px;background:var(--paper);border-radius:50%;}
+.brand h1{font-size:1.5rem;letter-spacing:-0.01em;}
+.brand p{margin:2px 0 0;color:var(--ink-soft);font-size:0.92rem;font-weight:600;}
+.eyebrow{
+  font-size:0.72rem;text-transform:uppercase;letter-spacing:.14em;
+  color:var(--ink-soft);font-weight:800;
+}
+
+.mute-btn{
+  width:46px;height:46px;border-radius:50%;border:2px solid var(--line);
+  background:var(--card);cursor:pointer;font-size:1.2rem;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow); transition:transform .15s ease, border-color .15s ease;
+}
+.mute-btn:hover{transform:translateY(-2px);border-color:var(--diameter);}
+.mute-btn:active{transform:translateY(0);}
+
+.tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.tab-btn{
+  border:2px solid var(--line);background:var(--card);color:var(--ink-soft);
+  padding:11px 22px;border-radius:999px;font-weight:800;font-size:0.95rem;
+  cursor:pointer;font-family:inherit;transition:all .15s ease;
+  box-shadow:var(--shadow);
+}
+.tab-btn:hover{transform:translateY(-2px);}
+.tab-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+
+.panel{display:none;}
+.panel.active{display:block;animation:fadeUp .35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.explore-grid{
+  display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start;
+}
+@media (max-width:900px){ .explore-grid{grid-template-columns:1fr;} }
+
+.stage-card{
+  background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow);
+  padding:18px; position:relative; border:1px solid var(--line);
+}
+.stage-toolbar{
+  display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center;
+}
+.tool-btn{
+  border:2px solid var(--line);background:var(--paper);color:var(--ink);
+  padding:9px 16px;border-radius:var(--radius-sm);font-weight:700;font-size:0.86rem;
+  cursor:pointer;font-family:inherit;transition:all .15s ease;display:flex;align-items:center;gap:6px;
+}
+.tool-btn:hover{border-color:var(--diameter);transform:translateY(-1px);}
+.tool-btn.on{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+.tool-btn.primary{background:var(--radius);border-color:var(--radius);color:#fff;}
+.tool-btn.primary:hover{filter:brightness(1.08);}
+.tool-btn.warn{background:#fff;border-color:var(--bad);color:var(--bad);}
+
+.svg-holder{
+  width:100%; aspect-ratio:1/1; max-height:560px; margin:0 auto;
+  touch-action:none; user-select:none; -webkit-user-select:none;
+}
+.svg-holder svg{width:100%;height:100%;display:block;}
+
+.readout-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+.pill{
+  background:var(--paper);border:1.5px solid var(--line);border-radius:999px;
+  padding:7px 14px;font-size:0.82rem;font-weight:700;color:var(--ink-soft);
+  display:flex;align-items:center;gap:6px;
+}
+.pill .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+
+.side-card{
+  background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow);
+  padding:20px;border:1px solid var(--line);
+}
+.legend-title{font-size:0.78rem;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);font-weight:800;margin-bottom:12px;}
+.legend-item{
+  display:flex;align-items:flex-start;gap:11px;padding:10px 10px;border-radius:var(--radius-sm);
+  cursor:pointer;transition:background .15s ease; margin-bottom:3px; border:1.5px solid transparent;
+}
+.legend-item:hover{background:var(--paper);}
+.legend-item.selected{background:var(--paper);border-color:currentColor;}
+.legend-swatch{width:16px;height:16px;border-radius:5px;flex-shrink:0;margin-top:2px;}
+.legend-name{font-weight:800;font-size:0.98rem;}
+.legend-def{font-size:0.85rem;color:var(--ink-soft);margin-top:2px;line-height:1.4;display:none;}
+.legend-item.selected .legend-def{display:block;}
+
+.info-callout{
+  margin-top:16px;padding:14px 16px;border-radius:var(--radius-md);
+  background:linear-gradient(135deg,#FFF6E8,#F3EFE2);border:1.5px dashed #D9C79A;
+  font-size:0.9rem;line-height:1.5;color:var(--ink);display:none;
+}
+.info-callout.show{display:block;animation:fadeUp .25s ease;}
+.info-callout b{color:var(--centre);}
+
+.challenge-shell{
+  display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start;
+}
+@media (max-width:900px){.challenge-shell{grid-template-columns:1fr;}}
+
+.stat-card{
+  background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow);
+  padding:18px;border:1px solid var(--line);margin-bottom:16px;
+}
+.stat-row{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.stat{flex:1;min-width:80px;text-align:center;background:var(--paper);border-radius:var(--radius-sm);padding:10px 6px;}
+.stat-num{font-size:1.5rem;font-weight:800;color:var(--diameter);font-family:'Baloo 2',sans-serif;}
+.stat-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);font-weight:700;margin-top:2px;}
+.progress-track{height:12px;background:var(--paper);border-radius:999px;overflow:hidden;border:1.5px solid var(--line);}
+.progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--radius),var(--diameter));border-radius:999px;transition:width .4s ease;}
+
+.q-card{
+  background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow);
+  padding:24px;border:1px solid var(--line);min-height:520px;display:flex;flex-direction:column;
+}
+.q-eyebrow{font-size:0.75rem;text-transform:uppercase;letter-spacing:.1em;color:var(--arc);font-weight:800;margin-bottom:6px;}
+.q-text{font-size:1.28rem;font-weight:800;line-height:1.4;margin-bottom:16px;font-family:'Baloo 2',sans-serif;}
+.q-stage{flex:1;display:flex;align-items:center;justify-content:center;position:relative;min-height:340px;}
+.q-stage svg{width:100%;max-width:420px;height:auto;touch-action:none;user-select:none;}
+.opt-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;}
+.opt-btn{
+  flex:1;min-width:120px;border:2px solid var(--line);background:var(--paper);
+  padding:14px 16px;border-radius:var(--radius-md);font-weight:800;font-size:1rem;
+  cursor:pointer;font-family:inherit;transition:all .15s ease;color:var(--ink);
+}
+.opt-btn:hover{border-color:var(--diameter);transform:translateY(-2px);}
+.opt-btn.correct{background:#E7F5EF;border-color:var(--good);color:var(--good);}
+.opt-btn.wrong{background:#FBEAE7;border-color:var(--bad);color:var(--bad);}
+.feedback-banner{
+  margin-top:14px;padding:12px 16px;border-radius:var(--radius-md);font-weight:800;font-size:0.98rem;
+  display:none;align-items:center;gap:8px;
+}
+.feedback-banner.good{display:flex;background:#E7F5EF;color:var(--good);}
+.feedback-banner.bad{display:flex;background:#FBEAE7;color:var(--bad);}
+.q-footer{display:flex;justify-content:space-between;align-items:center;margin-top:18px;}
+.q-nav-btn{
+  border:none;background:var(--ink);color:var(--paper);padding:11px 22px;border-radius:999px;
+  font-weight:800;cursor:pointer;font-family:inherit;font-size:0.92rem;transition:all .15s ease;
+}
+.q-nav-btn:hover{transform:translateY(-2px);}
+.q-nav-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none;}
+.dots{display:flex;gap:6px;}
+.qdot{width:9px;height:9px;border-radius:50%;background:var(--line);}
+.qdot.done-correct{background:var(--good);}
+.qdot.done-wrong{background:var(--bad);}
+.qdot.current{outline:2px solid var(--ink);outline-offset:2px;}
+
+.final-screen{display:none;text-align:center;padding:40px 20px;}
+.final-screen.show{display:block;animation:fadeUp .4s ease;}
+.final-badge{
+  width:120px;height:120px;border-radius:50%;margin:0 auto 18px;
+  background:conic-gradient(from -90deg, var(--centre), var(--diameter), var(--radius), var(--arc), var(--centre));
+  display:flex;align-items:center;justify-content:center;font-size:2.6rem;
+  box-shadow:0 10px 30px rgba(31,42,55,0.18);
+}
+.final-title{font-size:1.7rem;font-family:'Baloo 2',sans-serif;margin-bottom:6px;}
+.final-sub{color:var(--ink-soft);font-weight:600;margin-bottom:18px;}
+
+footer.note{text-align:center;color:var(--ink-soft);font-size:0.82rem;margin-top:26px;padding-bottom:10px;}
+.svg-label{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;font-size:15px;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"></div>
+      <div>
+        <div class="eyebrow">Class 4 · Shapes Around Us</div>
+        <h1>Parts of a Circle</h1>
+        <p>A digital maths lab — touch it, drag it, discover it.</p>
+      </div>
+    </div>
+    <button class="mute-btn" id="muteBtn" title="Mute sound" aria-label="Mute sound">🔊</button>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" data-panel="explore" role="tab" aria-selected="true">🔍 Explore the Circle</button>
+    <button class="tab-btn" data-panel="find" role="tab" aria-selected="false">🎯 Find the Part</button>
+    <button class="tab-btn" data-panel="challenge" role="tab" aria-selected="false">🏆 Challenge Zone</button>
+  </div>
+
+  <section class="panel active" id="panel-explore">
+    <div class="explore-grid">
+      <div class="stage-card">
+        <div class="stage-toolbar">
+          <button class="tool-btn" id="modeRadius">📏 Drag radius</button>
+          <button class="tool-btn" id="modeDiameter">↔️ Move diameter</button>
+          <button class="tool-btn" id="modeChord">✏️ Draw a chord</button>
+          <button class="tool-btn" id="modeArc">🌙 Pick an arc</button>
+          <button class="tool-btn" id="modeSector">🍕 Pick a sector</button>
+          <button class="tool-btn" id="labelToggle">🏷️ Hide labels</button>
+          <button class="tool-btn warn" id="resetExplore">↺ Reset</button>
+        </div>
+        <div class="svg-holder" id="exploreHolder">
+          <svg id="exploreSvg" viewBox="0 0 520 520" role="img" aria-label="Interactive circle diagram"></svg>
+        </div>
+        <div class="readout-row" id="readoutRow"></div>
+      </div>
+
+      <div class="side-card">
+        <div class="legend-title">Parts of a circle</div>
+        <div id="legendList"></div>
+        <div class="info-callout" id="infoCallout"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-find">
+    <div class="explore-grid">
+      <div class="stage-card">
+        <div class="stage-toolbar">
+          <span id="findPrompt" style="font-size:0.95rem;color:var(--ink);font-weight:800;">Can you find the radius?</span>
+        </div>
+        <div class="svg-holder" id="findHolder">
+          <svg id="findSvg" viewBox="0 0 520 520" role="img" aria-label="Find the part interactive circle"></svg>
+        </div>
+        <div class="feedback-banner" id="findFeedback"></div>
+      </div>
+      <div class="side-card">
+        <div class="legend-title">How to play</div>
+        <p style="font-size:0.92rem;line-height:1.6;color:var(--ink-soft);margin:0 0 14px;">
+          Read the question above the circle, then <b>tap or click</b> the matching part directly on the diagram.
+          Get instant feedback and move to the next round.
+        </p>
+        <div class="stat-row" style="margin-bottom:0;">
+          <div class="stat"><div class="stat-num" id="findScoreNum">0</div><div class="stat-label">Correct</div></div>
+          <div class="stat"><div class="stat-num" id="findRoundNum">1/8</div><div class="stat-label">Round</div></div>
+        </div>
+        <button class="tool-btn primary" id="findNextBtn" style="margin-top:14px;width:100%;justify-content:center;">Next round ▶</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-challenge">
+    <div class="stat-card">
+      <div class="stat-row">
+        <div class="stat"><div class="stat-num" id="statScore">0</div><div class="stat-label">Score</div></div>
+        <div class="stat"><div class="stat-num" id="statDone">0/10</div><div class="stat-label">Completed</div></div>
+        <div class="stat"><div class="stat-num" id="statCorrect">0</div><div class="stat-label">Correct</div></div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="challengeProgress"></div></div>
+    </div>
+
+    <div class="challenge-shell">
+      <div class="q-card" id="qCard">
+        <div class="q-eyebrow" id="qEyebrow">Question 1 of 10</div>
+        <div class="q-text" id="qText">Loading…</div>
+        <div class="q-stage" id="qStage"></div>
+        <div class="opt-row" id="qOpts"></div>
+        <div class="feedback-banner" id="qFeedback"></div>
+        <div class="q-footer">
+          <div class="dots" id="qDots"></div>
+          <button class="q-nav-btn" id="qNextBtn" disabled>Next question ▶</button>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <div class="legend-title">Circle Explorer badge</div>
+        <p style="font-size:0.88rem;line-height:1.55;color:var(--ink-soft);">
+          Answer all 10 questions to unlock your <b style="color:var(--ink);">Circle Explorer</b> badge.
+          Mix of click, drag and true/false questions — no repeats!
+        </p>
+        <button class="tool-btn warn" id="restartChallenge" style="width:100%;justify-content:center;margin-top:6px;">↺ Restart challenge</button>
+      </div>
+    </div>
+
+    <div class="final-screen" id="finalScreen">
+      <div class="final-badge">🏅</div>
+      <div class="final-title">You're a Circle Explorer!</div>
+      <div class="final-sub" id="finalSub">You scored 10/10 — brilliant work!</div>
+      <button class="tool-btn primary" id="playAgainBtn">↺ Play again</button>
+    </div>
+  </section>
+
+  <footer class="note">Parts of a Circle · A hands-on maths lab for young explorers · No internet connection required</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+const NS = "http://www.w3.org/2000/svg";
+const CX = 260, CY = 260;
+const R_MIN = 60, R_MAX = 200, R_DEFAULT = 150;
+const COLORS = {
+  centre:"#E0562B", radius:"#1E7F6E", diameter:"#2A5EA8",
+  chord:"#8E4CB6", arc:"#C8931A", sector:"#E0562B", circumference:"#1F2A37"
+};
+const DEFS = {
+  centre:"The fixed point in the middle of a circle.",
+  radius:"A line from the centre to any point on the circle.",
+  diameter:"A line passing through the centre and joining two points on the circle.",
+  chord:"A line joining any two points on the circle.",
+  circumference:"The boundary all the way around the circle.",
+  arc:"A curved part of the circumference.",
+  sector:"A region of a circle between two radii and an arc."
+};
+const NAMES = {centre:"Centre",radius:"Radius",diameter:"Diameter",chord:"Chord",circumference:"Circumference",arc:"Arc",sector:"Sector"};
+
+function el(tag, attrs){
+  const e = document.createElementNS(NS, tag);
+  for(const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function pointOnCircle(cx,cy,r,angleDeg){
+  const a = angleDeg*Math.PI/180;
+  return {x:cx+r*Math.cos(a), y:cy+r*Math.sin(a)};
+}
+function angleOf(cx,cy,x,y){ return Math.atan2(y-cy, x-cx)*180/Math.PI; }
+function dist(x1,y1,x2,y2){ return Math.hypot(x2-x1,y2-y1); }
+
+let muted = false;
+let actx = null;
+function ensureCtx(){ if(!actx){ try{ actx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return actx; }
+function beep(freqs, dur, type){
+  if(muted) return;
+  const ctx = ensureCtx(); if(!ctx) return;
+  const now = ctx.currentTime;
+  freqs.forEach((f,i)=>{
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = type||"sine";
+    o.frequency.value = f;
+    g.gain.value = 0.0001;
+    o.connect(g); g.connect(ctx.destination);
+    const t0 = now + i*0.09;
+    g.gain.exponentialRampToValueAtTime(0.14, t0+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+    o.start(t0); o.stop(t0+dur+0.02);
+  });
+}
+function sndCorrect(){ beep([523.25,659.25,783.99], 0.28, "triangle"); }
+function sndWrong(){ beep([220,196], 0.32, "sawtooth"); }
+function sndComplete(){ beep([523.25,659.25,783.99,1046.5], 0.35, "triangle"); }
+function sndClick(){ beep([392], 0.09, "sine"); }
+
+document.getElementById("muteBtn").addEventListener("click", function(){
+  muted = !muted;
+  this.textContent = muted ? "🔇" : "🔊";
+  this.setAttribute("aria-label", muted?"Unmute sound":"Mute sound");
+});
+
+const tabBtns = document.querySelectorAll(".tab-btn");
+tabBtns.forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    tabBtns.forEach(b=>{b.classList.remove("active"); b.setAttribute("aria-selected","false");});
+    btn.classList.add("active"); btn.setAttribute("aria-selected","true");
+    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+    document.getElementById("panel-"+btn.dataset.panel).classList.add("active");
+    sndClick();
+    if(btn.dataset.panel === "find" && !findState.started){ initFindRound(); findState.started = true; }
+    if(btn.dataset.panel === "challenge" && !challengeState.started){ renderQuestion(); challengeState.started = true; }
+  });
+});
+
+const exploreSvg = document.getElementById("exploreSvg");
+const legendList = document.getElementById("legendList");
+const infoCallout = document.getElementById("infoCallout");
+const readoutRow = document.getElementById("readoutRow");
+
+let ex = {
+  r: R_DEFAULT,
+  diamAngle: -20,
+  chordA: 200, chordB: 320,
+  arcStart: 30, arcEnd: 100,
+  sectorStart: 210, sectorEnd: 260,
+  labelsOn: true,
+  mode: null,
+  selected: null
+};
+
+function buildExploreSvg(){
+  exploreSvg.innerHTML = "";
+
+  const bg = el("circle",{cx:CX,cy:CY,r:210,fill:"#FDFCF8"});
+  exploreSvg.appendChild(bg);
+
+  const sectorPath = describeSector(CX,CY,ex.r,ex.sectorStart,ex.sectorEnd);
+  const sectorEl = el("path",{d:sectorPath, fill:COLORS.sector, opacity: ex.mode==="sector"?"0.28":"0.16", stroke:"none", id:"sectorFill"});
+  exploreSvg.appendChild(sectorEl);
+
+  const circle = el("circle",{cx:CX,cy:CY,r:ex.r,fill:"none",stroke:COLORS.circumference,"stroke-width":3.5, id:"mainCircle"});
+  exploreSvg.appendChild(circle);
+
+  const arcPath = describeArc(CX,CY,ex.r,ex.arcStart,ex.arcEnd);
+  const arcEl = el("path",{d:arcPath, fill:"none", stroke:COLORS.arc, "stroke-width":7, "stroke-linecap":"round", id:"arcHighlight"});
+  exploreSvg.appendChild(arcEl);
+
+  const s1 = pointOnCircle(CX,CY,ex.r,ex.sectorStart);
+  const s2 = pointOnCircle(CX,CY,ex.r,ex.sectorEnd);
+  [s1,s2].forEach(p=>{
+    exploreSvg.appendChild(el("line",{x1:CX,y1:CY,x2:p.x,y2:p.y,stroke:COLORS.sector,"stroke-width":2.5,"stroke-dasharray":"5 4",opacity:0.85}));
+  });
+
+  const cA = pointOnCircle(CX,CY,ex.r,ex.chordA);
+  const cB = pointOnCircle(CX,CY,ex.r,ex.chordB);
+  exploreSvg.appendChild(el("line",{x1:cA.x,y1:cA.y,x2:cB.x,y2:cB.y,stroke:COLORS.chord,"stroke-width":4,"stroke-linecap":"round",id:"chordLine"}));
+  [cA,cB].forEach((p,i)=>{ exploreSvg.appendChild(makeHandle(p.x,p.y,COLORS.chord,"chordHandle"+i)); });
+
+  const dA = pointOnCircle(CX,CY,ex.r,ex.diamAngle);
+  const dB = pointOnCircle(CX,CY,ex.r,ex.diamAngle+180);
+  exploreSvg.appendChild(el("line",{x1:dA.x,y1:dA.y,x2:dB.x,y2:dB.y,stroke:COLORS.diameter,"stroke-width":4,"stroke-linecap":"round",id:"diamLine"}));
+  exploreSvg.appendChild(makeHandle(dA.x,dA.y,COLORS.diameter,"diamHandle"));
+  exploreSvg.appendChild(makeHandle(dB.x,dB.y,COLORS.diameter,"diamHandle2"));
+
+  const rEnd = pointOnCircle(CX,CY,ex.r,50);
+  exploreSvg.appendChild(el("line",{x1:CX,y1:CY,x2:rEnd.x,y2:rEnd.y,stroke:COLORS.radius,"stroke-width":4,"stroke-linecap":"round",id:"radiusLine"}));
+  exploreSvg.appendChild(makeHandle(rEnd.x,rEnd.y,COLORS.radius,"radiusHandle"));
+
+  exploreSvg.appendChild(makeHandle(CX,CY,COLORS.centre,"centreHandle",8));
+
+  if(ex.labelsOn){
+    addLabel(exploreSvg, (CX+rEnd.x)/2 - 8, (CY+rEnd.y)/2 - 14, "Radius", COLORS.radius);
+    addLabel(exploreSvg, (dA.x+dB.x)/2, Math.min(dA.y,dB.y) - 16, "Diameter", COLORS.diameter);
+    addLabel(exploreSvg, (cA.x+cB.x)/2, (cA.y+cB.y)/2 + 22, "Chord", COLORS.chord);
+    const arcMid = pointOnCircle(CX,CY,ex.r+22,(ex.arcStart+ex.arcEnd)/2);
+    addLabel(exploreSvg, arcMid.x, arcMid.y, "Arc", COLORS.arc);
+    const secMid = pointOnCircle(CX,CY,ex.r*0.55,(ex.sectorStart+ex.sectorEnd)/2);
+    addLabel(exploreSvg, secMid.x, secMid.y, "Sector", COLORS.sector);
+    addLabel(exploreSvg, CX+14, CY-10, "Centre", COLORS.centre);
+    const circMid = pointOnCircle(CX,CY,ex.r,175);
+    addLabel(exploreSvg, circMid.x, circMid.y+18, "Circumference", COLORS.circumference);
+  }
+
+  updateReadout();
+}
+
+function makeHandle(x,y,color,id,rad){
+  const g = el("g",{id:id, style:"cursor:grab;"});
+  g.appendChild(el("circle",{cx:x,cy:y,r:(rad||11),fill:"#fff",stroke:color,"stroke-width":3}));
+  g.appendChild(el("circle",{cx:x,cy:y,r:(rad?rad-4:4.5),fill:color}));
+  return g;
+}
+function addLabel(svg,x,y,text,color){
+  const w = text.length*8+14, h=20;
+  const rect = el("rect",{x:x-w/2,y:y-15,width:w,height:h,rx:8,fill:"#fff",opacity:0.86});
+  svg.appendChild(rect);
+  const t = el("text",{x:x,y:y,class:"svg-label",fill:color,"text-anchor":"middle"});
+  t.textContent = text;
+  svg.appendChild(t);
+}
+function describeArc(cx,cy,r,a1,a2){
+  const p1 = pointOnCircle(cx,cy,r,a1);
+  const p2 = pointOnCircle(cx,cy,r,a2);
+  let diff = a2-a1; while(diff<0) diff+=360;
+  const large = diff>180?1:0;
+  return `M ${p1.x} ${p1.y} A ${r} ${r} 0 ${large} 1 ${p2.x} ${p2.y}`;
+}
+function describeSector(cx,cy,r,a1,a2){
+  const p1 = pointOnCircle(cx,cy,r,a1);
+  const p2 = pointOnCircle(cx,cy,r,a2);
+  let diff = a2-a1; while(diff<0) diff+=360;
+  const large = diff>180?1:0;
+  return `M ${cx} ${cy} L ${p1.x} ${p1.y} A ${r} ${r} 0 ${large} 1 ${p2.x} ${p2.y} Z`;
+}
+
+function updateReadout(){
+  const rVal = Math.round(ex.r/2);
+  readoutRow.innerHTML = `
+    <div class="pill"><span class="dot" style="background:${COLORS.radius}"></span>Radius ≈ ${rVal} units</div>
+    <div class="pill"><span class="dot" style="background:${COLORS.diameter}"></span>Diameter ≈ ${rVal*2} units</div>
+    <div class="pill"><span class="dot" style="background:${COLORS.circumference}"></span>Circumference ≈ ${Math.round(2*Math.PI*rVal)} units</div>
+  `;
+}
+
+function buildLegend(){
+  legendList.innerHTML = "";
+  Object.keys(NAMES).forEach(key=>{
+    const item = document.createElement("div");
+    item.className = "legend-item";
+    item.style.color = COLORS[key];
+    item.dataset.key = key;
+    item.innerHTML = `
+      <div class="legend-swatch" style="background:${COLORS[key]}"></div>
+      <div>
+        <div class="legend-name" style="color:${COLORS[key]}">${NAMES[key]}</div>
+        <div class="legend-def">${DEFS[key]}</div>
+      </div>`;
+    item.addEventListener("click", ()=>selectPart(key));
+    legendList.appendChild(item);
+  });
+}
+function selectPart(key){
+  ex.selected = key;
+  document.querySelectorAll(".legend-item").forEach(it=>{ it.classList.toggle("selected", it.dataset.key===key); });
+  infoCallout.className = "info-callout show";
+  infoCallout.innerHTML = `<b>${NAMES[key]}:</b> ${DEFS[key]}`;
+  sndClick();
+}
+
+const modeBtns = {
+  radius: document.getElementById("modeRadius"),
+  diameter: document.getElementById("modeDiameter"),
+  chord: document.getElementById("modeChord"),
+  arc: document.getElementById("modeArc"),
+  sector: document.getElementById("modeSector")
+};
+function setMode(m){
+  ex.mode = (ex.mode===m) ? null : m;
+  Object.keys(modeBtns).forEach(k=>modeBtns[k].classList.toggle("on", k===ex.mode));
+  if(ex.mode) selectPart(ex.mode);
+  buildExploreSvg();
+  attachExploreHandlers();
+}
+Object.keys(modeBtns).forEach(k=> modeBtns[k].addEventListener("click", ()=>setMode(k)) );
+
+document.getElementById("labelToggle").addEventListener("click", function(){
+  ex.labelsOn = !ex.labelsOn;
+  this.textContent = ex.labelsOn ? "🏷️ Hide labels" : "🏷️ Show labels";
+  buildExploreSvg();
+  attachExploreHandlers();
+});
+
+document.getElementById("resetExplore").addEventListener("click", function(){
+  ex = {r:R_DEFAULT, diamAngle:-20, chordA:200, chordB:320, arcStart:30, arcEnd:100, sectorStart:210, sectorEnd:260, labelsOn:true, mode:null, selected:null};
+  Object.keys(modeBtns).forEach(k=>modeBtns[k].classList.remove("on"));
+  document.getElementById("labelToggle").textContent = "🏷️ Hide labels";
+  infoCallout.className = "info-callout";
+  document.querySelectorAll(".legend-item").forEach(it=>it.classList.remove("selected"));
+  buildExploreSvg();
+  attachExploreHandlers();
+  sndClick();
+});
+
+function svgPoint(svg, evt){
+  const pt = svg.createSVGPoint();
+  const src = evt.touches ? evt.touches[0] : evt;
+  pt.x = src.clientX; pt.y = src.clientY;
+  const ctm = svg.getScreenCTM().inverse();
+  return pt.matrixTransform(ctm);
+}
+function attachExploreHandlers(){
+  const radiusHandle = document.getElementById("radiusHandle");
+  const centreHandle = document.getElementById("centreHandle");
+  const diamHandle = document.getElementById("diamHandle");
+  const diamHandle2 = document.getElementById("diamHandle2");
+  const chordHandle0 = document.getElementById("chordHandle0");
+  const chordHandle1 = document.getElementById("chordHandle1");
+  const arcHighlight = document.getElementById("arcHighlight");
+  const sectorFill = document.getElementById("sectorFill");
+  const mainCircle = document.getElementById("mainCircle");
+
+  if(radiusHandle) startDrag(radiusHandle, (p)=>{
+    const r = Math.max(R_MIN, Math.min(R_MAX, dist(CX,CY,p.x,p.y)));
+    ex.r = r; buildExploreSvg(); attachExploreHandlers();
+  });
+  if(centreHandle) startDrag(centreHandle, ()=>{}, ()=>{ selectPart("centre"); pulseCentre(); });
+
+  if(diamHandle) startDrag(diamHandle, (p)=>{ ex.diamAngle = angleOf(CX,CY,p.x,p.y); buildExploreSvg(); attachExploreHandlers(); });
+  if(diamHandle2) startDrag(diamHandle2, (p)=>{ ex.diamAngle = angleOf(CX,CY,p.x,p.y) - 180; buildExploreSvg(); attachExploreHandlers(); });
+
+  if(chordHandle0) startDrag(chordHandle0, (p)=>{ ex.chordA = angleOf(CX,CY,p.x,p.y); buildExploreSvg(); attachExploreHandlers(); });
+  if(chordHandle1) startDrag(chordHandle1, (p)=>{ ex.chordB = angleOf(CX,CY,p.x,p.y); buildExploreSvg(); attachExploreHandlers(); });
+
+  if(arcHighlight) arcHighlight.addEventListener("click", ()=>selectPart("arc"));
+  if(sectorFill) sectorFill.addEventListener("click", ()=>selectPart("sector"));
+  if(mainCircle) mainCircle.addEventListener("click", ()=>selectPart("circumference"));
+
+  const map = [["radiusLine","radius"],["diamLine","diameter"],["chordLine","chord"]];
+  map.forEach(([id,key])=>{
+    const node = document.getElementById(id);
+    if(node) node.addEventListener("click",()=>selectPart(key));
+  });
+
+  function startDrag(handle, onMove, onTap){
+    let moved = false;
+    function move(evt){
+      moved = true;
+      evt.preventDefault();
+      onMove(svgPoint(exploreSvg, evt));
+    }
+    function up(){
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mouseup", up);
+      window.removeEventListener("touchmove", move);
+      window.removeEventListener("touchend", up);
+      if(!moved && onTap) onTap();
+    }
+    function down(evt){
+      evt.preventDefault();
+      moved = false;
+      window.addEventListener("mousemove", move);
+      window.addEventListener("mouseup", up);
+      window.addEventListener("touchmove", move, {passive:false});
+      window.addEventListener("touchend", up);
+    }
+    handle.addEventListener("mousedown", down);
+    handle.addEventListener("touchstart", down, {passive:false});
+  }
+}
+function pulseCentre(){
+  const c = document.getElementById("centreHandle");
+  if(!c) return;
+  c.style.transition = "transform .25s ease";
+  c.style.transformOrigin = `${CX}px ${CY}px`;
+  c.style.transform = "scale(1.35)";
+  setTimeout(()=>{ c.style.transform = "scale(1)"; }, 250);
+}
+
+buildLegend();
+buildExploreSvg();
+attachExploreHandlers();
+
+/* ---------------- FIND THE PART ---------------- */
+const findSvg = document.getElementById("findSvg");
+const findPrompt = document.getElementById("findPrompt");
+const findFeedback = document.getElementById("findFeedback");
+const findScoreNum = document.getElementById("findScoreNum");
+const findRoundNum = document.getElementById("findRoundNum");
+const findNextBtn = document.getElementById("findNextBtn");
+
+const FIND_QUESTIONS = [
+  {key:"radius", q:"Can you find the radius?"},
+  {key:"diameter", q:"Can you find the diameter?"},
+  {key:"chord", q:"Can you find the chord?"},
+  {key:"centre", q:"Can you find the centre?"},
+  {key:"arc", q:"Can you find the arc?"},
+  {key:"sector", q:"Can you find the sector?"},
+  {key:"circumference", q:"Can you find the circumference?"},
+  {key:"diameter", q:"Which line passes through the centre? Find the diameter."}
+];
+
+let findState = {round:0, score:0, started:false, answered:false, order:[]};
+
+function shuffledOrder(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+  return arr;
+}
+
+function buildFindDiagram(){
+  findSvg.innerHTML = "";
+  findSvg.appendChild(el("circle",{cx:CX,cy:CY,r:210,fill:"#FDFCF8"}));
+
+  const r = 150;
+  const sectorEl = el("path",{d:describeSector(CX,CY,r,215,265), fill:COLORS.sector, opacity:0.16, id:"f_sector"});
+  findSvg.appendChild(sectorEl);
+
+  findSvg.appendChild(el("circle",{cx:CX,cy:CY,r:r,fill:"none",stroke:COLORS.circumference,"stroke-width":3.5,id:"f_circ"}));
+
+  const arcEl = el("path",{d:describeArc(CX,CY,r,20,90), fill:"none",stroke:COLORS.arc,"stroke-width":8,"stroke-linecap":"round",id:"f_arc"});
+  findSvg.appendChild(arcEl);
+
+  const s1=pointOnCircle(CX,CY,r,215), s2=pointOnCircle(CX,CY,r,265);
+  [s1,s2].forEach(p=> findSvg.appendChild(el("line",{x1:CX,y1:CY,x2:p.x,y2:p.y,stroke:COLORS.sector,"stroke-width":2.5,"stroke-dasharray":"5 4",opacity:0.85})));
+
+  const cA=pointOnCircle(CX,CY,r,150), cB=pointOnCircle(CX,CY,r,290);
+  findSvg.appendChild(el("line",{x1:cA.x,y1:cA.y,x2:cB.x,y2:cB.y,stroke:COLORS.chord,"stroke-width":6,"stroke-linecap":"round",id:"f_chord"}));
+
+  const dA=pointOnCircle(CX,CY,r,-35), dB=pointOnCircle(CX,CY,r,145);
+  findSvg.appendChild(el("line",{x1:dA.x,y1:dA.y,x2:dB.x,y2:dB.y,stroke:COLORS.diameter,"stroke-width":6,"stroke-linecap":"round",id:"f_diam"}));
+
+  const rEnd = pointOnCircle(CX,CY,r,45);
+  findSvg.appendChild(el("line",{x1:CX,y1:CY,x2:rEnd.x,y2:rEnd.y,stroke:COLORS.radius,"stroke-width":6,"stroke-linecap":"round",id:"f_radius"}));
+
+  findSvg.appendChild(el("circle",{cx:CX,cy:CY,r:9,fill:COLORS.centre,stroke:"#fff","stroke-width":2.5,id:"f_centre"}));
+
+  ["f_circ","f_arc","f_chord","f_diam","f_radius"].forEach(id=>{ document.getElementById(id).style.cursor="pointer"; });
+  document.getElementById("f_sector").style.cursor="pointer";
+  document.getElementById("f_centre").style.cursor="pointer";
+}
+
+function initFindRound(){
+  if(findState.order.length===0) findState.order = shuffledOrder(FIND_QUESTIONS.length);
+  findState.round = 0; findState.score = 0; findState.answered = false;
+  findScoreNum.textContent = "0";
+  loadFindRound();
+}
+function loadFindRound(){
+  findState.answered = false;
+  findFeedback.className = "feedback-banner";
+  findFeedback.innerHTML = "";
+  buildFindDiagram();
+  const qIdx = findState.order[findState.round];
+  const qObj = FIND_QUESTIONS[qIdx];
+  findPrompt.textContent = qObj.q;
+  findRoundNum.textContent = (findState.round+1)+"/"+FIND_QUESTIONS.length;
+  findNextBtn.disabled = true;
+
+  const targetId = {radius:"f_radius",diameter:"f_diam",chord:"f_chord",arc:"f_arc",sector:"f_sector",centre:"f_centre",circumference:"f_circ"}[qObj.key];
+
+  ["f_circ","f_arc","f_chord","f_diam","f_radius","f_sector","f_centre"].forEach(id=>{
+    const node = document.getElementById(id);
+    if(!node) return;
+    node.onclick = ()=> handleFindAnswer(id===targetId, node);
+  });
+}
+function handleFindAnswer(correct, node){
+  if(findState.answered) return;
+  findState.answered = true;
+  findNextBtn.disabled = false;
+  if(correct){
+    findState.score++;
+    findScoreNum.textContent = findState.score;
+    findFeedback.className = "feedback-banner good";
+    findFeedback.innerHTML = "⭐ Great job! That's correct!";
+    sndCorrect();
+    node.setAttribute("stroke-width", (parseFloat(node.getAttribute("stroke-width")||6)+3));
+  } else {
+    findFeedback.className = "feedback-banner bad";
+    findFeedback.innerHTML = "💡 Try again next round! Look closely at how each part touches the circle.";
+    sndWrong();
+  }
+}
+findNextBtn.addEventListener("click", ()=>{
+  findState.round++;
+  if(findState.round >= FIND_QUESTIONS.length){
+    findState.order = shuffledOrder(FIND_QUESTIONS.length);
+    findState.round = 0;
+    findState.score = 0;
+    findScoreNum.textContent = "0";
+  }
+  loadFindRound();
+});
+
+/* ---------------- CHALLENGE ZONE ---------------- */
+const qEyebrow = document.getElementById("qEyebrow");
+const qText = document.getElementById("qText");
+const qStage = document.getElementById("qStage");
+const qOpts = document.getElementById("qOpts");
+const qFeedback = document.getElementById("qFeedback");
+const qNextBtn = document.getElementById("qNextBtn");
+const qDots = document.getElementById("qDots");
+const statScore = document.getElementById("statScore");
+const statDone = document.getElementById("statDone");
+const statCorrect = document.getElementById("statCorrect");
+const challengeProgress = document.getElementById("challengeProgress");
+const finalScreen = document.getElementById("finalScreen");
+const finalSub = document.getElementById("finalSub");
+
+let challengeState = {idx:0, score:0, correct:0, results:[], started:false, answeredCurrent:false};
+
+const QUESTIONS = [
+  {
+    type:"mcq",
+    text:"Tap the CENTRE of the circle.",
+    build:(svg,onPick)=>{
+      const c = el("circle",{cx:150,cy:150,r:9,fill:COLORS.centre,stroke:"#fff","stroke-width":2.5,style:"cursor:pointer"});
+      c.addEventListener("click",()=>onPick(true));
+      svg.appendChild(c);
+      [{x:150,y:70},{x:220,y:190}].forEach(p=>{
+        const d = el("circle",{cx:p.x,cy:p.y,r:9,fill:"#B9C2CB",stroke:"#fff","stroke-width":2.5,style:"cursor:pointer"});
+        d.addEventListener("click",()=>onPick(false));
+        svg.appendChild(d);
+      });
+    }
+  },
+  { type:"drag-radius", text:"Drag the dot from the centre to make a RADIUS." },
+  { type:"drag-diameter", text:"Drag the dot to create a line that passes through the centre — a DIAMETER." },
+  { type:"classify", text:"Look at the highlighted line. Is it a RADIUS, DIAMETER, or CHORD?", setup:"radius" },
+  { type:"classify", text:"Look at the highlighted line. Is it a RADIUS, DIAMETER, or CHORD?", setup:"chord" },
+  { type:"longest", text:"Which line is the LONGEST?" },
+  { type:"truefalse", text:"A chord can pass through the centre of a circle.", answer:true,
+    explain:"Yes! When a chord passes through the centre, it becomes a diameter — the longest possible chord." },
+  { type:"truefalse", text:"The radius is always exactly twice the diameter.", answer:false,
+    explain:"It's the other way round — the diameter is twice the radius." },
+  { type:"find-sector", text:"Tap the SECTOR — the pizza-slice region between two radii and an arc." },
+  { type:"passesCentre", text:"Which of these lines passes through the centre?" }
+];
+
+function resetDots(){
+  qDots.innerHTML = "";
+  QUESTIONS.forEach(()=>{ const d = document.createElement("div"); d.className = "qdot"; qDots.appendChild(d); });
+}
+resetDots();
+
+function updateDots(){
+  const dots = qDots.children;
+  for(let i=0;i<dots.length;i++){
+    dots[i].className = "qdot";
+    if(challengeState.results[i]==="correct") dots[i].classList.add("done-correct");
+    if(challengeState.results[i]==="wrong") dots[i].classList.add("done-wrong");
+    if(i===challengeState.idx) dots[i].classList.add("current");
+  }
+}
+function updateStats(){
+  statScore.textContent = challengeState.score;
+  statDone.textContent = challengeState.results.filter(r=>r).length + "/" + QUESTIONS.length;
+  statCorrect.textContent = challengeState.correct;
+  const pct = (challengeState.results.filter(r=>r).length / QUESTIONS.length) * 100;
+  challengeProgress.style.width = pct+"%";
+}
+
+function renderQuestion(){
+  finalScreen.classList.remove("show");
+  document.getElementById("qCard").style.display = "";
+  const idx = challengeState.idx;
+  const qObj = QUESTIONS[idx];
+  qEyebrow.textContent = `Question ${idx+1} of ${QUESTIONS.length}`;
+  qText.textContent = qObj.text;
+  qStage.innerHTML = "";
+  qOpts.innerHTML = "";
+  qFeedback.className = "feedback-banner";
+  qFeedback.innerHTML = "";
+  qNextBtn.disabled = true;
+  challengeState.answeredCurrent = false;
+  updateDots();
+
+  const svg = el("svg",{viewBox:"0 0 300 300"});
+  svg.appendChild(el("circle",{cx:150,cy:150,r:110,fill:"#FDFCF8",stroke:COLORS.circumference,"stroke-width":3}));
+  qStage.appendChild(svg);
+
+  if(qObj.type==="mcq"){ qObj.build(svg, handleAnswer); }
+  else if(qObj.type==="drag-radius" || qObj.type==="drag-diameter"){ buildDragQuestion(svg, qObj.type); }
+  else if(qObj.type==="classify"){ buildClassifyQuestion(svg, qObj.setup); }
+  else if(qObj.type==="longest"){ buildLongestQuestion(svg); }
+  else if(qObj.type==="truefalse"){
+    buildTrueFalse(qObj);
+    const rEnd = pointOnCircle(150,150,110,40);
+    svg.appendChild(el("line",{x1:150,y1:150,x2:rEnd.x,y2:rEnd.y,stroke:COLORS.radius,"stroke-width":4}));
+    const dA=pointOnCircle(150,150,110,-30), dB=pointOnCircle(150,150,110,150);
+    svg.appendChild(el("line",{x1:dA.x,y1:dA.y,x2:dB.x,y2:dB.y,stroke:COLORS.diameter,"stroke-width":4}));
+  }
+  else if(qObj.type==="find-sector"){ buildFindSector(svg); }
+  else if(qObj.type==="passesCentre"){ buildPassesCentre(svg); }
+}
+
+function buildDragQuestion(svg, kind){
+  svg.appendChild(el("circle",{cx:150,cy:150,r:8,fill:COLORS.centre,id:"dq_centre"}));
+  let handlePos = {x:230,y:150};
+  const line = el("line",{x1:150,y1:150,x2:handlePos.x,y2:handlePos.y,stroke:COLORS.radius,"stroke-width":5,"stroke-linecap":"round"});
+  svg.appendChild(line);
+  const handle = el("circle",{cx:handlePos.x,cy:handlePos.y,r:12,fill:"#fff",stroke:COLORS.radius,"stroke-width":3,style:"cursor:grab;"});
+  svg.appendChild(handle);
+  let oppLine = null;
+
+  function svgPointFor(evt){
+    const pt = svg.createSVGPoint();
+    const src = evt.touches?evt.touches[0]:evt;
+    pt.x = src.clientX; pt.y = src.clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  }
+  function move(evt){
+    evt.preventDefault();
+    const p = svgPointFor(evt);
+    const d = dist(150,150,p.x,p.y);
+    const clamped = Math.max(20, Math.min(105, d));
+    const ang = Math.atan2(p.y-150,p.x-150);
+    const hx = 150+clamped*Math.cos(ang), hy = 150+clamped*Math.sin(ang);
+    handle.setAttribute("cx",hx); handle.setAttribute("cy",hy);
+    line.setAttribute("x2",hx); line.setAttribute("y2",hy);
+    handlePos = {x:hx,y:hy,onEdge: clamped>=95};
+
+    if(kind==="drag-diameter"){
+      if(!oppLine){ oppLine = el("line",{stroke:COLORS.diameter,"stroke-width":5,"stroke-linecap":"round"}); svg.insertBefore(oppLine, line); }
+      const ox = 150-(hx-150), oy = 150-(hy-150);
+      oppLine.setAttribute("x1",hx); oppLine.setAttribute("y1",hy);
+      oppLine.setAttribute("x2",ox); oppLine.setAttribute("y2",oy);
+      line.setAttribute("stroke", COLORS.diameter);
+    }
+  }
+  function up(){
+    window.removeEventListener("mousemove",move);
+    window.removeEventListener("mouseup",up);
+    window.removeEventListener("touchmove",move);
+    window.removeEventListener("touchend",up);
+  }
+  handle.addEventListener("mousedown", (e)=>{e.preventDefault(); window.addEventListener("mousemove",move); window.addEventListener("mouseup",up);});
+  handle.addEventListener("touchstart",(e)=>{e.preventDefault(); window.addEventListener("touchmove",move,{passive:false}); window.addEventListener("touchend",up);},{passive:false});
+
+  const doneBtn = document.createElement("button");
+  doneBtn.className = "tool-btn primary";
+  doneBtn.style.marginTop = "12px";
+  doneBtn.textContent = "✓ Check my line";
+  qOpts.appendChild(doneBtn);
+  doneBtn.addEventListener("click", ()=>{ handleAnswer(!!handlePos.onEdge); });
+}
+
+function buildClassifyQuestion(svg, setup){
+  let x1,y1,x2,y2,correctLabel;
+  if(setup==="radius"){
+    const p = pointOnCircle(150,150,110,60);
+    x1=150;y1=150;x2=p.x;y2=p.y; correctLabel="Radius";
+  } else {
+    const a = pointOnCircle(150,150,110,160);
+    const b = pointOnCircle(150,150,110,300);
+    x1=a.x;y1=a.y;x2=b.x;y2=b.y; correctLabel="Chord";
+  }
+  svg.appendChild(el("circle",{cx:150,cy:150,r:6,fill:COLORS.centre}));
+  svg.appendChild(el("line",{x1,y1,x2,y2,stroke:"#3A3F47","stroke-width":5,"stroke-linecap":"round"}));
+
+  ["Radius","Diameter","Chord"].forEach(label=>{
+    const btn = document.createElement("button");
+    btn.className = "opt-btn";
+    btn.textContent = label;
+    btn.addEventListener("click",()=>{
+      const ok = label===correctLabel;
+      markOptButtons(qOpts, btn, ok);
+      handleAnswer(ok);
+    });
+    qOpts.appendChild(btn);
+  });
+}
+
+function buildLongestQuestion(svg){
+  svg.appendChild(el("circle",{cx:150,cy:150,r:6,fill:COLORS.centre}));
+  const rEnd = pointOnCircle(150,150,80,20);
+  const dA = pointOnCircle(150,150,110,-160), dB = pointOnCircle(150,150,110,20);
+  const cA = pointOnCircle(150,150,110,120), cB = pointOnCircle(150,150,110,200);
+
+  const lines = [
+    {x1:150,y1:150,x2:rEnd.x,y2:rEnd.y, color:COLORS.radius, label:"A"},
+    {x1:dA.x,y1:dA.y,x2:dB.x,y2:dB.y, color:COLORS.diameter, label:"B"},
+    {x1:cA.x,y1:cA.y,x2:cB.x,y2:cB.y, color:COLORS.chord, label:"C"}
+  ];
+  lines.forEach(l=>{
+    svg.appendChild(el("line",{x1:l.x1,y1:l.y1,x2:l.x2,y2:l.y2,stroke:l.color,"stroke-width":5,"stroke-linecap":"round"}));
+    const mx=(l.x1+l.x2)/2, my=(l.y1+l.y2)/2;
+    const tag = el("text",{x:mx,y:my-10,"text-anchor":"middle",class:"svg-label",fill:l.color});
+    tag.textContent = l.label;
+    svg.appendChild(tag);
+  });
+  ["A","B","C"].forEach(label=>{
+    const btn = document.createElement("button");
+    btn.className="opt-btn"; btn.textContent="Line "+label;
+    btn.addEventListener("click",()=>{
+      const ok = label==="B";
+      markOptButtons(qOpts, btn, ok);
+      handleAnswer(ok);
+    });
+    qOpts.appendChild(btn);
+  });
+}
+
+function buildTrueFalse(qObj){
+  ["True","False"].forEach(label=>{
+    const btn = document.createElement("button");
+    btn.className="opt-btn"; btn.textContent=label;
+    btn.addEventListener("click",()=>{
+      const ok = (label==="True") === qObj.answer;
+      markOptButtons(qOpts, btn, ok);
+      handleAnswer(ok, qObj.explain);
+    });
+    qOpts.appendChild(btn);
+  });
+}
+
+function buildFindSector(svg){
+  const sectorPath = describeSector(150,150,110,300,350);
+  const decoy = el("circle",{cx:150,cy:150,r:110,fill:"transparent",style:"cursor:pointer"});
+  decoy.addEventListener("click",()=>handleAnswer(false));
+  svg.appendChild(decoy);
+  const sEl = el("path",{d:sectorPath, fill:COLORS.sector, opacity:0.3, style:"cursor:pointer"});
+  sEl.addEventListener("click",(e)=>{ e.stopPropagation(); handleAnswer(true); });
+  svg.appendChild(sEl);
+  const s1=pointOnCircle(150,150,110,300), s2=pointOnCircle(150,150,110,350);
+  [s1,s2].forEach(p=>svg.appendChild(el("line",{x1:150,y1:150,x2:p.x,y2:p.y,stroke:COLORS.sector,"stroke-width":2,"stroke-dasharray":"4 3"})));
+}
+
+function buildPassesCentre(svg){
+  svg.appendChild(el("circle",{cx:150,cy:150,r:6,fill:COLORS.centre}));
+  const dA=pointOnCircle(150,150,110,-150), dB=pointOnCircle(150,150,110,30);
+  const cA=pointOnCircle(150,150,110,60), cB=pointOnCircle(150,150,110,170);
+  const lineD = el("line",{x1:dA.x,y1:dA.y,x2:dB.x,y2:dB.y,stroke:"#3A3F47","stroke-width":5,"stroke-linecap":"round",style:"cursor:pointer"});
+  const lineC = el("line",{x1:cA.x,y1:cA.y,x2:cB.x,y2:cB.y,stroke:"#3A3F47","stroke-width":5,"stroke-linecap":"round",style:"cursor:pointer"});
+  lineD.addEventListener("click",()=>handleAnswer(true));
+  lineC.addEventListener("click",()=>handleAnswer(false));
+  svg.appendChild(lineD); svg.appendChild(lineC);
+  const tagD = el("text",{x:(dA.x+dB.x)/2, y:(dA.y+dB.y)/2 - 10, "text-anchor":"middle",class:"svg-label",fill:"#3A3F47"});
+  tagD.textContent="A";
+  const tagC = el("text",{x:(cA.x+cB.x)/2, y:(cA.y+cB.y)/2 + 20, "text-anchor":"middle",class:"svg-label",fill:"#3A3F47"});
+  tagC.textContent="B";
+  svg.appendChild(tagD); svg.appendChild(tagC);
+}
+
+function markOptButtons(container, chosenBtn, correct){
+  Array.from(container.children).forEach(b=>{
+    if(b===chosenBtn) b.classList.add(correct?"correct":"wrong");
+    b.disabled = true;
+  });
+}
+
+function handleAnswer(correct, explain){
+  if(challengeState.answeredCurrent) return;
+  challengeState.answeredCurrent = true;
+  const idx = challengeState.idx;
+  challengeState.results[idx] = correct ? "correct" : "wrong";
+  if(correct){
+    challengeState.score += 10;
+    challengeState.correct += 1;
+    qFeedback.className = "feedback-banner good";
+    qFeedback.innerHTML = "⭐ Great job! " + (explain?explain:"That's exactly right.");
+    sndCorrect();
+  } else {
+    qFeedback.className = "feedback-banner bad";
+    qFeedback.innerHTML = "💡 Try again next time! " + (explain?explain:"Look carefully at how the line touches the circle and the centre.");
+    sndWrong();
+  }
+  qNextBtn.disabled = false;
+  updateDots();
+  updateStats();
+}
+
+qNextBtn.addEventListener("click", ()=>{
+  if(challengeState.idx < QUESTIONS.length-1){ challengeState.idx++; renderQuestion(); }
+  else { showFinal(); }
+});
+
+function showFinal(){
+  document.getElementById("qCard").style.display = "none";
+  finalScreen.classList.add("show");
+  finalSub.textContent = `You scored ${challengeState.correct}/${QUESTIONS.length} — ${challengeState.correct>=8?"brilliant work!":challengeState.correct>=5?"nice effort, keep exploring!":"great try, explore the circle and play again!"}`;
+  sndComplete();
+}
+document.getElementById("playAgainBtn").addEventListener("click", restartChallenge);
+document.getElementById("restartChallenge").addEventListener("click", restartChallenge);
+
+function restartChallenge(){
+  challengeState = {idx:0, score:0, correct:0, results:[], started:true, answeredCurrent:false};
+  resetDots();
+  updateStats();
+  finalScreen.classList.remove("show");
+  document.getElementById("qCard").style.display = "";
+  renderQuestion();
+  sndClick();
+}
+
+})();
+</script>
+</body>
+</html>
