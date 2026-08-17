@@ -1,0 +1,2146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Shape Explorer — Class 4 Mathematics</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary: #0ea5e9;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Navigation */
+        header {
+            background: linear-gradient(135deg, var(--primary), #3730a3);
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+        }
+
+        .logo-text h1 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-text p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        nav {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* Main Container & View Sections */
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .view-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero / Home View */
+        .hero {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .hero h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p.tagline {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.85rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+        }
+
+        .home-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .home-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .home-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .home-card .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .home-card h3 {
+            font-size: 1.2rem;
+            color: var(--text-main);
+        }
+
+        /* Shape Selection Grid */
+        .shapes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .shape-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.2rem;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .shape-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .shape-preview {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .shape-card h3 {
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        /* Lab Layout */
+        .lab-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .lab-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .workspace-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .workspace-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .workspace-header h2 {
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        .svg-canvas-wrapper {
+            width: 100%;
+            height: 320px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px dashed var(--border);
+        }
+
+        .shape-svg {
+            width: 260px;
+            height: 260px;
+            transition: transform 0.3s ease;
+        }
+
+        .tool-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .tool-btn {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .tool-btn:hover {
+            background: #f8fafc;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .tool-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Investigation Panel */
+        .investigation-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .step-box {
+            background: #faf5ff;
+            border: 1px solid #e9d5ff;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .step-title {
+            font-weight: 700;
+            color: #6b21a8;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-desc {
+            font-size: 0.95rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .num-input {
+            width: 70px;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .num-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn-check {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-check:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-hint {
+            background: white;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-hint:hover {
+            background: #fffbeeb;
+        }
+
+        /* Feedback Styling */
+        .feedback-msg {
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 0.6rem 0.9rem;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .feedback-msg.correct {
+            display: block !important;
+            background: #d1fae5;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+
+        .feedback-msg.incorrect {
+            display: block !important;
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fca5a5;
+        }
+
+        .feedback-msg.hint {
+            display: block !important;
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        /* Cloze Form */
+        .cloze-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            font-size: 0.95rem;
+        }
+
+        .cloze-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .cloze-input {
+            padding: 0.3rem 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        /* Modal Overlay */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: var(--radius);
+            max-width: 600px;
+            width: 100%;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        /* Sorting Lab */
+        .sorting-container {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 1.5rem;
+        }
+
+        @media(max-width: 768px) {
+            .sorting-container { grid-template-columns: 1fr; }
+        }
+
+        .source-shapes {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .drag-shape {
+            padding: 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #f8fafc;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .bins-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .bin-box {
+            background: white;
+            border: 2px dashed var(--primary);
+            border-radius: var(--radius);
+            padding: 1rem;
+            min-height: 220px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bin-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .bin-contents {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-content: flex-start;
+        }
+
+        /* Comparison Lab */
+        .compare-selects {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .compare-select {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 1rem;
+            font-weight: 600;
+            background: white;
+        }
+
+        .compare-workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        /* Real Life Detective */
+        .detective-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .detective-card {
+            background: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detective-img-placeholder {
+            height: 140px;
+            background: #f1f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .detective-body {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        /* SVG Highlights */
+        .vertex-highlight {
+            fill: var(--danger) !important;
+            r: 8 !important;
+        }
+
+        .angle-marker {
+            stroke: var(--success);
+            stroke-width: 3;
+            fill: rgba(16, 185, 129, 0.2);
+        }
+
+        /* Mystery Challenge styling */
+        .mystery-clue-box {
+            background: #e0f2fe;
+            border-left: 4px solid var(--secondary);
+            padding: 0.9rem;
+            border-radius: 6px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #0369a1;
+            margin-bottom: 0.6rem;
+            animation: fadeIn 0.25s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area" onclick="showView('home')">
+            <div class="logo-icon">📐</div>
+            <div class="logo-text">
+                <h1>2D SHAPE EXPLORER</h1>
+                <p>Observe • Explore • Discover • Describe</p>
+            </div>
+        </div>
+        <nav>
+            <button class="nav-btn" onclick="showView('home')">🏠 Home</button>
+            <button class="nav-btn" onclick="showView('shapes')">🔬 Shape Lab</button>
+            <button class="nav-btn" onclick="showView('compare')">⚖️ Comparison Lab</button>
+            <button class="nav-btn" onclick="showView('guess')">🕵️ Mystery Shape</button>
+            <button class="nav-btn" onclick="showView('sort')">🗂️ Shape Sorting</button>
+            <button class="nav-btn" onclick="showView('detective')">🖼️ Shape Detective</button>
+            <button class="nav-btn" onclick="showView('challenge')">🏆 Challenge</button>
+            <button class="nav-btn" onclick="toggleTeacherHelp()">❓ Help</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- HOME VIEW -->
+        <section id="view-home" class="view-section active">
+            <div class="hero">
+                <h2>📐 2D SHAPE EXPLORER</h2>
+                <p class="tagline">"Observe • Explore • Discover • Describe"</p>
+                <button class="btn-primary" onclick="showView('shapes')">START EXPLORING</button>
+            </div>
+
+            <div class="home-grid">
+                <div class="home-card" onclick="showView('shapes')">
+                    <div class="card-icon">🔬</div>
+                    <h3>Shape Lab</h3>
+                </div>
+                <div class="home-card" onclick="showView('compare')">
+                    <div class="card-icon">⚖️</div>
+                    <h3>Comparison Lab</h3>
+                </div>
+                <div class="home-card" onclick="showView('guess')">
+                    <div class="card-icon">🕵️</div>
+                    <h3>Mystery Shape</h3>
+                </div>
+                <div class="home-card" onclick="showView('sort')">
+                    <div class="card-icon">🗂️</div>
+                    <h3>Shape Sorting</h3>
+                </div>
+            </div>
+        </section>
+
+        <!-- SHAPE SELECTION VIEW -->
+        <section id="view-shapes" class="view-section">
+            <h2 style="margin-bottom: 0.5rem;">Select a Shape to Investigate</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Click any shape card to open its interactive Discovery Laboratory.</p>
+            <div class="shapes-grid" id="shapes-card-grid">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- SHAPE INVESTIGATION LAB VIEW -->
+        <section id="view-lab" class="view-section">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <button class="tool-btn" onclick="showView('shapes')">← Back to Shapes</button>
+                <h2 id="lab-shape-title">INVESTIGATE THE SHAPE</h2>
+            </div>
+
+            <div class="lab-container">
+                <!-- Left: SVG Workspace -->
+                <div class="workspace-card">
+                    <div class="workspace-header">
+                        <span id="lab-shape-name" style="font-weight: 700; font-size: 1.1rem; color: var(--primary);">Square</span>
+                        <span style="font-size: 0.85rem; color: var(--text-muted);">Interactive Canvas</span>
+                    </div>
+
+                    <div class="svg-canvas-wrapper" id="svg-canvas">
+                        <!-- Interactive SVG inserted here -->
+                    </div>
+
+                    <div class="tool-bar">
+                        <button class="tool-btn" onclick="rotateLabShape()">🔄 Rotate 45°</button>
+                        <button class="tool-btn" id="btn-toggle-sides" onclick="toggleSideHighlight()">📏 Highlight Sides</button>
+                        <button class="tool-btn" id="btn-toggle-vertices" onclick="toggleVertexHighlight()">📍 Highlight Vertices</button>
+                        <button class="tool-btn" id="btn-toggle-angles" onclick="toggleAngleHighlight()">📐 Right Angles</button>
+                        <button class="tool-btn" onclick="resetLabShape()">⏮️ Reset Shape</button>
+                    </div>
+
+                    <!-- Rotation Activity Note -->
+                    <div style="margin-top: 1.2rem; width: 100%; background: #e0f2fe; padding: 0.8rem; border-radius: 8px; text-align: center; font-size: 0.9rem;">
+                        <strong>Is it still the same shape?</strong><br>
+                        Turn or rotate the shape above. Does turning a shape change its number of sides or corners?
+                    </div>
+                </div>
+
+                <!-- Right: Discovery Sequence -->
+                <div class="investigation-card">
+                    <!-- Inv 1: Count Sides -->
+                    <div class="step-box">
+                        <div class="step-title"><span>1️⃣</span> Count the Sides</div>
+                        <div class="step-desc">How many straight sides boundary this shape?</div>
+                        <div class="input-group">
+                            <input type="number" id="inv1-input" class="num-input" min="0" max="20" placeholder="?">
+                            <button class="btn-check" onclick="checkInv1()">CHECK ANSWER</button>
+                            <button class="btn-hint" onclick="showHint(1)">HINT</button>
+                        </div>
+                        <div id="inv1-feedback" class="feedback-msg"></div>
+                    </div>
+
+                    <!-- Inv 2: Count Vertices -->
+                    <div class="step-box">
+                        <div class="step-title"><span>2️⃣</span> Count the Corners (Vertices)</div>
+                        <div class="step-desc">Corners are where two sides meet (vertices). How many can you find?</div>
+                        <div class="input-group">
+                            <input type="number" id="inv2-input" class="num-input" min="0" max="20" placeholder="?">
+                            <button class="btn-check" onclick="checkInv2()">CHECK ANSWER</button>
+                            <button class="btn-check" style="background:#0ea5e9;" onclick="countVerticesVisual()">SHOW / COUNT</button>
+                        </div>
+                        <div id="inv2-feedback" class="feedback-msg"></div>
+                    </div>
+
+                    <!-- Inv 3: Side Equality -->
+                    <div class="step-box">
+                        <div class="step-title"><span>3️⃣</span> Equal or Unequal Sides?</div>
+                        <div class="step-desc">Observe closely at the sides. What do you notice?</div>
+                        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.8rem;">
+                            <label><input type="radio" name="side-eq" value="all"> All sides are equal in length</label>
+                            <label><input type="radio" name="side-eq" value="opposite"> Opposite sides are equal in length</label>
+                            <label><input type="radio" name="side-eq" value="none"> No sides are equal in length / Curved side</label>
+                            <label><input type="radio" name="side-eq" value="some"> Some sides are equal</label>
+                        </div>
+                        <button class="btn-check" onclick="checkInv3()">CHECK OBSERVATION</button>
+                        <div id="inv3-feedback" class="feedback-msg"></div>
+                    </div>
+
+                    <!-- Inv 4: Right Angles -->
+                    <div class="step-box">
+                        <div class="step-title"><span>4️⃣</span> Find Right Angles</div>
+                        <div class="step-desc">Does this shape have square corners (right angles)?</div>
+                        <div class="input-group">
+                            <input type="number" id="inv4-input" class="num-input" min="0" max="20" placeholder="?">
+                            <button class="btn-check" onclick="checkInv4()">CHECK ANSWER</button>
+                        </div>
+                        <div id="inv4-feedback" class="feedback-msg"></div>
+                    </div>
+
+                    <!-- Inv 5: Can it roll? -->
+                    <div class="step-box">
+                        <div class="step-title"><span>5️⃣</span> Can it roll?</div>
+                        <div class="step-desc">Does this shape have a curved edge that allows it to roll smoothly?</div>
+                        <div style="display: flex; gap: 1rem; margin-bottom: 0.8rem;">
+                            <label><input type="radio" name="can-roll" value="yes"> Yes</label>
+                            <label><input type="radio" name="can-roll" value="no"> No</label>
+                        </div>
+                        <button class="btn-check" onclick="checkRoll()">CHECK ANSWER</button>
+                        <div id="inv-roll-feedback" class="feedback-msg"></div>
+                    </div>
+
+                    <!-- Inv 6: Can it slide? -->
+                    <div class="step-box">
+                        <div class="step-title"><span>6️⃣</span> Can it slide?</div>
+                        <div class="step-desc">Does this shape have a flat side that allows it to slide across a table?</div>
+                        <div style="display: flex; gap: 1rem; margin-bottom: 0.8rem;">
+                            <label><input type="radio" name="can-slide" value="yes"> Yes</label>
+                            <label><input type="radio" name="can-slide" value="no"> No</label>
+                        </div>
+                        <button class="btn-check" onclick="checkSlide()">CHECK ANSWER</button>
+                        <div id="inv-slide-feedback" class="feedback-msg"></div>
+                    </div>
+
+                    <!-- Inv 7: Cloze Description -->
+                    <div class="step-box" style="background: #ecfdf5; border-color: #a7f3d0;">
+                        <div class="step-title" style="color: #065f46;"><span>7️⃣</span> Describe Your Discovery</div>
+                        <div class="cloze-form">
+                            <div class="cloze-row">
+                                I discovered that a <strong id="cloze-shape-name">Shape</strong> has
+                                <input type="text" id="cloze-sides" class="cloze-input" style="width: 50px;"> sides and
+                                <input type="text" id="cloze-vertices" class="cloze-input" style="width: 50px;"> vertices.
+                            </div>
+                            <div class="cloze-row">
+                                Its sides are <input type="text" id="cloze-sides-desc" class="cloze-input" placeholder="e.g. all equal" style="width: 140px;">.
+                            </div>
+                            <div class="cloze-row">
+                                It has <input type="text" id="cloze-angles" class="cloze-input" style="width: 50px;"> right angles.
+                            </div>
+                        </div>
+                        <button class="btn-check" style="margin-top: 0.8rem; background: #10b981;" onclick="checkDiscoverySummary()">CHECK MY DISCOVERY</button>
+                        <div id="inv5-feedback" class="feedback-msg"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPARISON LAB VIEW -->
+        <section id="view-compare" class="view-section">
+            <h2>Shape Comparison Laboratory</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">OBSERVE → THINK → ANSWER → CHECK → DISCOVER!</p>
+
+            <div class="compare-selects">
+                <div>
+                    <label><strong>Shape A:</strong> </label>
+                    <select id="compare-a" class="compare-select" onchange="renderComparison()"></select>
+                </div>
+                <div>
+                    <label><strong>Shape B:</strong> </label>
+                    <select id="compare-b" class="compare-select" onchange="renderComparison()"></select>
+                </div>
+            </div>
+
+            <!-- VISUAL SIDE-BY-SIDE COMPARISON -->
+            <div class="compare-workspace">
+                <div style="text-align: center; border-right: 1px solid var(--border); padding-right: 1rem;">
+                    <h3 id="comp-title-a">Shape A</h3>
+                    <div id="comp-svg-a" style="height: 200px; display: flex; justify-content: center; align-items: center;"></div>
+                </div>
+                <div style="text-align: center; padding-left: 1rem;">
+                    <h3 id="comp-title-b">Shape B</h3>
+                    <div id="comp-svg-b" style="height: 200px; display: flex; justify-content: center; align-items: center;"></div>
+                </div>
+            </div>
+
+            <!-- INTERACTIVE COMPARISON QUESTIONS -->
+            <div class="investigation-card" style="margin-top: 1.5rem;">
+                <h3 style="color: var(--primary);">🔍 Observe & Think First</h3>
+                <p style="font-size: 0.95rem; color: var(--text-muted);">Observe carefully at Shape A and Shape B above and answer the questions below.</p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="step-box">
+                        <div class="step-title">Question 1</div>
+                        <div class="step-desc">How many sides does <strong class="comp-label-a">Shape A</strong> have?</div>
+                        <input type="number" id="comp-q1" class="num-input" min="0" max="20" placeholder="?">
+                    </div>
+                    <div class="step-box">
+                        <div class="step-title">Question 2</div>
+                        <div class="step-desc">How many sides does <strong class="comp-label-b">Shape B</strong> have?</div>
+                        <input type="number" id="comp-q2" class="num-input" min="0" max="20" placeholder="?">
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-title">Question 3</div>
+                    <div class="step-desc">Do they have the same number of sides?</div>
+                    <div style="display: flex; gap: 1.5rem;">
+                        <label><input type="radio" name="comp-q3" value="yes"> Yes</label>
+                        <label><input type="radio" name="comp-q3" value="no"> No</label>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="step-box">
+                        <div class="step-title">Question 4</div>
+                        <div class="step-desc">How many vertices does <strong class="comp-label-a">Shape A</strong> have?</div>
+                        <input type="number" id="comp-q4" class="num-input" min="0" max="20" placeholder="?">
+                    </div>
+                    <div class="step-box">
+                        <div class="step-title">Question 5</div>
+                        <div class="step-desc">How many vertices does <strong class="comp-label-b">Shape B</strong> have?</div>
+                        <input type="number" id="comp-q5" class="num-input" min="0" max="20" placeholder="?">
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-title">Question 6</div>
+                    <div class="step-desc">Do they have the same number of vertices?</div>
+                    <div style="display: flex; gap: 1.5rem;">
+                        <label><input type="radio" name="comp-q6" value="yes"> Yes</label>
+                        <label><input type="radio" name="comp-q6" value="no"> No</label>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-title">Question 7</div>
+                    <div class="step-desc">What is similar about these two shapes?</div>
+                    <select id="comp-q7" class="compare-select" style="width: 100%; font-size: 0.9rem;">
+                        <!-- Dynamically populated -->
+                    </select>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-title">Question 8</div>
+                    <div class="step-desc">What is different about these two shapes?</div>
+                    <select id="comp-q8" class="compare-select" style="width: 100%; font-size: 0.9rem;">
+                        <!-- Dynamically populated -->
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-top: 0.5rem;">
+                    <button class="btn-check" onclick="checkComparisonAnswers()">CHECK ANSWER</button>
+                    <button class="btn-hint" onclick="showComparisonHint()">💡 HINT</button>
+                    <button class="btn-primary" id="btn-reveal-comp" style="display: none; background: #0ea5e9;" onclick="revealComparisonDetails()">REVEAL COMPARISON</button>
+                </div>
+
+                <div id="comp-feedback" class="feedback-msg"></div>
+
+                <!-- REVEALED COMPARISON CONTENT -->
+                <div id="comp-reveal-panel" style="display: none; margin-top: 1.5rem; background: #f8fafc; padding: 1.5rem; border-radius: var(--radius); border: 2px solid var(--primary);">
+                    <h3 style="color: var(--primary); margin-bottom: 1rem;">✨ Discovery Breakdown</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <h4 id="comp-reveal-title-a">Shape A Properties</h4>
+                            <div id="comp-details-a" style="margin-top: 0.5rem; font-size: 0.9rem; line-height: 1.6;"></div>
+                        </div>
+                        <div>
+                            <h4 id="comp-reveal-title-b">Shape B Properties</h4>
+                            <div id="comp-details-b" style="margin-top: 0.5rem; font-size: 0.9rem; line-height: 1.6;"></div>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;">
+                        <div>
+                            <strong>What is Similar?</strong>
+                            <ul id="comp-sim-list" style="margin-left: 1.2rem; margin-top: 0.5rem; font-size: 0.9rem;"></ul>
+                        </div>
+                        <div>
+                            <strong>What is Different?</strong>
+                            <ul id="comp-diff-list" style="margin-left: 1.2rem; margin-top: 0.5rem; font-size: 0.9rem;"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MYSTERY SHAPE CHALLENGE VIEW -->
+        <section id="view-guess" class="view-section">
+            <h2>🕵️ Mystery Shape Challenge</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Read the clues one at a time and deduce which 2D shape is hiding!</p>
+
+            <div style="background: white; padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); max-width: 650px; margin: 0 auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <span style="font-weight: 700; color: var(--primary); font-size: 1.1rem;" id="mystery-tracker">Mystery 1 of 10</span>
+                    <span style="font-size: 0.9rem; color: var(--text-muted);" id="mystery-score">Score: 0</span>
+                </div>
+
+                <div id="clues-container" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.2rem;">
+                    <!-- Clues added dynamically -->
+                </div>
+
+                <button class="btn-hint" id="btn-next-clue" onclick="revealNextClue()">💡 REVEAL NEXT CLUE</button>
+
+                <div style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                    <strong>Who am I?</strong>
+                    <div id="guess-options" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.6rem; margin-top: 0.8rem;">
+                        <!-- Buttons for shapes -->
+                    </div>
+                </div>
+
+                <div id="guess-feedback" class="feedback-msg" style="margin-top: 1rem;"></div>
+
+                <button class="btn-primary" id="btn-next-mystery" style="display: none; margin-top: 1rem; width: 100%; justify-content: center;" onclick="nextMysteryChallenge()">NEXT MYSTERY →</button>
+            </div>
+        </section>
+
+        <!-- SHAPE SORTING LAB VIEW -->
+        <section id="view-sort" class="view-section">
+            <h2>🗂️ Shape Sorting Game</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">Drag and drop shapes into the correct categories based on their mathematical properties.</p>
+
+            <div style="margin-bottom: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button class="tool-btn active" id="rule-btn-4sides" onclick="setupSortRule('4sides')">Rule A: 4 Sides / Not 4 Sides</button>
+                <button class="tool-btn" id="rule-btn-equal" onclick="setupSortRule('equal')">Rule B: All Sides Equal / Not All Equal</button>
+                <button class="tool-btn" id="rule-btn-angles" onclick="setupSortRule('angles')">Rule C: Has Right Angles / Does Not Have</button>
+            </div>
+
+            <div class="sorting-container">
+                <div class="source-shapes" id="sort-sources">
+                    <!-- Source items dynamically added -->
+                </div>
+                <div class="bins-grid">
+                    <div class="bin-box" id="bin-1" ondragover="allowDrop(event)" ondrop="handleDrop(event, 1)">
+                        <div class="bin-title" id="bin-1-title">Category 1</div>
+                        <div class="bin-contents" id="bin-1-contents"></div>
+                    </div>
+                    <div class="bin-box" id="bin-2" ondragover="allowDrop(event)" ondrop="handleDrop(event, 2)">
+                        <div class="bin-title" id="bin-2-title">Category 2</div>
+                        <div class="bin-contents" id="bin-2-contents"></div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-primary" style="margin-top: 1.5rem;" onclick="checkSorting()">CHECK SORTING</button>
+            <div id="sort-feedback" class="feedback-msg" style="margin-top: 1rem;"></div>
+        </section>
+
+        <!-- REAL-LIFE DETECTIVE VIEW -->
+        <section id="view-detective" class="view-section">
+            <h2>Real-Life Shape Detective</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Can you spot the 2D shapes hiding in everyday classroom and real-world objects?</p>
+
+            <div class="detective-grid" id="detective-grid">
+                <!-- Detective cards dynamically created -->
+            </div>
+        </section>
+
+        <!-- CHALLENGE ZONE VIEW -->
+        <section id="view-challenge" class="view-section">
+            <h2>Shape Explorer Final Challenge</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Test your shape discovery power with mathematical questions!</p>
+
+            <div id="challenge-questions-container" style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 800px; margin: 0 auto;">
+                <!-- Questions insertion -->
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn-primary" onclick="checkAllChallengeAnswers()">SUBMIT CHALLENGE</button>
+            </div>
+            <div id="challenge-score-box" class="feedback-msg" style="max-width: 800px; margin: 1.5rem auto 0 auto; text-align: center; font-size: 1.1rem;"></div>
+        </section>
+    </main>
+
+    <!-- TEACHER / HELP MODAL -->
+    <div id="modal-teacher" class="modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Teacher Guide & How to Explore</h3>
+                <button class="modal-close" onclick="toggleTeacherHelp()">×</button>
+            </div>
+            <div style="line-height: 1.6; font-size: 0.95rem; color: var(--text-main);">
+                <p><strong>Pedagogical Model:</strong> OBSERVE → THINK → ANSWER → CHECK → DISCOVER</p>
+                <br>
+                <p>This TLM avoids giving learners pre-written shape facts immediately. Instead, students are prompted to count sides and vertices, test angle guides, rotate shapes, and solve clues to construct spatial knowledge actively.</p>
+                <br>
+                <p><strong>Classroom Usage Tips:</strong></p>
+                <ul style="margin-left: 1.2rem;">
+                    <li>Use on smart interactive whiteboards for whole-class discovery.</li>
+                    <li>Encourage pairs to discuss before clicking "CHECK ANSWER".</li>
+                    <li>Use the Comparison Lab and Mystery Shape Challenge to build mathematical reasoning.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* SHAPE DATA DEFINITIONS */
+        const SHAPES_DATA = {
+            circle: {
+                id: 'circle',
+                name: 'Circle',
+                sides: 0,
+                vertices: 0,
+                rightAngles: 0,
+                sideEq: 'none',
+                sideDesc: '1 continuous curved edge',
+                canRoll: 'yes',
+                canSlide: 'no',
+                svgType: 'circle',
+                cx: 130, cy: 130, r: 90,
+                vertexCoords: []
+            },
+            triangle: {
+                id: 'triangle',
+                name: 'Triangle',
+                sides: 3,
+                vertices: 3,
+                rightAngles: 0,
+                sideEq: 'some',
+                sideDesc: '3 straight sides',
+                canRoll: 'no',
+                canSlide: 'yes',
+                svgType: 'polygon',
+                points: '130,30 30,220 230,220',
+                vertexCoords: [{x:130, y:30}, {x:30, y:220}, {x:230, y:220}]
+            },
+            square: {
+                id: 'square',
+                name: 'Square',
+                sides: 4,
+                vertices: 4,
+                rightAngles: 4,
+                sideEq: 'all',
+                sideDesc: 'all 4 sides equal',
+                canRoll: 'no',
+                canSlide: 'yes',
+                svgType: 'polygon',
+                points: '40,40 220,40 220,220 40,220',
+                vertexCoords: [{x:40, y:40}, {x:220, y:40}, {x:220, y:220}, {x:40, y:220}]
+            },
+            rectangle: {
+                id: 'rectangle',
+                name: 'Rectangle',
+                sides: 4,
+                vertices: 4,
+                rightAngles: 4,
+                sideEq: 'opposite',
+                sideDesc: 'opposite sides equal',
+                canRoll: 'no',
+                canSlide: 'yes',
+                svgType: 'polygon',
+                points: '20,60 240,60 240,200 20,200',
+                vertexCoords: [{x:20, y:60}, {x:240, y:60}, {x:240, y:200}, {x:20, y:200}]
+            },
+            pentagon: {
+                id: 'pentagon',
+                name: 'Pentagon',
+                sides: 5,
+                vertices: 5,
+                rightAngles: 0,
+                sideEq: 'all',
+                sideDesc: '5 straight sides',
+                canRoll: 'no',
+                canSlide: 'yes',
+                svgType: 'polygon',
+                points: '130,20 235,95 195,220 65,220 25,95',
+                vertexCoords: [{x:130, y:20}, {x:235, y:95}, {x:195, y:220}, {x:65, y:220}, {x:25, y:95}]
+            },
+            hexagon: {
+                id: 'hexagon',
+                name: 'Hexagon',
+                sides: 6,
+                vertices: 6,
+                rightAngles: 0,
+                sideEq: 'all',
+                sideDesc: '6 straight sides',
+                canRoll: 'no',
+                canSlide: 'yes',
+                svgType: 'polygon',
+                points: '130,20 220,70 220,180 130,230 40,180 40,70',
+                vertexCoords: [{x:130, y:20}, {x:220, y:70}, {x:220, y:180}, {x:130, y:230}, {x:40, y:180}, {x:40, y:70}]
+            },
+            heptagon: {
+                id: 'heptagon',
+                name: 'Heptagon',
+                sides: 7,
+                vertices: 7,
+                rightAngles: 0,
+                sideEq: 'all',
+                sideDesc: '7 straight sides',
+                canRoll: 'no',
+                canSlide: 'yes',
+                svgType: 'polygon',
+                points: '130,20 210,50 240,120 200,200 60,200 20,120 50,50',
+                vertexCoords: [{x:130, y:20}, {x:210, y:50}, {x:240, y:120}, {x:200, y:200}, {x:60, y:200}, {x:20, y:120}, {x:50, y:50}]
+            },
+            octagon: {
+                id: 'octagon',
+                name: 'Octagon',
+                sides: 8,
+                vertices: 8,
+                rightAngles: 0,
+                sideEq: 'all',
+                sideDesc: '8 straight sides',
+                canRoll: 'no',
+                canSlide: 'yes',
+                svgType: 'polygon',
+                points: '90,30 170,30 230,90 230,170 170,230 90,230 30,170 30,90',
+                vertexCoords: [{x:90,y:30}, {x:170,y:30}, {x:230,y:90}, {x:230,y:170}, {x:170,y:230}, {x:90,y:230}, {x:30,y:170}, {x:30,y:90}]
+            },
+            nonagon: {
+                id: 'nonagon',
+                name: 'Nonagon',
+                sides: 9,
+                vertices: 9,
+                rightAngles: 0,
+                sideEq: 'all',
+                sideDesc: '9 straight sides',
+                canRoll: 'no',
+                canSlide: 'yes',
+                svgType: 'polygon',
+                points: '130,20 195,43 235,98 230,163 175,220 85,220 30,163 25,98 65,43',
+                vertexCoords: [{x:130,y:20}, {x:195,y:43}, {x:235,y:98}, {x:230,y:163}, {x:175,y:220}, {x:85,y:220}, {x:30,y:163}, {x:25,y:98}, {x:65,y:43}]
+            },
+            decagon: {
+                id: 'decagon',
+                name: 'Decagon',
+                sides: 10,
+                vertices: 10,
+                rightAngles: 0,
+                sideEq: 'all',
+                sideDesc: '10 straight sides',
+                canRoll: 'no',
+                canSlide: 'yes',
+                svgType: 'polygon',
+                points: '130,30 189,49 225,99 225,161 189,211 130,230 71,211 35,161 35,99 71,49',
+                vertexCoords: [{x:130,y:30}, {x:189,y:49}, {x:225,y:99}, {x:225,y:161}, {x:189,y:211}, {x:130,y:230}, {x:71,y:211}, {x:35,y:161}, {x:35,y:99}, {x:71,y:49}]
+            },
+            semicircle: {
+                id: 'semicircle',
+                name: 'Semicircle',
+                sides: 1,
+                vertices: 2,
+                rightAngles: 0,
+                sideEq: 'none',
+                sideDesc: '1 straight side and 1 curved boundary',
+                canRoll: 'yes',
+                canSlide: 'yes',
+                svgType: 'path',
+                path: 'M 30,160 A 100,100 0 0,1 230,160 Z',
+                vertexCoords: [{x:30, y:160}, {x:230, y:160}]
+            },
+            oval: {
+                id: 'oval',
+                name: 'Oval',
+                sides: 0,
+                vertices: 0,
+                rightAngles: 0,
+                sideEq: 'none',
+                sideDesc: '1 continuous curved edge',
+                canRoll: 'yes',
+                canSlide: 'no',
+                svgType: 'ellipse',
+                cx: 130, cy: 130, rx: 100, ry: 60,
+                vertexCoords: []
+            },
+            quadrilateral: {
+                id: 'quadrilateral',
+                name: 'Quadrilateral',
+                sides: 4,
+                vertices: 4,
+                rightAngles: 0,
+                sideEq: 'none',
+                sideDesc: '4 sides of general length',
+                canRoll: 'no',
+                canSlide: 'yes',
+                svgType: 'polygon',
+                points: '40,50 210,30 240,210 50,190',
+                vertexCoords: [{x:40, y:50}, {x:210, y:30}, {x:240, y:210}, {x:50, y:190}]
+            },
+            parallelogram: {
+                id: 'parallelogram',
+                name: 'Parallelogram',
+                sides: 4,
+                vertices: 4,
+                rightAngles: 0,
+                sideEq: 'opposite',
+                sideDesc: 'opposite sides equal & parallel',
+                canRoll: 'no',
+                canSlide: 'yes',
+                svgType: 'polygon',
+                points: '70,50 240,50 190,200 20,200',
+                vertexCoords: [{x:70, y:50}, {x:240, y:50}, {x:190, y:200}, {x:20, y:200}]
+            },
+            rhombus: {
+                id: 'rhombus',
+                name: 'Rhombus',
+                sides: 4,
+                vertices: 4,
+                rightAngles: 0,
+                sideEq: 'all',
+                sideDesc: 'all 4 sides equal',
+                canRoll: 'no',
+                canSlide: 'yes',
+                svgType: 'polygon',
+                points: '130,30 230,130 130,230 30,130',
+                vertexCoords: [{x:130, y:30}, {x:230, y:130}, {x:130, y:230}, {x:30, y:130}]
+            }
+        };
+
+        /* STATE MANAGEMENT */
+        let currentLabShapeKey = 'square';
+        let labRotation = 0;
+        let sidesHighlighted = false;
+        let verticesHighlighted = false;
+        let anglesHighlighted = false;
+
+        /* INITIALIZATION */
+        window.addEventListener('DOMContentLoaded', () => {
+            renderShapeCards();
+            populateCompareSelects();
+            setupDetectiveGrid();
+            setupChallengeQuestions();
+            initMysteryChallenge();
+        });
+
+        /* NAVIGATION */
+        function showView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById(`view-${viewId}`);
+            if (target) target.classList.add('active');
+
+            if (viewId === 'sort') setupSortRule('4sides');
+            if (viewId === 'compare') renderComparison();
+            if (viewId === 'guess') initMysteryChallenge();
+        }
+
+        function toggleTeacherHelp() {
+            const m = document.getElementById('modal-teacher');
+            m.classList.toggle('active');
+        }
+
+        /* RENDER SHAPE CARDS */
+        function renderShapeCards() {
+            const grid = document.getElementById('shapes-card-grid');
+            grid.innerHTML = '';
+            Object.keys(SHAPES_DATA).forEach(key => {
+                const s = SHAPES_DATA[key];
+                const card = document.createElement('div');
+                card.className = 'shape-card';
+                card.onclick = () => openShapeLab(key);
+
+                let shapeSvgInner = '';
+                if (s.svgType === 'polygon') {
+                    shapeSvgInner = `<polygon points="${s.points}" fill="rgba(79, 70, 229, 0.15)" stroke="var(--primary)" stroke-width="4"/>`;
+                } else if (s.svgType === 'circle') {
+                    shapeSvgInner = `<circle cx="${s.cx}" cy="${s.cy}" r="${s.r}" fill="rgba(79, 70, 229, 0.15)" stroke="var(--primary)" stroke-width="4"/>`;
+                } else if (s.svgType === 'ellipse') {
+                    shapeSvgInner = `<ellipse cx="${s.cx}" cy="${s.cy}" rx="${s.rx}" ry="${s.ry}" fill="rgba(79, 70, 229, 0.15)" stroke="var(--primary)" stroke-width="4"/>`;
+                } else if (s.svgType === 'path') {
+                    shapeSvgInner = `<path d="${s.path}" fill="rgba(79, 70, 229, 0.15)" stroke="var(--primary)" stroke-width="4"/>`;
+                }
+
+                card.innerHTML = `
+                    <div class="shape-preview">
+                        <svg viewBox="0 0 260 260" width="80" height="80">
+                            ${shapeSvgInner}
+                        </svg>
+                    </div>
+                    <h3>${s.name}</h3>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        /* SHAPE LAB FUNCTIONS */
+        function openShapeLab(shapeKey) {
+            currentLabShapeKey = shapeKey;
+            const s = SHAPES_DATA[shapeKey];
+
+            document.getElementById('lab-shape-name').innerText = s.name;
+            document.getElementById('cloze-shape-name').innerText = s.name;
+
+            // Clear inputs
+            document.getElementById('inv1-input').value = '';
+            document.getElementById('inv2-input').value = '';
+            document.getElementById('inv4-input').value = '';
+            document.getElementById('cloze-sides').value = '';
+            document.getElementById('cloze-vertices').value = '';
+            document.getElementById('cloze-sides-desc').value = '';
+            document.getElementById('cloze-angles').value = '';
+
+            // Reset radio selections & feedback displays cleanly
+            document.querySelectorAll('#view-lab .feedback-msg').forEach(el => {
+                el.className = 'feedback-msg';
+                el.innerText = '';
+                el.style.display = 'none';
+            });
+            
+            document.querySelectorAll('input[name="side-eq"]').forEach(el => el.checked = false);
+            document.querySelectorAll('input[name="can-roll"]').forEach(el => el.checked = false);
+            document.querySelectorAll('input[name="can-slide"]').forEach(el => el.checked = false);
+
+            labRotation = 0;
+            sidesHighlighted = false;
+            verticesHighlighted = false;
+            anglesHighlighted = false;
+
+            renderLabSVG();
+            showView('lab');
+        }
+
+        function renderLabSVG() {
+            const s = SHAPES_DATA[currentLabShapeKey];
+            const canvas = document.getElementById('svg-canvas');
+
+            let svgHTML = `<svg class="shape-svg" id="main-lab-svg" viewBox="0 0 260 260" style="transform: rotate(${labRotation}deg)">`;
+
+            if (s.svgType === 'polygon') {
+                svgHTML += `<polygon id="poly-main" points="${s.points}" fill="rgba(79, 70, 229, 0.15)" stroke="${sidesHighlighted ? 'var(--accent)' : 'var(--primary)'}" stroke-width="${sidesHighlighted ? 7 : 4}" />`;
+            } else if (s.svgType === 'circle') {
+                svgHTML += `<circle id="poly-main" cx="${s.cx}" cy="${s.cy}" r="${s.r}" fill="rgba(79, 70, 229, 0.15)" stroke="${sidesHighlighted ? 'var(--accent)' : 'var(--primary)'}" stroke-width="${sidesHighlighted ? 7 : 4}" />`;
+            } else if (s.svgType === 'ellipse') {
+                svgHTML += `<ellipse id="poly-main" cx="${s.cx}" cy="${s.cy}" rx="${s.rx}" ry="${s.ry}" fill="rgba(79, 70, 229, 0.15)" stroke="${sidesHighlighted ? 'var(--accent)' : 'var(--primary)'}" stroke-width="${sidesHighlighted ? 7 : 4}" />`;
+            } else if (s.svgType === 'path') {
+                svgHTML += `<path id="poly-main" d="${s.path}" fill="rgba(79, 70, 229, 0.15)" stroke="${sidesHighlighted ? 'var(--accent)' : 'var(--primary)'}" stroke-width="${sidesHighlighted ? 7 : 4}" />`;
+            }
+
+            // Vertices
+            s.vertexCoords.forEach((v) => {
+                svgHTML += `<circle class="lab-vertex ${verticesHighlighted ? 'vertex-highlight' : ''}" cx="${v.x}" cy="${v.y}" r="6" fill="var(--primary)" />`;
+            });
+
+            // Angle markers if square/rectangle
+            if (anglesHighlighted && s.rightAngles > 0) {
+                if (s.id === 'square') {
+                    svgHTML += `
+                        <path d="M 40 60 L 60 60 L 60 40" class="angle-marker" />
+                        <path d="M 200 40 L 200 60 L 220 60" class="angle-marker" />
+                        <path d="M 220 200 L 200 200 L 200 220" class="angle-marker" />
+                        <path d="M 60 220 L 60 200 L 40 200" class="angle-marker" />
+                    `;
+                } else if (s.id === 'rectangle') {
+                    svgHTML += `
+                        <path d="M 20 80 L 40 80 L 40 60" class="angle-marker" />
+                        <path d="M 220 60 L 220 80 L 240 80" class="angle-marker" />
+                        <path d="M 240 180 L 220 180 L 220 200" class="angle-marker" />
+                        <path d="M 40 200 L 40 180 L 20 180" class="angle-marker" />
+                    `;
+                }
+            }
+
+            svgHTML += `</svg>`;
+            canvas.innerHTML = svgHTML;
+        }
+
+        function rotateLabShape() {
+            labRotation = (labRotation + 45) % 360;
+            renderLabSVG();
+        }
+
+        function resetLabShape() {
+            labRotation = 0;
+            sidesHighlighted = false;
+            verticesHighlighted = false;
+            anglesHighlighted = false;
+            renderLabSVG();
+        }
+
+        function toggleSideHighlight() {
+            sidesHighlighted = !sidesHighlighted;
+            renderLabSVG();
+        }
+
+        function toggleVertexHighlight() {
+            verticesHighlighted = !verticesHighlighted;
+            renderLabSVG();
+        }
+
+        function toggleAngleHighlight() {
+            anglesHighlighted = !anglesHighlighted;
+            renderLabSVG();
+        }
+
+        function showFeedback(fb, type, message) {
+            fb.style.display = 'block';
+            fb.className = `feedback-msg ${type}`;
+            fb.innerText = message;
+        }
+
+        function checkInv1() {
+            const inputVal = document.getElementById('inv1-input').value.trim();
+            const target = SHAPES_DATA[currentLabShapeKey].sides;
+            const fb = document.getElementById('inv1-feedback');
+
+            if (inputVal === '') {
+                showFeedback(fb, 'hint', '💡 Please enter a number!');
+                return;
+            }
+
+            if (parseInt(inputVal, 10) === target) {
+                showFeedback(fb, 'correct', `✓ Correct! This shape has ${target} side(s).`);
+            } else {
+                showFeedback(fb, 'incorrect', '✗ Try again! Count the straight boundary lines carefully.');
+            }
+        }
+
+        function showHint(step) {
+            const fb = document.getElementById(`inv${step}-feedback`);
+            showFeedback(fb, 'hint', '💡 Hint: Count all the straight boundary lines enclosing this shape.');
+        }
+
+        function checkInv2() {
+            const inputVal = document.getElementById('inv2-input').value.trim();
+            const target = SHAPES_DATA[currentLabShapeKey].vertices;
+            const fb = document.getElementById('inv2-feedback');
+
+            if (inputVal === '') {
+                showFeedback(fb, 'hint', '💡 Please enter a number!');
+                return;
+            }
+
+            if (parseInt(inputVal, 10) === target) {
+                showFeedback(fb, 'correct', `✓ Correct! This shape has ${target} corner(s)/vertex(es).`);
+            } else {
+                showFeedback(fb, 'incorrect', '✗ Try again! Count where two sides meet to form corners.');
+            }
+        }
+
+        function countVerticesVisual() {
+            verticesHighlighted = true;
+            renderLabSVG();
+        }
+
+        function checkInv3() {
+            const selected = document.querySelector('input[name="side-eq"]:checked');
+            const target = SHAPES_DATA[currentLabShapeKey].sideEq;
+            const fb = document.getElementById('inv3-feedback');
+
+            if (!selected) {
+                showFeedback(fb, 'hint', '💡 Please select an option first!');
+                return;
+            }
+
+            if (selected.value === target) {
+                showFeedback(fb, 'correct', '✓ Spot on observation!');
+            } else {
+                showFeedback(fb, 'incorrect', '✗ Observe closer at the lengths of the sides and try again.');
+            }
+        }
+
+        function checkInv4() {
+            const inputVal = document.getElementById('inv4-input').value.trim();
+            const target = SHAPES_DATA[currentLabShapeKey].rightAngles;
+            const fb = document.getElementById('inv4-feedback');
+
+            if (inputVal === '') {
+                showFeedback(fb, 'hint', '💡 Please enter a number!');
+                return;
+            }
+
+            if (parseInt(inputVal, 10) === target) {
+                showFeedback(fb, 'correct', `✓ Correct! It has ${target} right angle(s).`);
+            } else {
+                showFeedback(fb, 'incorrect', '✗ Not quite. Try turning on the "Right Angles" tool above!');
+            }
+        }
+
+        function checkRoll() {
+            const selected = document.querySelector('input[name="can-roll"]:checked');
+            const target = SHAPES_DATA[currentLabShapeKey].canRoll;
+            const fb = document.getElementById('inv-roll-feedback');
+
+            if (!selected) {
+                showFeedback(fb, 'hint', '💡 Please select Yes or No!');
+                return;
+            }
+
+            if (selected.value === target) {
+                const msg = target === 'yes' ? '✓ Correct! Curved boundaries allow shapes to roll.' : '✓ Correct! Flat sides prevent smooth rolling.';
+                showFeedback(fb, 'correct', msg);
+            } else {
+                showFeedback(fb, 'incorrect', '✗ Think about whether this shape has a curved boundary that rolls!');
+            }
+        }
+
+        function checkSlide() {
+            const selected = document.querySelector('input[name="can-slide"]:checked');
+            const target = SHAPES_DATA[currentLabShapeKey].canSlide;
+            const fb = document.getElementById('inv-slide-feedback');
+
+            if (!selected) {
+                showFeedback(fb, 'hint', '💡 Please select Yes or No!');
+                return;
+            }
+
+            if (selected.value === target) {
+                const msg = target === 'yes' ? '✓ Correct! Flat sides allow shapes to slide smoothly across surfaces.' : '✓ Correct! Completely round shapes roll instead of sliding.';
+                showFeedback(fb, 'correct', msg);
+            } else {
+                showFeedback(fb, 'incorrect', '✗ Think about whether this shape has flat edges to slide on!');
+            }
+        }
+
+        function checkDiscoverySummary() {
+            const s = SHAPES_DATA[currentLabShapeKey];
+            const fb = document.getElementById('inv5-feedback');
+            showFeedback(fb, 'correct', `✓ Excellent Discovery! ${s.name} has ${s.sides} sides, ${s.vertices} vertices, and ${s.rightAngles} right angles.`);
+        }
+
+        /* COMPARISON LAB */
+        function populateCompareSelects() {
+            const selA = document.getElementById('compare-a');
+            const selB = document.getElementById('compare-b');
+            selA.innerHTML = ''; selB.innerHTML = '';
+
+            Object.keys(SHAPES_DATA).forEach(key => {
+                const s = SHAPES_DATA[key];
+                selA.innerHTML += `<option value="${key}">${s.name}</option>`;
+                selB.innerHTML += `<option value="${key}">${s.name}</option>`;
+            });
+
+            selA.value = 'square';
+            selB.value = 'rectangle';
+        }
+
+        function getShapeSvgHTML(s, colorVar) {
+            if (s.svgType === 'polygon') return `<svg viewBox="0 0 260 260" width="150" height="150"><polygon points="${s.points}" fill="rgba(79, 70, 229, 0.15)" stroke="${colorVar}" stroke-width="4"/></svg>`;
+            if (s.svgType === 'circle') return `<svg viewBox="0 0 260 260" width="150" height="150"><circle cx="${s.cx}" cy="${s.cy}" r="${s.r}" fill="rgba(79, 70, 229, 0.15)" stroke="${colorVar}" stroke-width="4"/></svg>`;
+            if (s.svgType === 'ellipse') return `<svg viewBox="0 0 260 260" width="150" height="150"><ellipse cx="${s.cx}" cy="${s.cy}" rx="${s.rx}" ry="${s.ry}" fill="rgba(79, 70, 229, 0.15)" stroke="${colorVar}" stroke-width="4"/></svg>`;
+            if (s.svgType === 'path') return `<svg viewBox="0 0 260 260" width="150" height="150"><path d="${s.path}" fill="rgba(79, 70, 229, 0.15)" stroke="${colorVar}" stroke-width="4"/></svg>`;
+            return '';
+        }
+
+        function renderComparison() {
+            const keyA = document.getElementById('compare-a').value;
+            const keyB = document.getElementById('compare-b').value;
+            const a = SHAPES_DATA[keyA];
+            const b = SHAPES_DATA[keyB];
+
+            document.getElementById('comp-title-a').innerText = a.name;
+            document.getElementById('comp-title-b').innerText = b.name;
+            document.querySelectorAll('.comp-label-a').forEach(el => el.innerText = a.name);
+            document.querySelectorAll('.comp-label-b').forEach(el => el.innerText = b.name);
+
+            document.getElementById('comp-svg-a').innerHTML = getShapeSvgHTML(a, 'var(--primary)');
+            document.getElementById('comp-svg-b').innerHTML = getShapeSvgHTML(b, 'var(--secondary)');
+
+            // Clear inputs and hide revealed answers
+            document.getElementById('comp-q1').value = '';
+            document.getElementById('comp-q2').value = '';
+            document.getElementById('comp-q4').value = '';
+            document.getElementById('comp-q5').value = '';
+            document.querySelectorAll('input[name="comp-q3"]').forEach(r => r.checked = false);
+            document.querySelectorAll('input[name="comp-q6"]').forEach(r => r.checked = false);
+            document.getElementById('comp-reveal-panel').style.display = 'none';
+            document.getElementById('btn-reveal-comp').style.display = 'none';
+
+            const fb = document.getElementById('comp-feedback');
+            fb.style.display = 'none';
+            fb.className = 'feedback-msg';
+
+            // Generate options for Q7 (Similarity)
+            const selQ7 = document.getElementById('comp-q7');
+            selQ7.innerHTML = '<option value="">-- Choose Similarity --</option>';
+
+            const simOpts = [];
+            if (a.sides === b.sides) simOpts.push({ text: `Both shapes have exactly ${a.sides} sides and ${a.vertices} vertices.`, correct: true });
+            if (a.rightAngles === b.rightAngles && a.rightAngles > 0) simOpts.push({ text: `Both shapes have ${a.rightAngles} right angles.`, correct: true });
+            if (a.canRoll === b.canRoll) simOpts.push({ text: `Both shapes ${a.canRoll === 'yes' ? 'can' : 'cannot'} roll.`, correct: true });
+            
+            if (simOpts.length === 0) {
+                simOpts.push({ text: 'Both are 2D geometric shapes.', correct: true });
+            }
+
+            // Distractors
+            simOpts.push({ text: 'Both shapes have 10 equal sides.', correct: false });
+            simOpts.push({ text: 'Both shapes are 3D solids.', correct: false });
+
+            simOpts.sort(() => Math.random() - 0.5);
+            simOpts.forEach(opt => {
+                selQ7.innerHTML += `<option value="${opt.correct ? 'correct' : 'wrong'}">${opt.text}</option>`;
+            });
+
+            // Generate options for Q8 (Difference)
+            const selQ8 = document.getElementById('comp-q8');
+            selQ8.innerHTML = '<option value="">-- Choose Difference --</option>';
+
+            const diffOpts = [];
+            if (a.sides !== b.sides) diffOpts.push({ text: `${a.name} has ${a.sides} sides, but ${b.name} has ${b.sides} sides.`, correct: true });
+            else if (a.sideEq !== b.sideEq) diffOpts.push({ text: `${a.name} has ${a.sideDesc}, whereas ${b.name} has ${b.sideDesc}.`, correct: true });
+            else if (a.rightAngles !== b.rightAngles) diffOpts.push({ text: `${a.name} has ${a.rightAngles} right angles, while ${b.name} has ${b.rightAngles}.`, correct: true });
+            else diffOpts.push({ text: `They have different names and positions (${a.name} vs ${b.name}).`, correct: true });
+
+            // Distractors
+            diffOpts.push({ text: 'One shape is a cube and the other is a sphere.', correct: false });
+            diffOpts.push({ text: 'Shape A has 100 sides.', correct: false });
+
+            diffOpts.sort(() => Math.random() - 0.5);
+            diffOpts.forEach(opt => {
+                selQ8.innerHTML += `<option value="${opt.correct ? 'correct' : 'wrong'}">${opt.text}</option>`;
+            });
+
+            // Prepare reveal data
+            document.getElementById('comp-reveal-title-a').innerText = `${a.name} Properties`;
+            document.getElementById('comp-reveal-title-b').innerText = `${b.name} Properties`;
+
+            document.getElementById('comp-details-a').innerHTML = `
+                • <strong>Sides:</strong> ${a.sides}<br>
+                • <strong>Vertices:</strong> ${a.vertices}<br>
+                • <strong>Right Angles:</strong> ${a.rightAngles}<br>
+                • <strong>Side Rule:</strong> ${a.sideDesc}<br>
+                • <strong>Can Roll:</strong> ${a.canRoll}
+            `;
+
+            document.getElementById('comp-details-b').innerHTML = `
+                • <strong>Sides:</strong> ${b.sides}<br>
+                • <strong>Vertices:</strong> ${b.vertices}<br>
+                • <strong>Right Angles:</strong> ${b.rightAngles}<br>
+                • <strong>Side Rule:</strong> ${b.sideDesc}<br>
+                • <strong>Can Roll:</strong> ${b.canRoll}
+            `;
+
+            const simList = document.getElementById('comp-sim-list');
+            const diffList = document.getElementById('comp-diff-list');
+            simList.innerHTML = ''; diffList.innerHTML = '';
+
+            if (a.sides === b.sides) simList.innerHTML += `<li>Both have ${a.sides} sides and ${a.vertices} vertices.</li>`;
+            else diffList.innerHTML += `<li>${a.name} has ${a.sides} sides, but ${b.name} has ${b.sides} sides.</li>`;
+
+            if (a.rightAngles === b.rightAngles && a.rightAngles > 0) simList.innerHTML += `<li>Both shapes have ${a.rightAngles} right angles.</li>`;
+            else if (a.rightAngles !== b.rightAngles) diffList.innerHTML += `<li>${a.name} has ${a.rightAngles} right angles, while ${b.name} has ${b.rightAngles}.</li>`;
+
+            if (a.canRoll === b.canRoll) simList.innerHTML += `<li>Both ${a.canRoll === 'yes' ? 'can' : 'cannot'} roll.</li>`;
+            else diffList.innerHTML += `<li>${a.name} ${a.canRoll === 'yes' ? 'can' : 'cannot'} roll, while ${b.name} ${b.canRoll === 'yes' ? 'can' : 'cannot'}.</li>`;
+        }
+
+        function checkComparisonAnswers() {
+            const keyA = document.getElementById('compare-a').value;
+            const keyB = document.getElementById('compare-b').value;
+            const a = SHAPES_DATA[keyA];
+            const b = SHAPES_DATA[keyB];
+
+            const q1 = parseInt(document.getElementById('comp-q1').value, 10);
+            const q2 = parseInt(document.getElementById('comp-q2').value, 10);
+            const q3Rad = document.querySelector('input[name="comp-q3"]:checked');
+            const q4 = parseInt(document.getElementById('comp-q4').value, 10);
+            const q5 = parseInt(document.getElementById('comp-q5').value, 10);
+            const q6Rad = document.querySelector('input[name="comp-q6"]:checked');
+            const q7Val = document.getElementById('comp-q7').value;
+            const q8Val = document.getElementById('comp-q8').value;
+
+            const fb = document.getElementById('comp-feedback');
+
+            if (isNaN(q1) || isNaN(q2) || !q3Rad || isNaN(q4) || isNaN(q5) || !q6Rad || !q7Val || !q8Val) {
+                showFeedback(fb, 'hint', '💡 Please answer all questions before checking!');
+                return;
+            }
+
+            const q3Correct = (a.sides === b.sides && q3Rad.value === 'yes') || (a.sides !== b.sides && q3Rad.value === 'no');
+            const q6Correct = (a.vertices === b.vertices && q6Rad.value === 'yes') || (a.vertices !== b.vertices && q6Rad.value === 'no');
+
+            if (q1 === a.sides && q2 === b.sides && q3Correct && q4 === a.vertices && q5 === b.vertices && q6Correct && q7Val === 'correct' && q8Val === 'correct') {
+                showFeedback(fb, 'correct', '✓ Correct! Good observation.');
+                document.getElementById('btn-reveal-comp').style.display = 'inline-flex';
+            } else {
+                showFeedback(fb, 'incorrect', '✗ Try again. Observe carefully at both shapes.');
+            }
+        }
+
+        function showComparisonHint() {
+            const fb = document.getElementById('comp-feedback');
+            showFeedback(fb, 'hint', '💡 Hint: Count the straight boundary lines and sharp corners of both shapes shown above.');
+        }
+
+        function revealComparisonDetails() {
+            document.getElementById('comp-reveal-panel').style.display = 'block';
+            document.getElementById('comp-reveal-panel').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        /* MYSTERY SHAPE CHALLENGE */
+        const MYSTERY_QUESTIONS = [
+            {
+                target: 'square',
+                clues: ['I have 4 sides.', 'All my sides are equal.', 'I have 4 right angles.'],
+                explanation: 'A square has 4 equal sides and 4 right angles.'
+            },
+            {
+                target: 'circle',
+                clues: ['I have 0 straight sides.', 'I have 0 vertices (corners).', 'I am completely round and can roll easily.'],
+                explanation: 'A circle is enclosed by 1 continuous curved boundary with no corners.'
+            },
+            {
+                target: 'triangle',
+                clues: ['I am a polygon.', 'I have exactly 3 sides.', 'I have 3 vertices.'],
+                explanation: 'A triangle is a 3-sided polygon with 3 vertices.'
+            },
+            {
+                target: 'rectangle',
+                clues: ['I have 4 sides.', 'My opposite sides are equal in length.', 'I have 4 right angles.'],
+                explanation: 'A rectangle has 4 right angles and equal opposite sides.'
+            },
+            {
+                target: 'pentagon',
+                clues: ['I am a polygon.', 'I have 1 more side than a square.', 'I have exactly 5 sides and 5 vertices.'],
+                explanation: 'A pentagon is a 5-sided polygon.'
+            },
+            {
+                target: 'hexagon',
+                clues: ['I have 6 straight sides.', 'I have 6 vertices.', 'Honeycomb cells in bee hives are made in my shape!'],
+                explanation: 'A hexagon has 6 sides and 6 vertices.'
+            },
+            {
+                target: 'octagon',
+                clues: ['I have 8 straight sides.', 'I have 8 sharp vertices.', 'Street STOP signs are shaped like me.'],
+                explanation: 'An octagon has 8 sides and 8 corners.'
+            },
+            {
+                target: 'rhombus',
+                clues: ['I have 4 straight sides.', 'All 4 of my sides are equal in length.', 'I observe like a slanted or tilted square, but I do not require right angles.'],
+                explanation: 'A rhombus has 4 equal sides like a square, but its angles are not necessarily 90°.'
+            },
+            {
+                target: 'parallelogram',
+                clues: ['I am a 4-sided quadrilateral.', 'My opposite sides are parallel and equal.', 'I observe like a tilted rectangle.'],
+                explanation: 'A parallelogram has opposite sides that are parallel and equal.'
+            },
+            {
+                target: 'semicircle',
+                clues: ['I am formed by cutting a circle directly in half.', 'I have 1 straight side.', 'I have 1 curved boundary.'],
+                explanation: 'A semicircle is half a circle, made of 1 straight edge and 1 curved boundary.'
+            }
+        ];
+
+        let currentMysteryIdx = 0;
+        let currentClueIdx = 0;
+        let mysteryScore = 0;
+        let mysteryAttempted = false;
+
+        function initMysteryChallenge() {
+            currentMysteryIdx = 0;
+            mysteryScore = 0;
+            loadMysteryQuestion();
+        }
+
+        function loadMysteryQuestion() {
+            mysteryAttempted = false;
+            currentClueIdx = 0;
+            const q = MYSTERY_QUESTIONS[currentMysteryIdx];
+
+            document.getElementById('mystery-tracker').innerText = `Mystery ${currentMysteryIdx + 1} of ${MYSTERY_QUESTIONS.length}`;
+            document.getElementById('mystery-score').innerText = `Score: ${mysteryScore}`;
+
+            const cluesContainer = document.getElementById('clues-container');
+            cluesContainer.innerHTML = '';
+            
+            // Add first clue
+            addClueBox(q.clues[0], 1);
+
+            document.getElementById('btn-next-clue').style.display = 'inline-block';
+            document.getElementById('btn-next-mystery').style.display = 'none';
+
+            const fb = document.getElementById('guess-feedback');
+            fb.style.display = 'none';
+            fb.className = 'feedback-msg';
+
+            // Populate options
+            const opts = document.getElementById('guess-options');
+            opts.innerHTML = '';
+            Object.keys(SHAPES_DATA).forEach(key => {
+                opts.innerHTML += `<button class="tool-btn" onclick="checkMysteryAnswer('${key}')">${SHAPES_DATA[key].name}</button>`;
+            });
+        }
+
+        function addClueBox(text, num) {
+            const div = document.createElement('div');
+            div.className = 'mystery-clue-box';
+            div.innerText = `Clue ${num}: "${text}"`;
+            document.getElementById('clues-container').appendChild(div);
+        }
+
+        function revealNextClue() {
+            const q = MYSTERY_QUESTIONS[currentMysteryIdx];
+            if (currentClueIdx < q.clues.length - 1) {
+                currentClueIdx++;
+                addClueBox(q.clues[currentClueIdx], currentClueIdx + 1);
+                if (currentClueIdx === q.clues.length - 1) {
+                    document.getElementById('btn-next-clue').style.display = 'none';
+                }
+            }
+        }
+
+        function checkMysteryAnswer(selectedKey) {
+            const q = MYSTERY_QUESTIONS[currentMysteryIdx];
+            const fb = document.getElementById('guess-feedback');
+
+            if (selectedKey === q.target) {
+                if (!mysteryAttempted) {
+                    mysteryScore++;
+                    document.getElementById('mystery-score').innerText = `Score: ${mysteryScore}`;
+                }
+                showFeedback(fb, 'correct', `✓ Correct! You solved the mystery.\n\nExplanation: ${q.explanation}`);
+                document.getElementById('btn-next-mystery').style.display = 'flex';
+            } else {
+                mysteryAttempted = true;
+                showFeedback(fb, 'incorrect', '✗ Not yet. Read the clues again.');
+            }
+        }
+
+        function nextMysteryChallenge() {
+            if (currentMysteryIdx < MYSTERY_QUESTIONS.length - 1) {
+                currentMysteryIdx++;
+                loadMysteryQuestion();
+            } else {
+                // Final score
+                const fb = document.getElementById('guess-feedback');
+                showFeedback(fb, 'correct', `🎉 Challenge Complete! Final Score: ${mysteryScore} out of ${MYSTERY_QUESTIONS.length}`);
+                document.getElementById('btn-next-clue').style.display = 'none';
+                document.getElementById('btn-next-mystery').style.display = 'none';
+            }
+        }
+
+        /* SHAPE SORTING GAME */
+        let currentSortRule = '4sides';
+        let sortAllocations = {};
+
+        function setupSortRule(rule) {
+            currentSortRule = rule;
+            sortAllocations = {};
+
+            document.querySelectorAll('#view-sort .tool-btn').forEach(btn => btn.classList.remove('active'));
+            if (rule === '4sides') document.getElementById('rule-btn-4sides').classList.add('active');
+            if (rule === 'equal') document.getElementById('rule-btn-equal').classList.add('active');
+            if (rule === 'angles') document.getElementById('rule-btn-angles').classList.add('active');
+
+            const b1Title = document.getElementById('bin-1-title');
+            const b2Title = document.getElementById('bin-2-title');
+
+            if (rule === '4sides') {
+                b1Title.innerText = 'Has Exactly 4 Sides';
+                b2Title.innerText = 'Does NOT Have 4 Sides';
+            } else if (rule === 'equal') {
+                b1Title.innerText = 'All Sides Equal';
+                b2Title.innerText = 'Not All Sides Equal';
+            } else if (rule === 'angles') {
+                b1Title.innerText = 'Has Right Angles';
+                b2Title.innerText = 'No Right Angles';
+            }
+
+            const src = document.getElementById('sort-sources');
+            src.innerHTML = '<strong>Drag / Place Shapes:</strong>';
+            document.getElementById('bin-1-contents').innerHTML = '';
+            document.getElementById('bin-2-contents').innerHTML = '';
+            document.getElementById('sort-feedback').style.display = 'none';
+
+            Object.keys(SHAPES_DATA).forEach(key => {
+                const s = SHAPES_DATA[key];
+                src.innerHTML += `
+                    <div class="drag-shape" id="sort-item-${key}" draggable="true" ondragstart="handleDragStart(event, '${key}')">
+                        🔹 ${s.name}
+                    </div>
+                `;
+            });
+        }
+
+        function handleDragStart(e, key) {
+            e.dataTransfer.setData('text/plain', key);
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+        }
+
+        function handleDrop(e, binNum) {
+            e.preventDefault();
+            const key = e.dataTransfer.getData('text/plain');
+            if (!key || !SHAPES_DATA[key]) return;
+
+            sortAllocations[key] = binNum;
+            renderSortBins();
+        }
+
+        function renderSortBins() {
+            document.getElementById('bin-1-contents').innerHTML = '';
+            document.getElementById('bin-2-contents').innerHTML = '';
+
+            Object.keys(sortAllocations).forEach(key => {
+                const binNum = sortAllocations[key];
+                const s = SHAPES_DATA[key];
+                const item = document.createElement('div');
+                item.className = 'drag-shape';
+                item.innerText = `🔹 ${s.name}`;
+                document.getElementById(`bin-${binNum}-contents`).appendChild(item);
+
+                const srcItem = document.getElementById(`sort-item-${key}`);
+                if (srcItem) srcItem.style.display = 'none';
+            });
+        }
+
+        function checkSorting() {
+            let correct = true;
+            const fb = document.getElementById('sort-feedback');
+
+            if (Object.keys(sortAllocations).length < Object.keys(SHAPES_DATA).length) {
+                showFeedback(fb, 'hint', '💡 Please sort all shapes into a category before checking!');
+                return;
+            }
+
+            Object.keys(SHAPES_DATA).forEach(key => {
+                const s = SHAPES_DATA[key];
+                const userBin = sortAllocations[key];
+                let expectedBin = 2;
+
+                if (currentSortRule === '4sides' && s.sides === 4) expectedBin = 1;
+                if (currentSortRule === 'equal' && s.sideEq === 'all') expectedBin = 1;
+                if (currentSortRule === 'angles' && s.rightAngles > 0) expectedBin = 1;
+
+                if (userBin !== expectedBin) correct = false;
+            });
+
+            if (correct) {
+                showFeedback(fb, 'correct', '✓ Correct Sorting! Outstanding observation.');
+            } else {
+                showFeedback(fb, 'incorrect', '✗ Observe carefully at both categories and try again.');
+            }
+        }
+
+        /* REAL-LIFE DETECTIVE */
+        const DETECTIVE_ITEMS = [
+            { name: 'Clock Face', icon: '⏰', shape: 'circle', question: 'What 2D shape is the face of a round wall clock?' },
+            { name: 'Blackboard Face', icon: '⬛', shape: 'rectangle', question: 'What 2D shape is the front surface of a classroom blackboard?' },
+            { name: 'Board Duster Face', icon: '🧽', shape: 'rectangle', question: 'What 2D shape is the flat cleaning face of a board duster?' },
+            { name: 'Classroom Window', icon: '🪟', shape: 'square', question: 'What 2D shape forms this square window pane?' },
+            { name: 'Flying Kite', icon: '🪁', shape: 'rhombus', question: 'What 2D quadrilateral shape is this flying kite?' },
+            { name: 'Pizza Slice Face', icon: '🍕', shape: 'triangle', question: 'What 2D shape best describes the top surface of a pizza slice?' },
+            { name: 'Traffic Cone Base', icon: '🛑', shape: 'circle', question: 'What 2D shape is the circular opening base of a traffic cone?' },
+            { name: 'Traffic Yield Sign', icon: '🔻', shape: 'triangle', question: 'What 2D shape is this red yield sign?' },
+            { name: 'Envelope Front', icon: '✉️', shape: 'rectangle', question: 'What 2D shape is the front face of an envelope?' },
+            { name: 'Honeycomb Cell', icon: '🐝', shape: 'hexagon', question: 'What 2D shape forms a cell of a honeycomb?' },
+            { name: 'Coin Surface', icon: '🪙', shape: 'circle', question: 'What 2D shape is the face of a coin?' },
+            { name: 'Street Stop Sign', icon: '🛑', shape: 'octagon', question: 'What 2D shape is a standard red street stop sign?' }
+        ];
+
+        function setupDetectiveGrid() {
+            const grid = document.getElementById('detective-grid');
+            grid.innerHTML = '';
+
+            DETECTIVE_ITEMS.forEach((item, idx) => {
+                grid.innerHTML += `
+                    <div class="detective-card">
+                        <div class="detective-img-placeholder">${item.icon}</div>
+                        <div class="detective-body">
+                            <h3>${item.name}</h3>
+                            <p style="font-size:0.85rem; color:var(--text-muted); margin:0.4rem 0;">${item.question}</p>
+                            <select id="det-sel-${idx}" class="cloze-input" style="width:100%; margin-bottom:0.5rem; margin-top:auto;">
+                                <option value="">Select shape...</option>
+                                ${Object.keys(SHAPES_DATA).map(k => `<option value="${k}">${SHAPES_DATA[k].name}</option>`).join('')}
+                            </select>
+                            <button class="btn-check" style="width:100%;" onclick="checkDetective(${idx}, '${item.shape}')">CHECK</button>
+                            <div id="det-fb-${idx}" class="feedback-msg" style="margin-top:0.5rem;"></div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function checkDetective(idx, correctKey) {
+            const val = document.getElementById(`det-sel-${idx}`).value;
+            const fb = document.getElementById(`det-fb-${idx}`);
+
+            if (val === '') {
+                showFeedback(fb, 'hint', '💡 Select a shape!');
+                return;
+            }
+
+            if (val === correctKey) {
+                showFeedback(fb, 'correct', '✓ Correct Spotting!');
+            } else {
+                showFeedback(fb, 'incorrect', '✗ Try again!');
+            }
+        }
+
+        /* FINAL CHALLENGE QUESTIONS */
+        const QUESTIONS = [
+            { type: 'mcq', q: '1. How many vertices does a pentagon have?', options: ['3', '4', '5', '6'], answer: '5' },
+            { type: 'mcq', q: '2. Which shape has 4 right angles and 4 equal sides?', options: ['Rectangle', 'Square', 'Rhombus', 'Triangle'], answer: 'Square' },
+            { type: 'mcq', q: '3. What do we call a 2D shape with 6 straight sides?', options: ['Pentagon', 'Hexagon', 'Quadrilateral', 'Octagon'], answer: 'Hexagon' },
+            { type: 'mcq', q: '4. How many sides does an octagon have?', options: ['6', '7', '8', '10'], answer: '8' },
+            { type: 'mcq', q: '5. Does turning or rotating a shape change its number of corners?', options: ['Yes', 'No', 'Sometimes'], answer: 'No' },
+            { type: 'mcq', q: '6. Can a circle roll smoothly?', options: ['Yes', 'No'], answer: 'Yes' },
+            { type: 'mcq', q: '7. Which of these shapes has 7 sides?', options: ['Hexagon', 'Heptagon', 'Nonagon', 'Decagon'], answer: 'Heptagon' },
+            { type: 'mcq', q: '8. How many sides does a decagon have?', options: ['8', '9', '10', '12'], answer: '10' },
+            { type: 'mcq', q: '9. Which shape has 1 straight side and 1 curved boundary?', options: ['Circle', 'Oval', 'Semicircle', 'Triangle'], answer: 'Semicircle' },
+            { type: 'mcq', q: '10. True or False: All rhombuses have 4 equal sides.', options: ['True', 'False'], answer: 'True' }
+        ];
+
+        function setupChallengeQuestions() {
+            const container = document.getElementById('challenge-questions-container');
+            container.innerHTML = '';
+
+            QUESTIONS.forEach((q, idx) => {
+                let html = `<div class="step-box">
+                    <div style="font-weight:700; margin-bottom:0.6rem;">${q.q}</div>`;
+
+                if (q.type === 'mcq') {
+                    html += `<div style="display:flex; flex-direction:column; gap:0.4rem;">`;
+                    q.options.forEach(opt => {
+                        html += `<label><input type="radio" name="q-${idx}" value="${opt}"> ${opt}</label>`;
+                    });
+                    html += `</div>`;
+                }
+
+                html += `</div>`;
+                container.innerHTML += html;
+            });
+        }
+
+        function checkAllChallengeAnswers() {
+            let score = 0;
+            let totalMCQ = QUESTIONS.length;
+
+            QUESTIONS.forEach((q, idx) => {
+                if (q.type === 'mcq') {
+                    const sel = document.querySelector(`input[name="q-${idx}"]:checked`);
+                    if (sel && sel.value === q.answer) score++;
+                }
+            });
+
+            const box = document.getElementById('challenge-score-box');
+            if (score === totalMCQ) {
+                showFeedback(box, 'correct', `✓ Excellent! Perfect Score: ${score} / ${totalMCQ}`);
+            } else {
+                showFeedback(box, 'incorrect', `You scored ${score} out of ${totalMCQ}. Review the shapes and try again!`);
+            }
+        }
+    </script>
+</body>
+</html>
