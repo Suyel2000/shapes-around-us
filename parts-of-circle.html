@@ -26,7 +26,7 @@
   --radius-sm:9px;
   font-family:'Nunito',system-ui,-apple-system,sans-serif;
 }
-*{box-sizing:border-box;}
+*{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
 html,body{margin:0;padding:0;}
 body{
   background:
@@ -66,6 +66,7 @@ h1,h2,h3{font-family:'Baloo 2',system-ui,sans-serif; margin:0;}
   background:var(--card);cursor:pointer;font-size:1.2rem;
   display:flex;align-items:center;justify-content:center;
   box-shadow:var(--shadow); transition:transform .15s ease, border-color .15s ease;
+  touch-action: manipulation;
 }
 .mute-btn:hover{transform:translateY(-2px);border-color:var(--diameter);}
 .mute-btn:active{transform:translateY(0);}
@@ -75,7 +76,7 @@ h1,h2,h3{font-family:'Baloo 2',system-ui,sans-serif; margin:0;}
   border:2px solid var(--line);background:var(--card);color:var(--ink-soft);
   padding:11px 22px;border-radius:999px;font-weight:800;font-size:0.95rem;
   cursor:pointer;font-family:inherit;transition:all .15s ease;
-  box-shadow:var(--shadow);
+  box-shadow:var(--shadow); touch-action: manipulation;
 }
 .tab-btn:hover{transform:translateY(-2px);}
 .tab-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
@@ -100,6 +101,7 @@ h1,h2,h3{font-family:'Baloo 2',system-ui,sans-serif; margin:0;}
   border:2px solid var(--line);background:var(--paper);color:var(--ink);
   padding:9px 16px;border-radius:var(--radius-sm);font-weight:700;font-size:0.86rem;
   cursor:pointer;font-family:inherit;transition:all .15s ease;display:flex;align-items:center;gap:6px;
+  touch-action: manipulation;
 }
 .tool-btn:hover{border-color:var(--diameter);transform:translateY(-1px);}
 .tool-btn.on{background:var(--ink);color:var(--paper);border-color:var(--ink);}
@@ -111,7 +113,7 @@ h1,h2,h3{font-family:'Baloo 2',system-ui,sans-serif; margin:0;}
   width:100%; aspect-ratio:1/1; max-height:560px; margin:0 auto;
   touch-action:none; user-select:none; -webkit-user-select:none;
 }
-.svg-holder svg{width:100%;height:100%;display:block;}
+.svg-holder svg{width:100%;height:100%;display:block; touch-action:none; user-select:none; -webkit-user-select:none;}
 
 .readout-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
 .pill{
@@ -129,6 +131,7 @@ h1,h2,h3{font-family:'Baloo 2',system-ui,sans-serif; margin:0;}
 .legend-item{
   display:flex;align-items:flex-start;gap:11px;padding:10px 10px;border-radius:var(--radius-sm);
   cursor:pointer;transition:background .15s ease; margin-bottom:3px; border:1.5px solid transparent;
+  touch-action: manipulation;
 }
 .legend-item:hover{background:var(--paper);}
 .legend-item.selected{background:var(--paper);border-color:currentColor;}
@@ -168,12 +171,13 @@ h1,h2,h3{font-family:'Baloo 2',system-ui,sans-serif; margin:0;}
 .q-eyebrow{font-size:0.75rem;text-transform:uppercase;letter-spacing:.1em;color:var(--arc);font-weight:800;margin-bottom:6px;}
 .q-text{font-size:1.28rem;font-weight:800;line-height:1.4;margin-bottom:16px;font-family:'Baloo 2',sans-serif;}
 .q-stage{flex:1;display:flex;align-items:center;justify-content:center;position:relative;min-height:340px;}
-.q-stage svg{width:100%;max-width:420px;height:auto;touch-action:none;user-select:none;}
+.q-stage svg{width:100%;max-width:420px;height:auto;touch-action:none;user-select:none; -webkit-user-select:none;}
 .opt-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;}
 .opt-btn{
   flex:1;min-width:120px;border:2px solid var(--line);background:var(--paper);
   padding:14px 16px;border-radius:var(--radius-md);font-weight:800;font-size:1rem;
   cursor:pointer;font-family:inherit;transition:all .15s ease;color:var(--ink);
+  touch-action: manipulation;
 }
 .opt-btn:hover{border-color:var(--diameter);transform:translateY(-2px);}
 .opt-btn.correct{background:#E7F5EF;border-color:var(--good);color:var(--good);}
@@ -188,6 +192,7 @@ h1,h2,h3{font-family:'Baloo 2',system-ui,sans-serif; margin:0;}
 .q-nav-btn{
   border:none;background:var(--ink);color:var(--paper);padding:11px 22px;border-radius:999px;
   font-weight:800;cursor:pointer;font-family:inherit;font-size:0.92rem;transition:all .15s ease;
+  touch-action: manipulation;
 }
 .q-nav-btn:hover{transform:translateY(-2px);}
 .q-nav-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none;}
@@ -209,7 +214,7 @@ h1,h2,h3{font-family:'Baloo 2',system-ui,sans-serif; margin:0;}
 .final-sub{color:var(--ink-soft);font-weight:600;margin-bottom:18px;}
 
 footer.note{text-align:center;color:var(--ink-soft);font-size:0.82rem;margin-top:26px;padding-bottom:10px;}
-.svg-label{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;font-size:15px;}
+.svg-label{font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;font-size:15px;pointer-events:none;}
 
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
@@ -434,14 +439,16 @@ function buildExploreSvg(){
   exploreSvg.appendChild(bg);
 
   const sectorPath = describeSector(CX,CY,ex.r,ex.sectorStart,ex.sectorEnd);
-  const sectorEl = el("path",{d:sectorPath, fill:COLORS.sector, opacity: ex.mode==="sector"?"0.28":"0.16", stroke:"none", id:"sectorFill"});
+  const sectorEl = el("path",{d:sectorPath, fill:COLORS.sector, opacity: ex.mode==="sector"?"0.28":"0.16", stroke:"none", id:"sectorFill", style:"cursor:pointer; touch-action:none;"});
   exploreSvg.appendChild(sectorEl);
 
-  const circle = el("circle",{cx:CX,cy:CY,r:ex.r,fill:"none",stroke:COLORS.circumference,"stroke-width":3.5, id:"mainCircle"});
+  const circle = el("circle",{cx:CX,cy:CY,r:ex.r,fill:"none",stroke:COLORS.circumference,"stroke-width":3.5, id:"mainCircle", style:"cursor:pointer; touch-action:none;"});
   exploreSvg.appendChild(circle);
 
   const arcPath = describeArc(CX,CY,ex.r,ex.arcStart,ex.arcEnd);
-  const arcEl = el("path",{d:arcPath, fill:"none", stroke:COLORS.arc, "stroke-width":7, "stroke-linecap":"round", id:"arcHighlight"});
+  const arcHit = el("path",{d:arcPath, fill:"none", stroke:"transparent", "stroke-width":28, "stroke-linecap":"round", id:"arcHighlightHit", style:"cursor:pointer; touch-action:none;"});
+  exploreSvg.appendChild(arcHit);
+  const arcEl = el("path",{d:arcPath, fill:"none", stroke:COLORS.arc, "stroke-width":7, "stroke-linecap":"round", id:"arcHighlight", style:"cursor:pointer; touch-action:none;"});
   exploreSvg.appendChild(arcEl);
 
   const s1 = pointOnCircle(CX,CY,ex.r,ex.sectorStart);
@@ -452,17 +459,20 @@ function buildExploreSvg(){
 
   const cA = pointOnCircle(CX,CY,ex.r,ex.chordA);
   const cB = pointOnCircle(CX,CY,ex.r,ex.chordB);
-  exploreSvg.appendChild(el("line",{x1:cA.x,y1:cA.y,x2:cB.x,y2:cB.y,stroke:COLORS.chord,"stroke-width":4,"stroke-linecap":"round",id:"chordLine"}));
+  exploreSvg.appendChild(el("line",{x1:cA.x,y1:cA.y,x2:cB.x,y2:cB.y,stroke:"transparent","stroke-width":28,"stroke-linecap":"round",id:"chordLineHit",style:"cursor:pointer; touch-action:none;"}));
+  exploreSvg.appendChild(el("line",{x1:cA.x,y1:cA.y,x2:cB.x,y2:cB.y,stroke:COLORS.chord,"stroke-width":4,"stroke-linecap":"round",id:"chordLine",style:"cursor:pointer; touch-action:none;"}));
   [cA,cB].forEach((p,i)=>{ exploreSvg.appendChild(makeHandle(p.x,p.y,COLORS.chord,"chordHandle"+i)); });
 
   const dA = pointOnCircle(CX,CY,ex.r,ex.diamAngle);
   const dB = pointOnCircle(CX,CY,ex.r,ex.diamAngle+180);
-  exploreSvg.appendChild(el("line",{x1:dA.x,y1:dA.y,x2:dB.x,y2:dB.y,stroke:COLORS.diameter,"stroke-width":4,"stroke-linecap":"round",id:"diamLine"}));
+  exploreSvg.appendChild(el("line",{x1:dA.x,y1:dA.y,x2:dB.x,y2:dB.y,stroke:"transparent","stroke-width":28,"stroke-linecap":"round",id:"diamLineHit",style:"cursor:pointer; touch-action:none;"}));
+  exploreSvg.appendChild(el("line",{x1:dA.x,y1:dA.y,x2:dB.x,y2:dB.y,stroke:COLORS.diameter,"stroke-width":4,"stroke-linecap":"round",id:"diamLine",style:"cursor:pointer; touch-action:none;"}));
   exploreSvg.appendChild(makeHandle(dA.x,dA.y,COLORS.diameter,"diamHandle"));
   exploreSvg.appendChild(makeHandle(dB.x,dB.y,COLORS.diameter,"diamHandle2"));
 
   const rEnd = pointOnCircle(CX,CY,ex.r,ex.radiusAngle);
-  exploreSvg.appendChild(el("line",{x1:CX,y1:CY,x2:rEnd.x,y2:rEnd.y,stroke:COLORS.radius,"stroke-width":4,"stroke-linecap":"round",id:"radiusLine"}));
+  exploreSvg.appendChild(el("line",{x1:CX,y1:CY,x2:rEnd.x,y2:rEnd.y,stroke:"transparent","stroke-width":28,"stroke-linecap":"round",id:"radiusLineHit",style:"cursor:pointer; touch-action:none;"}));
+  exploreSvg.appendChild(el("line",{x1:CX,y1:CY,x2:rEnd.x,y2:rEnd.y,stroke:COLORS.radius,"stroke-width":4,"stroke-linecap":"round",id:"radiusLine",style:"cursor:pointer; touch-action:none;"}));
   exploreSvg.appendChild(makeHandle(rEnd.x,rEnd.y,COLORS.radius,"radiusHandle"));
 
   exploreSvg.appendChild(makeHandle(CX,CY,COLORS.centre,"centreHandle",8));
@@ -484,7 +494,8 @@ function buildExploreSvg(){
 }
 
 function makeHandle(x,y,color,id,rad){
-  const g = el("g",{id:id, style:"cursor:grab;"});
+  const g = el("g",{id:id, style:"cursor:grab; touch-action:none;"});
+  g.appendChild(el("circle",{cx:x,cy:y,r:24,fill:"transparent",stroke:"none"}));
   g.appendChild(el("circle",{cx:x,cy:y,r:(rad||11),fill:"#fff",stroke:color,"stroke-width":3}));
   g.appendChild(el("circle",{cx:x,cy:y,r:(rad?rad-4:4.5),fill:color}));
   return g;
@@ -502,7 +513,6 @@ function addLineLabel(svg, p1, p2, text, color, t){
   const mx = p1.x + (p2.x-p1.x)*frac, my = p1.y + (p2.y-p1.y)*frac;
   const dx = p2.x-p1.x, dy = p2.y-p1.y;
   const len = Math.hypot(dx,dy) || 1;
-  // unit perpendicular vector, offset away from the circle's centre so the label sits beside its line
   let nx = -dy/len, ny = dx/len;
   const towardCentreX = CX-mx, towardCentreY = CY-my;
   if(nx*towardCentreX + ny*towardCentreY > 0){ nx = -nx; ny = -ny; }
@@ -594,11 +604,59 @@ document.getElementById("resetExplore").addEventListener("click", function(){
 
 function svgPoint(svg, evt){
   const pt = svg.createSVGPoint();
-  const src = evt.touches ? evt.touches[0] : evt;
-  pt.x = src.clientX; pt.y = src.clientY;
+  let src = evt;
+  if (evt.touches && evt.touches.length > 0) {
+    src = evt.touches[0];
+  } else if (evt.changedTouches && evt.changedTouches.length > 0) {
+    src = evt.changedTouches[0];
+  }
+  pt.x = (src.clientX !== undefined) ? src.clientX : 0;
+  pt.y = (src.clientY !== undefined) ? src.clientY : 0;
   const ctm = svg.getScreenCTM().inverse();
   return pt.matrixTransform(ctm);
 }
+
+function bindTap(node, callback){
+  if(!node) return;
+  node.style.cursor = "pointer";
+  node.style.touchAction = "none";
+  let startX = 0, startY = 0, moved = false, lastTime = 0;
+
+  function down(e){
+    moved = false;
+    const src = (e.touches && e.touches.length > 0) ? e.touches[0] : (e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0] : e);
+    startX = src.clientX;
+    startY = src.clientY;
+  }
+  function move(e){
+    const src = (e.touches && e.touches.length > 0) ? e.touches[0] : (e.changedTouches && e.changedTouches.length > 0 ? e.changedTouches[0] : e);
+    if(Math.hypot(src.clientX - startX, src.clientY - startY) > 10){
+      moved = true;
+    }
+  }
+  function up(e){
+    const now = Date.now();
+    if(now - lastTime < 300) return;
+    const src = (e.changedTouches && e.changedTouches.length > 0) ? e.changedTouches[0] : e;
+    const d = Math.hypot(src.clientX - startX, src.clientY - startY);
+    if(!moved && d < 12){
+      lastTime = now;
+      if(e.cancelable) e.preventDefault();
+      callback(e);
+    }
+  }
+
+  node.addEventListener("click", (e)=>{
+    const now = Date.now();
+    if(now - lastTime < 300) return;
+    lastTime = now;
+    callback(e);
+  });
+  node.addEventListener("touchstart", down, {passive:true});
+  node.addEventListener("touchmove", move, {passive:true});
+  node.addEventListener("touchend", up, {passive:false});
+}
+
 function attachExploreHandlers(){
   const radiusHandle = document.getElementById("radiusHandle");
   const centreHandle = document.getElementById("centreHandle");
@@ -607,6 +665,7 @@ function attachExploreHandlers(){
   const chordHandle0 = document.getElementById("chordHandle0");
   const chordHandle1 = document.getElementById("chordHandle1");
   const arcHighlight = document.getElementById("arcHighlight");
+  const arcHighlightHit = document.getElementById("arcHighlightHit");
   const sectorFill = document.getElementById("sectorFill");
   const mainCircle = document.getElementById("mainCircle");
 
@@ -624,42 +683,73 @@ function attachExploreHandlers(){
   if(chordHandle0) startDrag(chordHandle0, (p)=>{ ex.chordA = angleOf(CX,CY,p.x,p.y); buildExploreSvg(); attachExploreHandlers(); });
   if(chordHandle1) startDrag(chordHandle1, (p)=>{ ex.chordB = angleOf(CX,CY,p.x,p.y); buildExploreSvg(); attachExploreHandlers(); });
 
-  if(arcHighlight) arcHighlight.addEventListener("click", ()=>selectPart("arc"));
-  if(sectorFill) sectorFill.addEventListener("click", ()=>selectPart("sector"));
-  if(mainCircle) mainCircle.addEventListener("click", ()=>selectPart("circumference"));
+  if(arcHighlight) bindTap(arcHighlight, ()=>selectPart("arc"));
+  if(arcHighlightHit) bindTap(arcHighlightHit, ()=>selectPart("arc"));
+  if(sectorFill) bindTap(sectorFill, ()=>selectPart("sector"));
+  if(mainCircle) bindTap(mainCircle, ()=>selectPart("circumference"));
 
-  const map = [["radiusLine","radius"],["diamLine","diameter"],["chordLine","chord"]];
+  const map = [
+    ["radiusLine","radius"], ["radiusLineHit","radius"],
+    ["diamLine","diameter"], ["diamLineHit","diameter"],
+    ["chordLine","chord"], ["chordLineHit","chord"]
+  ];
   map.forEach(([id,key])=>{
     const node = document.getElementById(id);
-    if(node) node.addEventListener("click",()=>selectPart(key));
+    if(node) bindTap(node, ()=>selectPart(key));
   });
 
   function startDrag(handle, onMove, onTap){
     let moved = false;
+    let startPt = {x:0, y:0};
+    let dragging = false;
+
     function move(evt){
-      moved = true;
-      evt.preventDefault();
-      onMove(svgPoint(exploreSvg, evt));
+      if(!dragging) return;
+      if(evt.cancelable) evt.preventDefault();
+      const p = svgPoint(exploreSvg, evt);
+      if(dist(startPt.x, startPt.y, p.x, p.y) > 4){
+        moved = true;
+      }
+      onMove(p);
     }
-    function up(){
+    function up(evt){
+      if(!dragging) return;
+      dragging = false;
+
       window.removeEventListener("mousemove", move);
       window.removeEventListener("mouseup", up);
       window.removeEventListener("touchmove", move);
       window.removeEventListener("touchend", up);
+      window.removeEventListener("touchcancel", up);
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+
       if(!moved && onTap) onTap();
     }
     function down(evt){
-      evt.preventDefault();
+      if(evt.cancelable) evt.preventDefault();
+      dragging = true;
       moved = false;
+      startPt = svgPoint(exploreSvg, evt);
+
       window.addEventListener("mousemove", move);
       window.addEventListener("mouseup", up);
       window.addEventListener("touchmove", move, {passive:false});
       window.addEventListener("touchend", up);
+      window.addEventListener("touchcancel", up);
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", up);
+      window.addEventListener("pointercancel", up);
     }
+
+    handle.style.touchAction = "none";
     handle.addEventListener("mousedown", down);
     handle.addEventListener("touchstart", down, {passive:false});
+    handle.addEventListener("pointerdown", down);
   }
 }
+
 function pulseCentre(){
   const c = document.getElementById("centreHandle");
   if(!c) return;
@@ -705,31 +795,35 @@ function buildFindDiagram(){
   findSvg.appendChild(el("circle",{cx:CX,cy:CY,r:210,fill:"#FDFCF8"}));
 
   const r = 150;
-  const sectorEl = el("path",{d:describeSector(CX,CY,r,215,265), fill:COLORS.sector, opacity:0.16, id:"f_sector"});
+  const sectorEl = el("path",{d:describeSector(CX,CY,r,215,265), fill:COLORS.sector, opacity:0.16, id:"f_sector", style:"cursor:pointer; touch-action:none;"});
   findSvg.appendChild(sectorEl);
 
-  findSvg.appendChild(el("circle",{cx:CX,cy:CY,r:r,fill:"none",stroke:COLORS.circumference,"stroke-width":3.5,id:"f_circ"}));
+  const circHit = el("circle",{cx:CX,cy:CY,r:r,fill:"none",stroke:"transparent","stroke-width":28,id:"f_circ_hit",style:"cursor:pointer; touch-action:none;"});
+  findSvg.appendChild(circHit);
+  findSvg.appendChild(el("circle",{cx:CX,cy:CY,r:r,fill:"none",stroke:COLORS.circumference,"stroke-width":3.5,id:"f_circ",style:"cursor:pointer; touch-action:none;"}));
 
-  const arcEl = el("path",{d:describeArc(CX,CY,r,20,90), fill:"none",stroke:COLORS.arc,"stroke-width":8,"stroke-linecap":"round",id:"f_arc"});
+  const arcHit = el("path",{d:describeArc(CX,CY,r,20,90), fill:"none",stroke:"transparent","stroke-width":28,"stroke-linecap":"round",id:"f_arc_hit",style:"cursor:pointer; touch-action:none;"});
+  findSvg.appendChild(arcHit);
+  const arcEl = el("path",{d:describeArc(CX,CY,r,20,90), fill:"none",stroke:COLORS.arc,"stroke-width":8,"stroke-linecap":"round",id:"f_arc",style:"cursor:pointer; touch-action:none;"});
   findSvg.appendChild(arcEl);
 
   const s1=pointOnCircle(CX,CY,r,215), s2=pointOnCircle(CX,CY,r,265);
   [s1,s2].forEach(p=> findSvg.appendChild(el("line",{x1:CX,y1:CY,x2:p.x,y2:p.y,stroke:COLORS.sector,"stroke-width":2.5,"stroke-dasharray":"5 4",opacity:0.85})));
 
   const cA=pointOnCircle(CX,CY,r,150), cB=pointOnCircle(CX,CY,r,290);
-  findSvg.appendChild(el("line",{x1:cA.x,y1:cA.y,x2:cB.x,y2:cB.y,stroke:COLORS.chord,"stroke-width":6,"stroke-linecap":"round",id:"f_chord"}));
+  findSvg.appendChild(el("line",{x1:cA.x,y1:cA.y,x2:cB.x,y2:cB.y,stroke:"transparent","stroke-width":28,"stroke-linecap":"round",id:"f_chord_hit",style:"cursor:pointer; touch-action:none;"}));
+  findSvg.appendChild(el("line",{x1:cA.x,y1:cA.y,x2:cB.x,y2:cB.y,stroke:COLORS.chord,"stroke-width":6,"stroke-linecap":"round",id:"f_chord",style:"cursor:pointer; touch-action:none;"}));
 
   const dA=pointOnCircle(CX,CY,r,-35), dB=pointOnCircle(CX,CY,r,145);
-  findSvg.appendChild(el("line",{x1:dA.x,y1:dA.y,x2:dB.x,y2:dB.y,stroke:COLORS.diameter,"stroke-width":6,"stroke-linecap":"round",id:"f_diam"}));
+  findSvg.appendChild(el("line",{x1:dA.x,y1:dA.y,x2:dB.x,y2:dB.y,stroke:"transparent","stroke-width":28,"stroke-linecap":"round",id:"f_diam_hit",style:"cursor:pointer; touch-action:none;"}));
+  findSvg.appendChild(el("line",{x1:dA.x,y1:dA.y,x2:dB.x,y2:dB.y,stroke:COLORS.diameter,"stroke-width":6,"stroke-linecap":"round",id:"f_diam",style:"cursor:pointer; touch-action:none;"}));
 
   const rEnd = pointOnCircle(CX,CY,r,45);
-  findSvg.appendChild(el("line",{x1:CX,y1:CY,x2:rEnd.x,y2:rEnd.y,stroke:COLORS.radius,"stroke-width":6,"stroke-linecap":"round",id:"f_radius"}));
+  findSvg.appendChild(el("line",{x1:CX,y1:CY,x2:rEnd.x,y2:rEnd.y,stroke:"transparent","stroke-width":28,"stroke-linecap":"round",id:"f_radius_hit",style:"cursor:pointer; touch-action:none;"}));
+  findSvg.appendChild(el("line",{x1:CX,y1:CY,x2:rEnd.x,y2:rEnd.y,stroke:COLORS.radius,"stroke-width":6,"stroke-linecap":"round",id:"f_radius",style:"cursor:pointer; touch-action:none;"}));
 
-  findSvg.appendChild(el("circle",{cx:CX,cy:CY,r:9,fill:COLORS.centre,stroke:"#fff","stroke-width":2.5,id:"f_centre"}));
-
-  ["f_circ","f_arc","f_chord","f_diam","f_radius"].forEach(id=>{ document.getElementById(id).style.cursor="pointer"; });
-  document.getElementById("f_sector").style.cursor="pointer";
-  document.getElementById("f_centre").style.cursor="pointer";
+  findSvg.appendChild(el("circle",{cx:CX,cy:CY,r:24,fill:"transparent",stroke:"none",id:"f_centre_hit",style:"cursor:pointer; touch-action:none;"}));
+  findSvg.appendChild(el("circle",{cx:CX,cy:CY,r:9,fill:COLORS.centre,stroke:"#fff","stroke-width":2.5,id:"f_centre",style:"cursor:pointer; touch-action:none;"}));
 }
 
 function initFindRound(){
@@ -749,12 +843,23 @@ function loadFindRound(){
   findRoundNum.textContent = (findState.round+1)+"/"+FIND_QUESTIONS.length;
   findNextBtn.disabled = true;
 
-  const targetId = {radius:"f_radius",diameter:"f_diam",chord:"f_chord",arc:"f_arc",sector:"f_sector",centre:"f_centre",circumference:"f_circ"}[qObj.key];
+  const targetKey = qObj.key;
 
-  ["f_circ","f_arc","f_chord","f_diam","f_radius","f_sector","f_centre"].forEach(id=>{
-    const node = document.getElementById(id);
+  const elementMap = [
+    {id:"f_radius", key:"radius"}, {id:"f_radius_hit", key:"radius"},
+    {id:"f_diam", key:"diameter"}, {id:"f_diam_hit", key:"diameter"},
+    {id:"f_chord", key:"chord"}, {id:"f_chord_hit", key:"chord"},
+    {id:"f_arc", key:"arc"}, {id:"f_arc_hit", key:"arc"},
+    {id:"f_sector", key:"sector"},
+    {id:"f_centre", key:"centre"}, {id:"f_centre_hit", key:"centre"},
+    {id:"f_circ", key:"circumference"}, {id:"f_circ_hit", key:"circumference"}
+  ];
+
+  elementMap.forEach(item=>{
+    const node = document.getElementById(item.id);
+    const targetNode = document.getElementById("f_" + (item.key==="circumference"?"circ":item.key));
     if(!node) return;
-    node.onclick = ()=> handleFindAnswer(id===targetId, node);
+    bindTap(node, ()=> handleFindAnswer(item.key === targetKey, targetNode || node));
   });
 }
 function handleFindAnswer(correct, node){
@@ -807,12 +912,19 @@ const QUESTIONS = [
     type:"mcq",
     text:"Tap the CENTRE of the circle.",
     build:(svg,onPick)=>{
-      const c = el("circle",{cx:150,cy:150,r:9,fill:COLORS.centre,stroke:"#fff","stroke-width":2.5,style:"cursor:pointer"});
-      c.addEventListener("click",()=>onPick(true));
+      const cHit = el("circle",{cx:150,cy:150,r:24,fill:"transparent",style:"cursor:pointer; touch-action:none;"});
+      const c = el("circle",{cx:150,cy:150,r:9,fill:COLORS.centre,stroke:"#fff","stroke-width":2.5,style:"cursor:pointer; touch-action:none;"});
+      bindTap(cHit,()=>onPick(true));
+      bindTap(c,()=>onPick(true));
+      svg.appendChild(cHit);
       svg.appendChild(c);
+
       [{x:150,y:70},{x:220,y:190}].forEach(p=>{
-        const d = el("circle",{cx:p.x,cy:p.y,r:9,fill:"#B9C2CB",stroke:"#fff","stroke-width":2.5,style:"cursor:pointer"});
-        d.addEventListener("click",()=>onPick(false));
+        const dHit = el("circle",{cx:p.x,cy:p.y,r:24,fill:"transparent",style:"cursor:pointer; touch-action:none;"});
+        const d = el("circle",{cx:p.x,cy:p.y,r:9,fill:"#B9C2CB",stroke:"#fff","stroke-width":2.5,style:"cursor:pointer; touch-action:none;"});
+        bindTap(dHit,()=>onPick(false));
+        bindTap(d,()=>onPick(false));
+        svg.appendChild(dHit);
         svg.appendChild(d);
       });
     }
@@ -892,24 +1004,23 @@ function buildDragQuestion(svg, kind){
   let handlePos = {x:230,y:150};
   const line = el("line",{x1:150,y1:150,x2:handlePos.x,y2:handlePos.y,stroke:COLORS.radius,"stroke-width":5,"stroke-linecap":"round"});
   svg.appendChild(line);
-  const handle = el("circle",{cx:handlePos.x,cy:handlePos.y,r:12,fill:"#fff",stroke:COLORS.radius,"stroke-width":3,style:"cursor:grab;"});
+
+  const handleHit = el("circle",{cx:handlePos.x,cy:handlePos.y,r:24,fill:"transparent",style:"cursor:grab; touch-action:none;"});
+  const handle = el("circle",{cx:handlePos.x,cy:handlePos.y,r:12,fill:"#fff",stroke:COLORS.radius,"stroke-width":3,style:"cursor:grab; touch-action:none;"});
+  svg.appendChild(handleHit);
   svg.appendChild(handle);
   let oppLine = null;
 
-  function svgPointFor(evt){
-    const pt = svg.createSVGPoint();
-    const src = evt.touches?evt.touches[0]:evt;
-    pt.x = src.clientX; pt.y = src.clientY;
-    return pt.matrixTransform(svg.getScreenCTM().inverse());
-  }
   function move(evt){
-    evt.preventDefault();
-    const p = svgPointFor(evt);
+    if(evt.cancelable) evt.preventDefault();
+    const p = svgPoint(svg, evt);
     const d = dist(150,150,p.x,p.y);
     const clamped = Math.max(20, Math.min(105, d));
     const ang = Math.atan2(p.y-150,p.x-150);
     const hx = 150+clamped*Math.cos(ang), hy = 150+clamped*Math.sin(ang);
+
     handle.setAttribute("cx",hx); handle.setAttribute("cy",hy);
+    handleHit.setAttribute("cx",hx); handleHit.setAttribute("cy",hy);
     line.setAttribute("x2",hx); line.setAttribute("y2",hy);
     handlePos = {x:hx,y:hy,onEdge: clamped>=95};
 
@@ -921,14 +1032,37 @@ function buildDragQuestion(svg, kind){
       line.setAttribute("stroke", COLORS.diameter);
     }
   }
+
+  let active = false;
   function up(){
+    active = false;
     window.removeEventListener("mousemove",move);
     window.removeEventListener("mouseup",up);
     window.removeEventListener("touchmove",move);
     window.removeEventListener("touchend",up);
+    window.removeEventListener("touchcancel",up);
+    window.removeEventListener("pointermove",move);
+    window.removeEventListener("pointerup",up);
+    window.removeEventListener("pointercancel",up);
   }
-  handle.addEventListener("mousedown", (e)=>{e.preventDefault(); window.addEventListener("mousemove",move); window.addEventListener("mouseup",up);});
-  handle.addEventListener("touchstart",(e)=>{e.preventDefault(); window.addEventListener("touchmove",move,{passive:false}); window.addEventListener("touchend",up);},{passive:false});
+  function down(e){
+    if(e.cancelable) e.preventDefault();
+    active = true;
+    window.addEventListener("mousemove",move);
+    window.addEventListener("mouseup",up);
+    window.addEventListener("touchmove",move,{passive:false});
+    window.addEventListener("touchend",up);
+    window.addEventListener("touchcancel",up);
+    window.addEventListener("pointermove",move);
+    window.addEventListener("pointerup",up);
+    window.addEventListener("pointercancel",up);
+  }
+
+  [handle, handleHit].forEach(h => {
+    h.addEventListener("mousedown", down);
+    h.addEventListener("touchstart", down, {passive:false});
+    h.addEventListener("pointerdown", down);
+  });
 
   const doneBtn = document.createElement("button");
   doneBtn.className = "tool-btn primary";
@@ -1009,12 +1143,14 @@ function buildTrueFalse(qObj){
 
 function buildFindSector(svg){
   const sectorPath = describeSector(150,150,110,300,350);
-  const decoy = el("circle",{cx:150,cy:150,r:110,fill:"transparent",style:"cursor:pointer"});
-  decoy.addEventListener("click",()=>handleAnswer(false));
+  const decoy = el("circle",{cx:150,cy:150,r:110,fill:"transparent",style:"cursor:pointer; touch-action:none;"});
+  bindTap(decoy,()=>handleAnswer(false));
   svg.appendChild(decoy);
-  const sEl = el("path",{d:sectorPath, fill:COLORS.sector, opacity:0.3, style:"cursor:pointer"});
-  sEl.addEventListener("click",(e)=>{ e.stopPropagation(); handleAnswer(true); });
+
+  const sEl = el("path",{d:sectorPath, fill:COLORS.sector, opacity:0.3, style:"cursor:pointer; touch-action:none;"});
+  bindTap(sEl, (e)=>{ handleAnswer(true); });
   svg.appendChild(sEl);
+
   const s1=pointOnCircle(150,150,110,300), s2=pointOnCircle(150,150,110,350);
   [s1,s2].forEach(p=>svg.appendChild(el("line",{x1:150,y1:150,x2:p.x,y2:p.y,stroke:COLORS.sector,"stroke-width":2,"stroke-dasharray":"4 3"})));
 }
@@ -1023,11 +1159,21 @@ function buildPassesCentre(svg){
   svg.appendChild(el("circle",{cx:150,cy:150,r:6,fill:COLORS.centre}));
   const dA=pointOnCircle(150,150,110,-150), dB=pointOnCircle(150,150,110,30);
   const cA=pointOnCircle(150,150,110,60), cB=pointOnCircle(150,150,110,170);
-  const lineD = el("line",{x1:dA.x,y1:dA.y,x2:dB.x,y2:dB.y,stroke:"#3A3F47","stroke-width":5,"stroke-linecap":"round",style:"cursor:pointer"});
-  const lineC = el("line",{x1:cA.x,y1:cA.y,x2:cB.x,y2:cB.y,stroke:"#3A3F47","stroke-width":5,"stroke-linecap":"round",style:"cursor:pointer"});
-  lineD.addEventListener("click",()=>handleAnswer(true));
-  lineC.addEventListener("click",()=>handleAnswer(false));
-  svg.appendChild(lineD); svg.appendChild(lineC);
+
+  const lineDHit = el("line",{x1:dA.x,y1:dA.y,x2:dB.x,y2:dB.y,stroke:"transparent","stroke-width":28,"stroke-linecap":"round",style:"cursor:pointer; touch-action:none;"});
+  const lineD = el("line",{x1:dA.x,y1:dA.y,x2:dB.x,y2:dB.y,stroke:"#3A3F47","stroke-width":5,"stroke-linecap":"round",style:"cursor:pointer; touch-action:none;"});
+
+  const lineCHit = el("line",{x1:cA.x,y1:cA.y,x2:cB.x,y2:cB.y,stroke:"transparent","stroke-width":28,"stroke-linecap":"round",style:"cursor:pointer; touch-action:none;"});
+  const lineC = el("line",{x1:cA.x,y1:cA.y,x2:cB.x,y2:cB.y,stroke:"#3A3F47","stroke-width":5,"stroke-linecap":"round",style:"cursor:pointer; touch-action:none;"});
+
+  bindTap(lineDHit, ()=>handleAnswer(true));
+  bindTap(lineD, ()=>handleAnswer(true));
+  bindTap(lineCHit, ()=>handleAnswer(false));
+  bindTap(lineC, ()=>handleAnswer(false));
+
+  svg.appendChild(lineDHit); svg.appendChild(lineD);
+  svg.appendChild(lineCHit); svg.appendChild(lineC);
+
   const tagD = el("text",{x:(dA.x+dB.x)/2, y:(dA.y+dB.y)/2 - 10, "text-anchor":"middle",class:"svg-label",fill:"#3A3F47"});
   tagD.textContent="A";
   const tagC = el("text",{x:(cA.x+cB.x)/2, y:(cA.y+cB.y)/2 + 20, "text-anchor":"middle",class:"svg-label",fill:"#3A3F47"});
