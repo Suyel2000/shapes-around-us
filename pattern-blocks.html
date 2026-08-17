@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pattern Blocks Manipulative - Interactive Geometry & Fractions</title>
     <style>
         :root {
@@ -45,6 +45,8 @@
             padding: 0;
             user-select: none;
             -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -55,6 +57,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            touch-action: none;
         }
 
         /* Header */
@@ -112,6 +115,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            touch-action: manipulation;
         }
 
         .tab-btn.active {
@@ -144,6 +148,7 @@
             cursor: pointer;
             font-size: 1.1rem;
             transition: all 0.2s ease;
+            touch-action: manipulation;
         }
 
         .icon-btn:hover {
@@ -161,6 +166,7 @@
             gap: 12px;
             overflow-x: auto;
             white-space: nowrap;
+            touch-action: pan-x;
         }
 
         .tool-group {
@@ -188,6 +194,7 @@
             align-items: center;
             gap: 6px;
             transition: all 0.15s ease;
+            touch-action: manipulation;
         }
 
         .btn:hover {
@@ -239,6 +246,7 @@
             gap: 12px;
             overflow-y: auto;
             z-index: 5;
+            touch-action: pan-y;
         }
 
         .sidebar-title {
@@ -266,6 +274,7 @@
             justify-content: space-between;
             cursor: pointer;
             transition: all 0.2s ease;
+            touch-action: manipulation;
         }
 
         .shape-card:hover {
@@ -280,11 +289,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            pointer-events: none;
         }
 
         .shape-info {
             flex: 1;
             margin-left: 10px;
+            pointer-events: none;
         }
 
         .shape-name {
@@ -304,6 +315,7 @@
             background-color: var(--bg-primary);
             overflow: hidden;
             cursor: default;
+            touch-action: none;
         }
 
         #svg-canvas {
@@ -312,6 +324,12 @@
             position: absolute;
             top: 0;
             left: 0;
+            touch-action: none;
+        }
+
+        polygon {
+            touch-action: none;
+            cursor: move;
         }
 
         /* Floating Controls on Canvas */
@@ -327,6 +345,7 @@
             gap: 4px;
             box-shadow: var(--shadow-md);
             z-index: 5;
+            touch-action: manipulation;
         }
 
         /* Inspector / Right Panel */
@@ -340,6 +359,7 @@
             gap: 16px;
             overflow-y: auto;
             z-index: 5;
+            touch-action: pan-y;
         }
 
         .panel-section {
@@ -405,6 +425,7 @@
             border: 2px solid transparent;
             cursor: pointer;
             transition: transform 0.15s ease;
+            touch-action: manipulation;
         }
 
         .color-dot:hover {
@@ -446,6 +467,7 @@
             box-shadow: var(--shadow-lg);
             max-height: 85vh;
             overflow-y: auto;
+            touch-action: pan-y;
         }
 
         .modal-header {
@@ -466,6 +488,7 @@
             font-size: 1.4rem;
             cursor: pointer;
             color: var(--text-secondary);
+            touch-action: manipulation;
         }
 
         /* Fraction Mode Box */
@@ -753,6 +776,7 @@
         /**
          * Pattern Blocks Manipulative - Single File Web Application
          * Pure JavaScript + SVG with Magnetic Edge Snapping & Audio API
+         * Multi-Touch & Smart Board Enhanced Pointer Interaction
          */
 
         // Base Scale Factor (Side Length = 50px)
@@ -925,6 +949,9 @@
                 if (!this.ctx) {
                     this.ctx = new (window.AudioContext || window.webkitAudioContext)();
                 }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
             }
             play(type) {
                 if (!state.soundEnabled) return;
@@ -1021,7 +1048,12 @@
                         <div class="shape-meta">${def.sides} sides • ${def.fractionLabel !== 'N/A' ? def.fractionLabel + ' Whole' : 'Block'}</div>
                     </div>
                 `;
-                card.addEventListener('click', () => addShapeToCanvas(def.id));
+                const addHandler = (e) => {
+                    if (e.cancelable) e.preventDefault();
+                    audio.init();
+                    addShapeToCanvas(def.id);
+                };
+                card.addEventListener('pointerdown', addHandler);
                 paletteList.appendChild(card);
             });
         }
@@ -1157,11 +1189,12 @@
             const handleBtn = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             handleBtn.setAttribute('cx', handleX);
             handleBtn.setAttribute('cy', handleY);
-            handleBtn.setAttribute('r', '8');
+            handleBtn.setAttribute('r', '12');
             handleBtn.setAttribute('fill', '#0284c7');
             handleBtn.setAttribute('stroke', '#ffffff');
             handleBtn.setAttribute('stroke-width', '2');
             handleBtn.style.cursor = 'grab';
+            handleBtn.style.touchAction = 'none';
 
             handleBtn.addEventListener('pointerdown', (e) => startRotateShape(e, shape));
             g.appendChild(handleBtn);
@@ -1175,6 +1208,9 @@
 
         function startDragShape(e, shape) {
             e.stopPropagation();
+            if (e.cancelable) e.preventDefault();
+            audio.init();
+
             state.selectedShapeId = shape.id;
             isDragging = true;
 
@@ -1190,12 +1226,14 @@
 
             renderCanvas();
 
-            window.addEventListener('pointermove', onDragShape);
+            window.addEventListener('pointermove', onDragShape, { passive: false });
             window.addEventListener('pointerup', endDragShape);
+            window.addEventListener('pointercancel', endDragShape);
         }
 
         function onDragShape(e) {
             if (!isDragging) return;
+            if (e.cancelable) e.preventDefault();
             const shape = state.shapes.find(s => s.id === state.selectedShapeId);
             if (!shape) return;
 
@@ -1218,7 +1256,7 @@
             renderCanvas();
         }
 
-        function endDragShape() {
+        function endDragShape(e) {
             if (isDragging) {
                 isDragging = false;
                 audio.play('snap');
@@ -1226,6 +1264,7 @@
             }
             window.removeEventListener('pointermove', onDragShape);
             window.removeEventListener('pointerup', endDragShape);
+            window.removeEventListener('pointercancel', endDragShape);
         }
 
         // Magnetic Vertex & Edge Snapping Engine
@@ -1263,9 +1302,11 @@
         // Interactive Rotation Logic
         function startRotateShape(e, shape) {
             e.stopPropagation();
-            const startPt = getSVGCoordinates(e);
+            if (e.cancelable) e.preventDefault();
+            audio.init();
 
             const onRotate = (moveEvt) => {
+                if (moveEvt.cancelable) moveEvt.preventDefault();
                 const pt = getSVGCoordinates(moveEvt);
                 let angle = Math.atan2(pt.x - shape.x, -(pt.y - shape.y)) * (180 / Math.PI);
                 if (angle < 0) angle += 360;
@@ -1284,19 +1325,24 @@
                 saveStateToHistory();
                 window.removeEventListener('pointermove', onRotate);
                 window.removeEventListener('pointerup', endRotate);
+                window.removeEventListener('pointercancel', endRotate);
             };
 
-            window.addEventListener('pointermove', onRotate);
+            window.addEventListener('pointermove', onRotate, { passive: false });
             window.addEventListener('pointerup', endRotate);
+            window.addEventListener('pointercancel', endRotate);
         }
 
         // Utility: Get exact SVG coordinates from pointer event
         function getSVGCoordinates(e) {
+            const pt = svgCanvas.createSVGPoint();
+            pt.x = e.clientX;
+            pt.y = e.clientY;
             const ctm = svgCanvas.getScreenCTM();
-            return {
-                x: (e.clientX - ctm.e) / ctm.a,
-                y: (e.clientY - ctm.f) / ctm.d
-            };
+            if (ctm) {
+                return pt.matrixTransform(ctm.inverse());
+            }
+            return { x: e.clientX, y: e.clientY };
         }
 
         // Inspector Panel Dynamic Update
@@ -1678,6 +1724,7 @@
 
             // Click workspace background to deselect
             svgCanvas.addEventListener('pointerdown', (e) => {
+                audio.init();
                 if (e.target === svgCanvas || e.target === gridRect) {
                     state.selectedShapeId = null;
                     renderCanvas();
