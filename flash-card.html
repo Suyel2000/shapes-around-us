@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shapes Around Us - Mathematics Flashcards</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0F172A;
+            --primary-accent: #3B82F6;
+            --secondary: #10B981;
+            --accent-yellow: #F59E0B;
+            --accent-purple: #8B5CF6;
+            --accent-rose: #F43F5E;
+            --bg-gradient-1: #090D16;
+            --bg-gradient-2: #1E1B4B;
+            --card-front: #FFFFFF;
+            --card-back: #F8FAFC;
+            --text-main: #0F172A;
+            --text-muted: #475569;
+            --border-radius: 24px;
+            --shadow-lg: 0 20px 30px -5px rgba(0, 0, 0, 0.3), 0 10px 12px -6px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Quicksand', 'Fredoka', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2));
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            overflow-x: hidden;
+        }
+
+        /* CHAPTER TITLE */
+        .chapter-header {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 14px 24px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .chapter-name {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-accent);
+            letter-spacing: 0.5px;
+        }
+
+        /* CONTROLS & CATEGORIES */
+        .controls-wrapper {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .mode-and-instruction {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            padding: 10px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 8px;
+        }
+
+        .mode-btn {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #F8FAFC;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mode-btn.active {
+            background: var(--primary-accent);
+            color: #FFFFFF;
+            border-color: var(--primary-accent);
+            transform: scale(1.03);
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+        }
+
+        .instruction-note {
+            font-size: 0.85rem;
+            color: #E2E8F0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .categories-bar {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 2px 8px 2px;
+            scrollbar-width: none;
+        }
+
+        .categories-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-chip {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .category-chip:hover, .category-chip.active {
+            background: var(--primary-accent);
+            color: #FFFFFF;
+            border-color: var(--primary-accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* PROGRESS BAR */
+        .progress-container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-bar-bg {
+            flex: 1;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, #10B981, #3B82F6);
+            transition: width 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #F1F5F9;
+            min-width: 95px;
+            text-align: right;
+        }
+
+        /* FLASHCARD SCENE */
+        .card-scene {
+            width: 100%;
+            max-width: 600px;
+            height: 460px;
+            perspective: 1200px;
+            margin: 0 auto 12px auto;
+            position: relative;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .flashcard.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        /* FRONT FACE */
+        .card-face-front {
+            background: var(--card-front);
+            color: var(--text-main);
+        }
+
+        .card-category-badge {
+            align-self: flex-start;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 5px 14px;
+            border-radius: 12px;
+            background: #EFF6FF;
+            color: var(--primary-accent);
+            border: 1px solid #DBEAFE;
+        }
+
+        .illustration-container {
+            width: 100%;
+            height: 160px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 6px 0;
+        }
+
+        .illustration-container svg {
+            max-width: 100%;
+            max-height: 100%;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.08));
+        }
+
+        .card-question {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #0F172A;
+            line-height: 1.35;
+            margin-bottom: 4px;
+        }
+
+        .think-prompt {
+            font-size: 0.85rem;
+            color: #64748B;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        /* CHALLENGE MODE OPTIONS */
+        .challenge-box {
+            width: 100%;
+            margin-bottom: 8px;
+            display: none;
+        }
+
+        .challenge-box.active {
+            display: block;
+        }
+
+        .mcq-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .mcq-btn {
+            background: #F8FAFC;
+            border: 2px solid #E2E8F0;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mcq-btn:hover {
+            border-color: var(--primary-accent);
+            background: #EFF6FF;
+        }
+
+        .mcq-btn.selected-correct {
+            background: #D1FAE5 !important;
+            border-color: #10B981 !important;
+            color: #065F46 !important;
+        }
+
+        .mcq-btn.selected-wrong {
+            background: #FEE2E2 !important;
+            border-color: #EF4444 !important;
+            color: #991B1B !important;
+        }
+
+        .challenge-feedback {
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            min-height: 20px;
+        }
+
+        .feedback-correct { color: #059669; }
+        .feedback-wrong { color: #DC2626; }
+
+        .btn-reveal {
+            background: var(--primary-accent);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-reveal:hover {
+            transform: translateY(-2px);
+            background: #2563EB;
+        }
+
+        /* BACK FACE */
+        .card-face-back {
+            background: var(--card-back);
+            color: var(--text-main);
+            transform: rotateY(180deg);
+            border: 1px solid #E2E8F0;
+        }
+
+        .answer-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--primary-accent);
+            margin-bottom: 6px;
+        }
+
+        .explanation-text {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #334155;
+            margin-bottom: 10px;
+            max-width: 95%;
+            font-weight: 600;
+        }
+
+        .highlight-visual {
+            width: 100%;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+            background: transparent;
+            border-radius: 16px;
+            padding: 10px;
+        }
+
+        .highlight-visual svg {
+            max-width: 100%;
+            max-height: 100%;
+            filter: drop-shadow(0 6px 10px rgba(0,0,0,0.08));
+        }
+
+        .btn-back-flip {
+            background: #E2E8F0;
+            color: #334155;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-back-flip:hover {
+            background: #CBD5E1;
+        }
+
+        /* NAVIGATION TOOLBAR */
+        .nav-toolbar {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.92);
+            border: none;
+            color: var(--primary);
+            padding: 12px 20px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: #FFFFFF;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .center-tools {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.92);
+            border: none;
+            color: var(--primary);
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: #FFFFFF;
+            color: var(--primary-accent);
+            transform: scale(1.05);
+        }
+
+        /* SUMMARY OVERLAY */
+        .summary-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #FFFFFF;
+            border-radius: var(--border-radius);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 24px;
+            z-index: 10;
+            border: 2px solid #E2E8F0;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .summary-overlay.active {
+            display: flex;
+        }
+
+        .summary-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-accent);
+            margin-bottom: 12px;
+        }
+
+        .summary-stats {
+            font-size: 1.05rem;
+            color: var(--text-main);
+            margin-bottom: 24px;
+            line-height: 1.6;
+            font-weight: 600;
+        }
+
+        .summary-stats span {
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .summary-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .action-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+            background: #059669;
+        }
+
+        .action-btn.secondary {
+            background: #F1F5F9;
+            color: var(--text-main);
+        }
+
+        .action-btn.secondary:hover {
+            background: #E2E8F0;
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 10px; }
+            .chapter-name { font-size: 1.3rem; }
+            .card-scene { height: 470px; }
+            .card-face { padding: 16px; }
+            .illustration-container { height: 130px; }
+            .card-question { font-size: 1.02rem; }
+            .nav-btn { padding: 10px 14px; font-size: 0.8rem; }
+            .mcq-options { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CHAPTER TITLE -->
+    <div class="chapter-header">
+        <div class="chapter-name">Shapes Around Us</div>
+    </div>
+
+    <!-- CONTROLS & CATEGORY FILTER -->
+    <div class="controls-wrapper">
+        <div class="mode-and-instruction">
+            <div class="mode-selector">
+                <button class="mode-btn active" id="modeLearn" onclick="setMode('learn')">📚 LEARN</button>
+                <button class="mode-btn" id="modeShuffle" onclick="setMode('shuffle')">🔀 SHUFFLE</button>
+                <button class="mode-btn" id="modeChallenge" onclick="setMode('challenge')">🧠 CHALLENGE</button>
+            </div>
+            <div class="instruction-note">
+                <span>💡</span> Think first. Reveal when ready!
+            </div>
+        </div>
+
+        <div class="categories-bar" id="categoryBar"></div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-container">
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">Card 1 of 70</div>
+    </div>
+
+    <!-- FLASHCARD SCENE -->
+    <div class="card-scene">
+        
+        <!-- SUMMARY OVERLAY -->
+        <div class="summary-overlay" id="summaryOverlay">
+            <div class="summary-title">🎉 Excellent Work!</div>
+            <div class="summary-stats">
+                Cards Viewed: <span id="statCardsViewed">0</span><br>
+                Challenge Score: <span id="statScore">0 / 0</span>
+            </div>
+            <div class="summary-actions">
+                <button class="action-btn" onclick="restartDeck()">REVIEW AGAIN</button>
+                <button class="action-btn secondary" onclick="shuffleAndStart()">SHUFFLE AGAIN</button>
+                <button class="action-btn secondary" onclick="resetAll()">START OVER</button>
+            </div>
+        </div>
+
+        <div class="flashcard" id="flashcard">
+            
+            <!-- FRONT FACE -->
+            <div class="card-face card-face-front">
+                <div class="card-category-badge" id="cardCategory">2D SHAPES</div>
+                
+                <div class="illustration-container" id="frontIllustration"></div>
+
+                <div class="card-question" id="cardQuestion">Question goes here...</div>
+
+                <div class="think-prompt" id="thinkPrompt">"Think before you flip!"</div>
+
+                <div class="challenge-box" id="challengeBox">
+                    <div class="mcq-options" id="mcqOptions"></div>
+                    <div class="challenge-feedback" id="challengeFeedback"></div>
+                </div>
+
+                <button class="btn-reveal" id="btnReveal" onclick="flipCard()">
+                    <span>REVEAL ANSWER</span> ➔
+                </button>
+            </div>
+
+            <!-- BACK FACE -->
+            <div class="card-face card-face-back">
+                <div class="answer-title" id="cardAnswer">Answer Title</div>
+                
+                <div class="highlight-visual" id="backIllustration"></div>
+
+                <div class="explanation-text" id="cardExplanation">Explanation goes here...</div>
+
+                <button class="btn-back-flip" onclick="flipCard()">
+                    ⟲ Flip Back
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- NAVIGATION TOOLBAR -->
+    <div class="nav-toolbar">
+        <button class="nav-btn" id="btnPrev" onclick="prevCard()">
+            ← Previous
+        </button>
+
+        <div class="center-tools">
+            <button class="icon-btn" onclick="toggleShuffle()" title="Shuffle Deck">🔀</button>
+            <button class="icon-btn" onclick="restartDeck()" title="Restart Category">⟳</button>
+        </div>
+
+        <button class="nav-btn" id="btnNext" onclick="nextCard()">
+            Next →
+        </button>
+    </div>
+
+    <!-- JAVASCRIPT DATA & LOGIC -->
+    <script>
+        const allCards = [
+            // ================= 2D SHAPES (1-10) =================
+            {
+                id: '1', category: '2D Shapes',
+                question: 'How many sides does a square have, and what is special about them?',
+                think: 'Count the straight borders and check their lengths.',
+                options: ['3 equal sides', '4 equal sides', '4 unequal sides', '6 equal sides'], correct: '4 equal sides',
+                answer: '4 Equal Sides 🟩',
+                explanation: 'A square has 4 straight sides, and every single side is identical in length!',
+                svgFront: `<svg viewBox="0 0 140 140" width="120" height="120"><rect x="20" y="20" width="100" height="100" fill="rgba(37, 99, 235, 0.2)" stroke="#2563EB" stroke-width="4" rx="12"/><line x1="20" y1="20" x2="120" y2="120" stroke="rgba(37, 99, 235, 0.3)" stroke-width="2" stroke-dasharray="4 4"/></svg>`,
+                svgBack: `<svg viewBox="0 0 140 140" width="120" height="120"><rect x="20" y="20" width="100" height="100" fill="rgba(37, 99, 235, 0.25)" stroke="#2563EB" stroke-width="5" rx="12"/><circle cx="20" cy="20" r="7" fill="#F59E0B"/><circle cx="120" cy="20" r="7" fill="#F59E0B"/><circle cx="120" cy="120" r="7" fill="#F59E0B"/><circle cx="20" cy="120" r="7" fill="#F59E0B"/></svg>`
+            },
+            {
+                id: '2', category: '2D Shapes',
+                question: 'Are all sides of a rectangle equal in length?',
+                think: 'Compare the top side to the side adjacent to it.',
+                options: ['Yes, all 4 are equal', 'No, only opposite sides are equal', 'No sides are equal', 'Curved sides only'], correct: 'No, only opposite sides are equal',
+                answer: 'Opposite Sides Are Equal ▭',
+                explanation: 'In a rectangle, opposite sides match in length! Top matches bottom, left matches right.',
+                svgFront: `<svg viewBox="0 0 160 110" width="130" height="90"><rect x="10" y="20" width="140" height="70" fill="rgba(13, 148, 136, 0.2)" stroke="#0D9488" stroke-width="4" rx="10"/></svg>`,
+                svgBack: `<svg viewBox="0 0 160 110" width="130" height="90"><rect x="10" y="20" width="140" height="70" fill="rgba(13, 148, 136, 0.25)" stroke="#0D9488" stroke-width="4" rx="10"/><line x1="10" y1="20" x2="150" y2="20" stroke="#F59E0B" stroke-width="6"/><line x1="10" y1="90" x2="150" y2="90" stroke="#F59E0B" stroke-width="6"/></svg>`
+            },
+            {
+                id: '3', category: '2D Shapes',
+                question: 'How many corners (vertices) does a triangle have?',
+                think: 'Count the pointy corners where sides meet!',
+                options: ['2 corners', '3 corners', '4 corners', '0 corners'], correct: '3 corners',
+                answer: '3 Corners (Vertices) 🔺',
+                explanation: 'Tri means three! A triangle has 3 straight sides meeting at 3 pointy corners.',
+                svgFront: `<svg viewBox="0 0 140 120" width="120" height="100"><polygon points="70,12 15,105 125,105" fill="rgba(217, 119, 6, 0.2)" stroke="#D97706" stroke-width="4" stroke-linejoin="round"/></svg>`,
+                svgBack: `<svg viewBox="0 0 140 120" width="120" height="100"><polygon points="70,12 15,105 125,105" fill="rgba(217, 119, 6, 0.25)" stroke="#D97706" stroke-width="4" stroke-linejoin="round"/><circle cx="70" cy="12" r="7" fill="#2563EB"/><circle cx="15" cy="105" r="7" fill="#2563EB"/><circle cx="125" cy="105" r="7" fill="#2563EB"/></svg>`
+            },
+            {
+                id: '4', category: '2D Shapes',
+                question: 'What is a 5-sided flat shape called?',
+                think: 'Penta comes from the Greek word for five!',
+                options: ['Hexagon', 'Pentagon', 'Triangle', 'Octagon'], correct: 'Pentagon',
+                answer: 'Pentagon ⬠',
+                explanation: 'A Pentagon is a 2D flat shape with 5 straight sides and 5 vertices.',
+                svgFront: `<svg viewBox="0 0 140 130" width="120" height="110"><polygon points="70,10 130,50 105,120 35,120 10,50" fill="rgba(124, 58, 237, 0.2)" stroke="#7C3AED" stroke-width="4" stroke-linejoin="round"/></svg>`,
+                svgBack: `<svg viewBox="0 0 140 130" width="120" height="110"><polygon points="70,10 130,50 105,120 35,120 10,50" fill="rgba(124, 58, 237, 0.25)" stroke="#7C3AED" stroke-width="4" stroke-linejoin="round"/><circle cx="70" cy="10" r="5" fill="#10B981"/><circle cx="130" cy="50" r="5" fill="#10B981"/><circle cx="105" cy="120" r="5" fill="#10B981"/><circle cx="35" cy="120" r="5" fill="#10B981"/><circle cx="10" cy="50" r="5" fill="#10B981"/></svg>`
+            },
+            {
+                id: '5', category: '2D Shapes',
+                question: 'How many sides does a Hexagon have?',
+                think: 'Hex sounds like Six!',
+                options: ['5 sides', '6 sides', '7 sides', '8 sides'], correct: '6 sides',
+                answer: '6 Sides ⬡',
+                explanation: 'A Hexagon has 6 straight sides. Honeybee honeycomb cells are hexagonal!',
+                svgFront: `<svg viewBox="0 0 140 130" width="120" height="110"><polygon points="35,10 105,10 135,65 105,120 35,120 5,65" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" stroke-width="4" stroke-linejoin="round"/></svg>`,
+                svgBack: `<svg viewBox="0 0 140 130" width="120" height="110"><polygon points="35,10 105,10 135,65 105,120 35,120 5,65" fill="rgba(16, 185, 129, 0.25)" stroke="#10B981" stroke-width="4" stroke-linejoin="round"/></svg>`
+            },
+            {
+                id: '6', category: '2D Shapes',
+                question: 'How many straight sides does a Circle have?',
+                think: 'Does a circle have any sharp lines or corners?',
+                options: ['0 straight sides', '1 straight side', '2 straight sides', 'Infinite straight sides'], correct: '0 straight sides',
+                answer: '0 Straight Sides 🟡',
+                explanation: 'A circle has ZERO straight sides! It consists of one continuous curved line.',
+                svgFront: `<svg viewBox="0 0 130 130" width="110" height="110"><circle cx="65" cy="65" r="50" fill="rgba(245, 158, 11, 0.2)" stroke="#F59E0B" stroke-width="4"/></svg>`,
+                svgBack: `<svg viewBox="0 0 130 130" width="110" height="110"><circle cx="65" cy="65" r="50" fill="none" stroke="#2563EB" stroke-width="5" stroke-dasharray="8 4"/></svg>`
+            },
+            {
+                id: '7', category: '2D Shapes',
+                question: 'What shape looks like an elongated or squashed circle?',
+                think: 'Think of an egg shape!',
+                options: ['Circle', 'Oval', 'Square', 'Triangle'], correct: 'Oval',
+                answer: 'Oval (Ellipse) 🥚',
+                explanation: 'An Oval is a curved shape like a circle, but stretched longer in one direction.',
+                svgFront: `<svg viewBox="0 0 140 110" width="120" height="90"><ellipse cx="70" cy="55" rx="60" ry="38" fill="rgba(2, 132, 199, 0.2)" stroke="#0284C7" stroke-width="4"/></svg>`,
+                svgBack: `<svg viewBox="0 0 140 110" width="120" height="90"><ellipse cx="70" cy="55" rx="60" ry="38" fill="rgba(124, 58, 237, 0.25)" stroke="#7C3AED" stroke-width="4"/></svg>`
+            },
+            {
+                id: '8', category: '2D Shapes',
+                question: 'How many sides does an Octagon have?',
+                think: 'Octo means eight, like an octopus with 8 arms!',
+                options: ['6 sides', '7 sides', '8 sides', '10 sides'], correct: '8 sides',
+                answer: '8 Sides 🛑',
+                explanation: 'An Octagon has 8 straight sides. Standard STOP traffic signs are octagons!',
+                svgFront: `<svg viewBox="0 0 130 130" width="110" height="110"><polygon points="40,10 90,10 120,40 120,90 90,120 40,120 10,90 10,40" fill="rgba(220, 38, 38, 0.2)" stroke="#DC2626" stroke-width="4" stroke-linejoin="round"/></svg>`,
+                svgBack: `<svg viewBox="0 0 130 130" width="110" height="110"><polygon points="40,10 90,10 120,40 120,90 90,120 40,120 10,90 10,40" fill="rgba(220, 38, 38, 0.25)" stroke="#DC2626" stroke-width="4" stroke-linejoin="round"/><text x="65" y="72" fill="#DC2626" font-size="20" font-weight="bold" text-anchor="middle">STOP</text></svg>`
+            },
+            {
+                id: '9', category: '2D Shapes',
+                question: 'What is the general name for ANY 4-sided flat shape?',
+                think: 'Quad means four!',
+                options: ['Triangle', 'Quadrilateral', 'Pentagon', 'Hexagon'], correct: 'Quadrilateral',
+                answer: 'Quadrilateral 🔷',
+                explanation: 'Any flat shape bounded by 4 straight sides is a Quadrilateral (e.g., squares, rectangles, kites).',
+                svgFront: `<svg viewBox="0 0 140 110" width="120" height="90"><polygon points="20,20 120,10 130,90 10,100" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" stroke-width="4" stroke-linejoin="round"/></svg>`,
+                svgBack: `<svg viewBox="0 0 140 110" width="120" height="90"><polygon points="20,20 120,10 130,90 10,100" fill="rgba(37, 99, 235, 0.25)" stroke="#2563EB" stroke-width="4" stroke-linejoin="round"/></svg>`
+            },
+            {
+                id: '10', category: '2D Shapes',
+                question: 'What shape has 4 equal straight sides but slanted corners like a diamond?',
+                think: 'It looks like a tilted square!',
+                options: ['Rhombus', 'Rectangle', 'Circle', 'Triangle'], correct: 'Rhombus',
+                answer: 'Rhombus (Diamond) ♦️',
+                explanation: 'A Rhombus has 4 equal straight sides, with opposite sides parallel to each other.',
+                svgFront: `<svg viewBox="0 0 130 130" width="110" height="110"><polygon points="65,10 115,65 65,120 15,65" fill="rgba(217, 119, 6, 0.2)" stroke="#D97706" stroke-width="4" stroke-linejoin="round"/></svg>`,
+                svgBack: `<svg viewBox="0 0 130 130" width="110" height="110"><polygon points="65,10 115,65 65,120 15,65" fill="rgba(37, 99, 235, 0.25)" stroke="#2563EB" stroke-width="4" stroke-linejoin="round"/></svg>`
+            },
+
+            // ================= 3D SHAPES (11-20) =================
+            {
+                id: '11', category: '3D Shapes',
+                question: 'How many flat faces does a Cube have?',
+                think: 'Think of playing dice! What is the highest number on a die?',
+                options: ['4 faces', '6 faces', '8 faces', '12 faces'], correct: '6 faces',
+                answer: '6 Square Faces 🧊',
+                explanation: 'A cube has 6 flat square faces, 12 straight edges, and 8 corner vertices.',
+                svgFront: `<svg viewBox="0 0 130 130" width="110" height="110"><rect x="25" y="35" width="65" height="65" fill="rgba(2, 132, 199, 0.2)" stroke="#0284C7" stroke-width="3"/><path d="M25,35 L55,10 L120,10 L90,35 Z" fill="rgba(56, 189, 248, 0.3)" stroke="#0284C7" stroke-width="3"/><path d="M90,35 L120,10 L120,75 L90,100 Z" fill="rgba(3, 105, 161, 0.3)" stroke="#0284C7" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 130 130" width="110" height="110"><rect x="25" y="35" width="65" height="65" fill="rgba(217, 119, 6, 0.25)" stroke="#D97706" stroke-width="3" rx="4"/><text x="57" y="74" fill="#D97706" font-size="18" font-weight="bold" text-anchor="middle">6 Faces</text></svg>`
+            },
+            {
+                id: '12', category: '3D Shapes',
+                question: 'What shape are the 6 flat faces of a standard Cuboid?',
+                think: 'Look at a shoe box or a cereal box.',
+                options: ['Triangles', 'Rectangles', 'Circles', 'Pentagons'], correct: 'Rectangles',
+                answer: 'Rectangular Faces 📦',
+                explanation: 'A Cuboid has 6 flat faces that are rectangular in shape.',
+                svgFront: `<svg viewBox="0 0 150 110" width="130" height="90"><rect x="10" y="30" width="90" height="60" fill="rgba(124, 58, 237, 0.2)" stroke="#7C3AED" stroke-width="3"/><path d="M10,30 L35,10 L125,10 L100,30 Z" fill="rgba(167, 139, 250, 0.3)" stroke="#7C3AED" stroke-width="3"/><path d="M100,30 L125,10 L125,70 L100,90 Z" fill="rgba(91, 33, 182, 0.3)" stroke="#7C3AED" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 150 110" width="130" height="90"><rect x="10" y="25" width="130" height="60" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" stroke-width="3" rx="8"/><text x="75" y="62" fill="#059669" font-size="16" font-weight="bold" text-anchor="middle">Rectangles</text></svg>`
+            },
+            {
+                id: '13', category: '3D Shapes',
+                question: 'How many flat circular faces does a Cylinder have?',
+                think: 'Count the top and bottom lids of a soup can!',
+                options: ['1 face', '2 faces', '3 faces', '0 faces'], correct: '2 faces',
+                answer: '2 Flat Circular Faces 🛢️',
+                explanation: 'A cylinder has 2 flat circular bases (top and bottom) and 1 curved surface connecting them.',
+                svgFront: `<svg viewBox="0 0 120 140" width="100" height="120"><rect x="20" y="25" width="80" height="80" fill="rgba(245, 158, 11, 0.15)" stroke="#F59E0B" stroke-width="3"/><ellipse cx="60" cy="25" rx="40" ry="15" fill="rgba(252, 211, 77, 0.3)" stroke="#F59E0B" stroke-width="3"/><ellipse cx="60" cy="105" rx="40" ry="15" fill="rgba(217, 119, 6, 0.3)" stroke="#F59E0B" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 140" width="100" height="120"><ellipse cx="60" cy="25" rx="40" ry="15" fill="rgba(37, 99, 235, 0.3)" stroke="#2563EB" stroke-width="3"/><ellipse cx="60" cy="105" rx="40" ry="15" fill="rgba(37, 99, 235, 0.3)" stroke="#2563EB" stroke-width="3"/><line x1="20" y1="25" x2="20" y2="105" stroke="#2563EB" stroke-width="3"/><line x1="100" y1="25" x2="100" y2="105" stroke="#2563EB" stroke-width="3"/></svg>`
+            },
+            {
+                id: '14', category: '3D Shapes',
+                question: 'How many sharp corners (vertices) does a Sphere have?',
+                think: 'Does a football or marble have any sharp points?',
+                options: ['0 corners', '1 corner', '4 corners', '8 corners'], correct: '0 corners',
+                answer: '0 Corners (Vertices) ⚽',
+                explanation: 'A Sphere is perfectly round! It has 1 continuous curved surface and zero corners.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="48" fill="rgba(37, 99, 235, 0.2)" stroke="#2563EB" stroke-width="4"/><ellipse cx="60" cy="60" rx="48" ry="16" fill="none" stroke="rgba(37, 99, 235, 0.4)" stroke-dasharray="4 4"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="48" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" stroke-width="4"/><text x="60" y="65" fill="#059669" font-size="16" font-weight="bold" text-anchor="middle">0 Corners</text></svg>`
+            },
+            {
+                id: '15', category: '3D Shapes',
+                question: 'What is the top pointed vertex of a Cone called?',
+                think: 'Look at the sharp top point of an ice-cream cone!',
+                options: ['Apex', 'Base', 'Center', 'Edge'], correct: 'Apex',
+                answer: '1 Vertex (Apex) 🍦',
+                explanation: 'A Cone has 1 flat circular base at the bottom, 1 curved surface, and 1 top vertex called the Apex.',
+                svgFront: `<svg viewBox="0 0 120 140" width="100" height="120"><path d="M60,12 L15,110 A45,15 0 0,0 105,110 Z" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" stroke-width="3"/><ellipse cx="60" cy="110" rx="45" ry="15" fill="rgba(4, 120, 87, 0.25)" stroke="#10B981" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 140" width="100" height="120"><path d="M60,12 L15,110 A45,15 0 0,0 105,110 Z" fill="rgba(37, 99, 235, 0.2)" stroke="#2563EB" stroke-width="3"/><circle cx="60" cy="12" r="7" fill="#F59E0B"/></svg>`
+            },
+            {
+                id: '16', category: '3D Shapes',
+                question: 'How many straight edges does a Cube have?',
+                think: 'Count all the line segments forming the cube frame.',
+                options: ['6 edges', '8 edges', '10 edges', '12 edges'], correct: '12 edges',
+                answer: '12 Edges 📏',
+                explanation: 'A cube has 12 straight edges where its square faces intersect!',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><rect x="15" y="35" width="60" height="60" fill="none" stroke="#7C3AED" stroke-width="3"/><rect x="45" y="15" width="60" height="60" fill="none" stroke="#7C3AED" stroke-width="3"/><line x1="15" y1="35" x2="45" y2="15" stroke="#7C3AED" stroke-width="3"/><line x1="75" y1="35" x2="105" y2="15" stroke="#7C3AED" stroke-width="3"/><line x1="15" y1="95" x2="45" y2="75" stroke="#7C3AED" stroke-width="3"/><line x1="75" y1="95" x2="105" y2="75" stroke="#7C3AED" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#7C3AED" font-size="22" font-weight="bold" text-anchor="middle">12 Edges</text></svg>`
+            },
+            {
+                id: '17', category: '3D Shapes',
+                question: 'How many corners (vertices) does a Cuboid have?',
+                think: 'Count the corner points of a cereal box.',
+                options: ['6', '8', '10', '12'], correct: '8',
+                answer: '8 Vertices (Corners) 📦',
+                explanation: 'Just like a cube, a cuboid has 8 sharp corner points (vertices).',
+                svgFront: `<svg viewBox="0 0 140 100" width="120" height="80"><rect x="10" y="20" width="100" height="60" fill="rgba(217, 119, 6, 0.2)" stroke="#D97706" stroke-width="3" rx="6"/></svg>`,
+                svgBack: `<svg viewBox="0 0 140 100" width="120" height="80"><rect x="10" y="20" width="100" height="60" fill="rgba(37, 99, 235, 0.2)" stroke="#2563EB" stroke-width="3" rx="6"/><text x="60" y="55" fill="#2563EB" font-size="18" font-weight="bold" text-anchor="middle">8 Vertices</text></svg>`
+            },
+            {
+                id: '18', category: '3D Shapes',
+                question: 'How many total faces does a Triangular Prism have?',
+                think: 'It has 2 triangular ends and rectangular sides connecting them.',
+                options: ['3 faces', '4 faces', '5 faces', '6 faces'], correct: '5 faces',
+                answer: '5 Faces (2 Triangles + 3 Rectangles) ⛺',
+                explanation: 'A triangular prism (like a tent) has 2 triangular bases and 3 rectangular sides = 5 faces total.',
+                svgFront: `<svg viewBox="0 0 130 110" width="110" height="90"><polygon points="20,90 60,20 100,90" fill="rgba(245, 158, 11, 0.2)" stroke="#F59E0B" stroke-width="3"/><path d="M60,20 L115,35 L100,90" fill="none" stroke="#F59E0B" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 130 110" width="110" height="90"><text x="65" y="55" fill="#D97706" font-size="16" font-weight="bold" text-anchor="middle">2 Triangles</text><text x="65" y="80" fill="#2563EB" font-size="16" font-weight="bold" text-anchor="middle">+ 3 Rectangles</text></svg>`
+            },
+            {
+                id: '19', category: '3D Shapes',
+                question: 'Can a Cylinder both ROLL and SLIDE?',
+                think: 'Try rolling a tin can on its side, then sliding it on its bottom.',
+                options: ['Yes, both!', 'Only roll', 'Only slide', 'Neither'], correct: 'Yes, both!',
+                answer: 'Yes! It Rolls & Slides 🛢️',
+                explanation: 'It slides on its 2 flat circular faces and rolls on its curved middle surface!',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><rect x="30" y="20" width="60" height="80" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" stroke-width="3" rx="10"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="50" fill="#DC2626" font-size="15" font-weight="bold" text-anchor="middle">Rolls on Curve</text><text x="60" y="80" fill="#059669" font-size="15" font-weight="bold" text-anchor="middle">Slides on Flat Base</text></svg>`
+            },
+            {
+                id: '20', category: '3D Shapes',
+                question: 'What 3D shape has 1 square base and 4 triangular side faces?',
+                think: 'Think of the famous monuments in Egypt!',
+                options: ['Square Pyramid', 'Cube', 'Cone', 'Cylinder'], correct: 'Square Pyramid',
+                answer: 'Square Pyramid 🔺',
+                explanation: 'A Square Pyramid has 1 flat square base at the bottom and 4 triangular faces meeting at a top apex.',
+                svgFront: `<svg viewBox="0 0 130 120" width="110" height="100"><polygon points="65,12 15,100 115,100" fill="rgba(245, 158, 11, 0.2)" stroke="#F59E0B" stroke-width="3"/><polygon points="65,12 115,100 95,110" fill="rgba(217, 119, 6, 0.3)" stroke="#D97706" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 130 120" width="110" height="100"><text x="65" y="50" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle">1 Square Base</text><text x="65" y="75" fill="#2563EB" font-size="14" font-weight="bold" text-anchor="middle">+ 4 Triangles</text></svg>`
+            },
+
+            // ================= ANGLES (21-30) =================
+            {
+                id: '21', category: 'Angles',
+                question: 'What angle forms a perfect square corner like the letter "L"?',
+                think: 'Look at the corner of your desk or window!',
+                options: ['Acute Angle', 'Right Angle', 'Obtuse Angle', 'Straight Angle'], correct: 'Right Angle',
+                answer: 'Right Angle (90°) 📐',
+                explanation: 'A Right Angle forms a perfect square corner measuring exactly 90 degrees.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><path d="M25,20 L25,95 L100,95" fill="none" stroke="#2563EB" stroke-width="6" stroke-linecap="round"/><rect x="25" y="75" width="20" height="20" fill="rgba(37, 99, 235, 0.15)" stroke="#2563EB" stroke-width="2"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><path d="M25,20 L25,95 L100,95" fill="none" stroke="#059669" stroke-width="6" stroke-linecap="round"/><rect x="25" y="75" width="20" height="20" fill="rgba(16, 185, 129, 0.2)" stroke="#059669" stroke-width="2"/><text x="65" y="60" fill="#059669" font-size="16" font-weight="bold">90°</text></svg>`
+            },
+            {
+                id: '22', category: 'Angles',
+                question: 'What is an angle that measures LESS than a Right Angle (< 90°)?',
+                think: 'It looks sharp, narrow, and cute!',
+                options: ['Acute Angle', 'Obtuse Angle', 'Right Angle', 'Flat Angle'], correct: 'Acute Angle',
+                answer: 'Acute Angle (< 90°) ✂️',
+                explanation: 'An Acute Angle is smaller than 90°. Think of a narrow slice of pizza or an open beak!',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><path d="M95,35 L25,95 L100,95" fill="none" stroke="#0284C7" stroke-width="6" stroke-linecap="round"/><path d="M55,95 A30,30 0 0,0 48,78" fill="none" stroke="#0284C7" stroke-width="2" stroke-dasharray="2 2"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><path d="M95,35 L25,95 L100,95" fill="none" stroke="#0284C7" stroke-width="5" stroke-linecap="round"/><text x="65" y="85" fill="#2563EB" font-size="14" font-weight="bold">Small & Sharp!</text></svg>`
+            },
+            {
+                id: '23', category: 'Angles',
+                question: 'What is an angle that is LARGER than 90° but less than 180°?',
+                think: 'It opens up wide!',
+                options: ['Acute Angle', 'Obtuse Angle', 'Right Angle', 'Reflex Angle'], correct: 'Obtuse Angle',
+                answer: 'Obtuse Angle (> 90°) 🪑',
+                explanation: 'An Obtuse Angle is wider than a right angle (more than 90° but less than a straight line).',
+                svgFront: `<svg viewBox="0 0 130 110" width="110" height="90"><path d="M20,30 L60,90 L120,90" fill="none" stroke="#7C3AED" stroke-width="6" stroke-linecap="round"/><path d="M80,90 A25,25 0 0,0 48,72" fill="none" stroke="#7C3AED" stroke-width="2" stroke-dasharray="3 3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 130 110" width="110" height="90"><path d="M20,30 L60,90 L120,90" fill="none" stroke="#7C3AED" stroke-width="5" stroke-linecap="round"/><text x="70" y="70" fill="#D97706" font-size="14" font-weight="bold">Wide Opening!</text></svg>`
+            },
+            {
+                id: '24', category: 'Angles',
+                question: 'What type of angle do clock hands make at 3:00?',
+                think: 'One hand points straight up (12), one points right (3).',
+                options: ['Acute Angle', 'Right Angle', 'Obtuse Angle', 'Straight Angle'], correct: 'Right Angle',
+                answer: 'Right Angle (90°) 🕒',
+                explanation: 'At 3:00, the minute hand at 12 and hour hand at 3 form an exact 90° right angle!',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="50" fill="rgba(15, 23, 42, 0.05)" stroke="#0F172A" stroke-width="4"/><line x1="60" y1="60" x2="60" y2="20" stroke="#2563EB" stroke-width="5" stroke-linecap="round"/><line x1="60" y1="60" x2="95" y2="60" stroke="#2563EB" stroke-width="5" stroke-linecap="round"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="50" fill="none" stroke="#0F172A" stroke-width="3"/><rect x="60" y="45" width="15" height="15" fill="rgba(16, 185, 129, 0.2)" stroke="#059669" stroke-width="2"/><text x="60" y="95" fill="#0F172A" font-size="12" font-weight="bold" text-anchor="middle">Exact 90° Corner</text></svg>`
+            },
+            {
+                id: '25', category: 'Angles',
+                question: 'What angle do clock hands make at 1:00?',
+                think: 'Is the opening smaller or larger than 3:00?',
+                options: ['Acute Angle', 'Right Angle', 'Obtuse Angle', 'Straight Angle'], correct: 'Acute Angle',
+                answer: 'Acute Angle (30°) 🕐',
+                explanation: 'At 1:00, the hands are close together, forming a sharp 30° acute angle!',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="50" fill="none" stroke="#0F172A" stroke-width="4"/><line x1="60" y1="60" x2="60" y2="20" stroke="#0284C7" stroke-width="5" stroke-linecap="round"/><line x1="60" y1="60" x2="80" y2="25" stroke="#0284C7" stroke-width="5" stroke-linecap="round"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#0284C7" font-size="15" font-weight="bold" text-anchor="middle">30° (< 90°)</text></svg>`
+            },
+            {
+                id: '26', category: 'Angles',
+                question: 'What angle do clock hands make at 5:00?',
+                think: 'Is the opening wider than a 90° square corner?',
+                options: ['Acute Angle', 'Right Angle', 'Obtuse Angle', 'Straight Angle'], correct: 'Obtuse Angle',
+                answer: 'Obtuse Angle (150°) 🕔',
+                explanation: 'At 5:00, the hands open wide, forming a 150° obtuse angle!',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="50" fill="none" stroke="#0F172A" stroke-width="4"/><line x1="60" y1="60" x2="60" y2="20" stroke="#7C3AED" stroke-width="5" stroke-linecap="round"/><line x1="60" y1="60" x2="80" y2="100" stroke="#7C3AED" stroke-width="5" stroke-linecap="round"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#7C3AED" font-size="15" font-weight="bold" text-anchor="middle">150° (> 90°)</text></svg>`
+            },
+            {
+                id: '27', category: 'Angles',
+                question: 'What angle is formed when clock hands are at 6:00?',
+                think: 'The hands form a flat straight line!',
+                options: ['Right Angle', 'Obtuse Angle', 'Straight Angle', 'Acute Angle'], correct: 'Straight Angle',
+                answer: 'Straight Angle (180°) 🕕',
+                explanation: 'At 6:00, one hand points straight up and the other straight down, forming a 180° line.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="50" fill="none" stroke="#0F172A" stroke-width="4"/><line x1="60" y1="20" x2="60" y2="100" stroke="#2563EB" stroke-width="5" stroke-linecap="round"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#2563EB" font-size="15" font-weight="bold" text-anchor="middle">Flat Line (180°)</text></svg>`
+            },
+            {
+                id: '28', category: 'Angles',
+                question: 'What is an angle greater than 180° but less than 360° called?',
+                think: 'It bends backward around the outside!',
+                options: ['Obtuse Angle', 'Reflex Angle', 'Acute Angle', 'Right Angle'], correct: 'Reflex Angle',
+                answer: 'Reflex Angle (> 180°) 🔄',
+                explanation: 'A Reflex Angle is larger than a straight line (180°) but less than a full turn (360°).',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><path d="M30,70 L60,60 L100,80" fill="none" stroke="#F43F5E" stroke-width="5" stroke-linecap="round"/><path d="M100,80 A35,35 0 1,0 30,70" fill="none" stroke="#F43F5E" stroke-width="2" stroke-dasharray="3 3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#F43F5E" font-size="15" font-weight="bold" text-anchor="middle">Reflex Angle</text></svg>`
+            },
+            {
+                id: '29', category: 'Angles',
+                question: 'How many right angles are inside a square or rectangle?',
+                think: 'Count all four interior corners.',
+                options: ['2 right angles', '3 right angles', '4 right angles', '0 right angles'], correct: '4 right angles',
+                answer: '4 Right Angles (360° Total) 🟩',
+                explanation: 'Every corner of a square or rectangle is a 90° right angle. 4 × 90° = 360° total.',
+                svgFront: `<svg viewBox="0 0 110 110" width="90" height="90"><rect x="15" y="15" width="80" height="80" fill="rgba(16, 185, 129, 0.15)" stroke="#10B981" stroke-width="3" rx="4"/></svg>`,
+                svgBack: `<svg viewBox="0 0 110 110" width="90" height="90"><rect x="15" y="15" width="80" height="80" fill="rgba(245, 158, 11, 0.15)" stroke="#F59E0B" stroke-width="3" rx="4"/><rect x="15" y="15" width="14" height="14" fill="none" stroke="#2563EB" stroke-width="2"/><rect x="81" y="15" width="14" height="14" fill="none" stroke="#2563EB" stroke-width="2"/><rect x="81" y="81" width="14" height="14" fill="none" stroke="#2563EB" stroke-width="2"/><rect x="15" y="81" width="14" height="14" fill="none" stroke="#2563EB" stroke-width="2"/></svg>`
+            },
+            {
+                id: '30', category: 'Angles',
+                question: 'What mathematical instrument is used to measure angles in degrees?',
+                think: 'It is a clear semi-circular scale with degree markings!',
+                options: ['Ruler', 'Protractor', 'Compass', 'Divider'], correct: 'Protractor',
+                answer: 'Protractor 📐',
+                explanation: 'A Protractor is a semi-circular tool marked from 0° to 180° used to measure and draw angles.',
+                svgFront: `<svg viewBox="0 0 120 80" width="110" height="70"><path d="M10,70 A50,50 0 0,1 110,70 Z" fill="rgba(59, 130, 246, 0.2)" stroke="#3B82F6" stroke-width="3"/><line x1="60" y1="65" x2="60" y2="75" stroke="#3B82F6" stroke-width="2"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 80" width="110" height="70"><text x="60" y="45" fill="#3B82F6" font-size="14" font-weight="bold" text-anchor="middle">Protractor (0°-180°)</text></svg>`
+            },
+
+            // ================= CIRCLE (31-40) =================
+            {
+                id: '31', category: 'Circle',
+                question: 'What is the exact middle point inside a circle called?',
+                think: 'It is at equal distance from all outer boundary points.',
+                options: ['Radius', 'Diameter', 'Centre', 'Border'], correct: 'Centre',
+                answer: 'Centre of Circle 🎯',
+                explanation: 'The Centre is the fixed middle point from which all boundary points are equidistant.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="45" fill="rgba(2, 132, 199, 0.15)" stroke="#0284C7" stroke-width="3"/><circle cx="60" cy="60" r="6" fill="#2563EB"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="45" fill="rgba(2, 132, 199, 0.2)" stroke="#0284C7" stroke-width="3"/><circle cx="60" cy="60" r="6" fill="#2563EB"/><text x="60" y="95" fill="#0F172A" font-size="13" font-weight="bold" text-anchor="middle">Exact Centre</text></svg>`
+            },
+            {
+                id: '32', category: 'Circle',
+                question: 'What is a straight line from the centre to any boundary point called?',
+                think: 'It goes halfway across the circle.',
+                options: ['Radius', 'Diameter', 'Chord', 'Boundary'], correct: 'Radius',
+                answer: 'Radius 📏',
+                explanation: 'Radius is the straight distance from the centre to any point on the outer boundary.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="45" fill="rgba(15, 23, 42, 0.05)" stroke="#0F172A" stroke-width="3"/><circle cx="60" cy="60" r="4" fill="#2563EB"/><line x1="60" y1="60" x2="105" y2="60" stroke="#F59E0B" stroke-width="5" stroke-linecap="round"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#2563EB" font-size="16" font-weight="bold" text-anchor="middle">Halfway (Radius)</text></svg>`
+            },
+            {
+                id: '33', category: 'Circle',
+                question: 'What is a straight line passing through the centre connecting two opposite boundary points called?',
+                think: 'It cuts the circle into two equal halves!',
+                options: ['Radius', 'Diameter', 'Curve', 'Arc'], correct: 'Diameter',
+                answer: 'Diameter (2 × Radius) ✂️',
+                explanation: 'Diameter passes straight through the centre, connecting two sides. It is twice the radius.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="45" fill="rgba(15, 23, 42, 0.05)" stroke="#0F172A" stroke-width="3"/><line x1="15" y1="60" x2="105" y2="60" stroke="#10B981" stroke-width="5" stroke-linecap="round"/><circle cx="60" cy="60" r="4" fill="#10B981"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#059669" font-size="15" font-weight="bold" text-anchor="middle">Full Width Across</text></svg>`
+            },
+            {
+                id: '34', category: 'Circle',
+                question: 'If the Radius of a circle is 4 cm, what is its Diameter?',
+                think: 'Diameter is DOUBLE the Radius!',
+                options: ['2 cm', '4 cm', '8 cm', '16 cm'], correct: '8 cm',
+                answer: '8 cm 🧮',
+                explanation: 'Diameter = 2 × Radius. Therefore, 2 × 4 cm = 8 cm!',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="45" fill="rgba(124, 58, 237, 0.15)" stroke="#7C3AED" stroke-width="3"/><text x="60" y="65" fill="#0F172A" font-size="13" font-weight="bold" text-anchor="middle">Radius = 4 cm</text></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="52" fill="#7C3AED" font-size="14" font-weight="bold" text-anchor="middle">4 cm + 4 cm</text><text x="60" y="78" fill="#2563EB" font-size="18" font-weight="bold" text-anchor="middle">= 8 cm</text></svg>`
+            },
+            {
+                id: '35', category: 'Circle',
+                question: 'If the Diameter of a circle is 10 cm, what is its Radius?',
+                think: 'Radius is HALF of the Diameter!',
+                options: ['5 cm', '10 cm', '15 cm', '20 cm'], correct: '5 cm',
+                answer: '5 cm 🧮',
+                explanation: 'Radius = Diameter ÷ 2. Therefore, 10 cm ÷ 2 = 5 cm!',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="45" fill="rgba(59, 130, 246, 0.15)" stroke="#3B82F6" stroke-width="3"/><text x="60" y="65" fill="#0F172A" font-size="13" font-weight="bold" text-anchor="middle">Diameter = 10 cm</text></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="52" fill="#3B82F6" font-size="14" font-weight="bold" text-anchor="middle">10 cm ÷ 2</text><text x="60" y="78" fill="#059669" font-size="18" font-weight="bold" text-anchor="middle">= 5 cm</text></svg>`
+            },
+            {
+                id: '36', category: 'Circle',
+                question: 'What tool with a needle point and pencil holder is used to draw circles?',
+                think: 'You pivot around a fixed needle point!',
+                options: ['Ruler', 'Compass', 'Protractor', 'Eraser'], correct: 'Compass',
+                answer: 'Compass 📍',
+                explanation: 'A pair of Compasses keeps a fixed radius distance from the center to trace a smooth circle.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><path d="M60,15 L35,100 M60,15 L85,100" stroke="#0F172A" stroke-width="5" stroke-linecap="round"/><circle cx="60" cy="15" r="5" fill="#0F172A"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#2563EB" font-size="16" font-weight="bold" text-anchor="middle">Drawing Compass</text></svg>`
+            },
+            {
+                id: '37', category: 'Circle',
+                question: 'What is the total distance around the outer boundary of a circle called?',
+                think: 'It is the perimeter of a circle!',
+                options: ['Circumference', 'Area', 'Diameter', 'Radius'], correct: 'Circumference',
+                answer: 'Circumference ⭕',
+                explanation: 'Circumference is the total linear distance around the outer boundary of a circle.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="45" fill="none" stroke="#D97706" stroke-width="6" stroke-dasharray="6 4"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#D97706" font-size="14" font-weight="bold" text-anchor="middle">Perimeter Boundary</text></svg>`
+            },
+            {
+                id: '38', category: 'Circle',
+                question: 'What is half of a circle called?',
+                think: 'Semi means half!',
+                options: ['Quarter Circle', 'Semicircle', 'Oval', 'Arc'], correct: 'Semicircle',
+                answer: 'Semicircle 🌓',
+                explanation: 'A Semicircle is a half-circle bounded by a diameter and a half-circumference arc.',
+                svgFront: `<svg viewBox="0 0 120 80" width="110" height="70"><path d="M15,70 A45,45 0 0,1 105,70 Z" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 80" width="110" height="70"><text x="60" y="45" fill="#059669" font-size="15" font-weight="bold" text-anchor="middle">Half Circle</text></svg>`
+            },
+            {
+                id: '39', category: 'Circle',
+                question: 'What is a straight line connecting ANY two points on a circle called?',
+                think: 'It does not necessarily have to pass through the centre.',
+                options: ['Chord', 'Radius', 'Tangent', 'Arc'], correct: 'Chord',
+                answer: 'Chord 🎵',
+                explanation: 'A Chord is a line segment connecting two points on a circle. (The diameter is the longest chord!)',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="45" fill="rgba(15, 23, 42, 0.05)" stroke="#0F172A" stroke-width="3"/><line x1="25" y1="35" x2="95" y2="90" stroke="#F43F5E" stroke-width="4" stroke-linecap="round"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#F43F5E" font-size="15" font-weight="bold" text-anchor="middle">Chord Segment</text></svg>`
+            },
+            {
+                id: '40', category: 'Circle',
+                question: 'What is a straight line that touches a circle at EXACTLY ONE point called?',
+                think: 'It grazes the outer edge without crossing inside.',
+                options: ['Chord', 'Diameter', 'Tangent', 'Secant'], correct: 'Tangent',
+                answer: 'Tangent 📍',
+                explanation: 'A Tangent is a straight line touching a circle boundary at exactly one point.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="65" r="40" fill="rgba(59, 130, 246, 0.15)" stroke="#3B82F6" stroke-width="3"/><line x1="10" y1="25" x2="110" y2="25" stroke="#10B981" stroke-width="4"/><circle cx="60" cy="25" r="4" fill="#10B981"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#10B981" font-size="15" font-weight="bold" text-anchor="middle">Touches 1 Point</text></svg>`
+            },
+
+            // ================= SHAPES AROUND US (41-50) =================
+            {
+                id: '41', category: 'Shapes Around Us',
+                question: 'What 3D shape is a birthday party hat or traffic cone?',
+                think: 'It has a round base and tapering sharp top point.',
+                options: ['Cone', 'Cylinder', 'Sphere', 'Cube'], correct: 'Cone',
+                answer: 'Cone 🥳',
+                explanation: 'A birthday party hat is a 3D Cone!',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><path d="M60,10 L20,95 A40,12 0 0,0 100,95 Z" fill="rgba(37, 99, 235, 0.2)" stroke="#2563EB" stroke-width="3"/><ellipse cx="60" cy="95" rx="40" ry="12" fill="rgba(29, 78, 216, 0.3)" stroke="#2563EB" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#D97706" font-size="18" font-weight="bold" text-anchor="middle">CONE</text></svg>`
+            },
+            {
+                id: '42', category: 'Shapes Around Us',
+                question: 'What 3D shape is a cricket ball or world globe?',
+                think: 'Round like a planet!',
+                options: ['Sphere', 'Circle', 'Cylinder', 'Cone'], correct: 'Sphere',
+                answer: 'Sphere 🌍',
+                explanation: 'A globe, basketball, or cricket ball is a 3D Sphere!',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="45" fill="rgba(2, 132, 199, 0.2)" stroke="#0284C7" stroke-width="3"/><ellipse cx="60" cy="60" rx="45" ry="15" fill="none" stroke="rgba(2, 132, 199, 0.4)" stroke-dasharray="4 4"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#059669" font-size="18" font-weight="bold" text-anchor="middle">SPHERE</text></svg>`
+            },
+            {
+                id: '43', category: 'Shapes Around Us',
+                question: 'What 3D shape is a soda can, battery, or wooden log?',
+                think: 'Round tube with two flat circular ends!',
+                options: ['Cylinder', 'Cone', 'Cuboid', 'Sphere'], correct: 'Cylinder',
+                answer: 'Cylinder 🥤',
+                explanation: 'A drink can, battery, or log is shaped like a 3D Cylinder!',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><rect x="30" y="25" width="60" height="70" fill="rgba(245, 158, 11, 0.2)" stroke="#F59E0B" stroke-width="3"/><ellipse cx="60" cy="25" rx="30" ry="10" fill="rgba(252, 211, 77, 0.3)" stroke="#F59E0B" stroke-width="3"/><ellipse cx="60" cy="95" rx="30" ry="10" fill="rgba(217, 119, 6, 0.3)" stroke="#F59E0B" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#7C3AED" font-size="18" font-weight="bold" text-anchor="middle">CYLINDER</text></svg>`
+            },
+            {
+                id: '44', category: 'Shapes Around Us',
+                question: 'What shape is a slice of pizza or watermelon wedge?',
+                think: 'It has 3 sides meeting at a central point.',
+                options: ['Triangle / Sector', 'Square', 'Rectangle', 'Circle'], correct: 'Triangle / Sector',
+                answer: 'Triangle / Sector 🍕',
+                explanation: 'A pizza slice resembles a Triangle or a Circle Sector with a curved outer crust.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><path d="M60,15 L15,95 Q60,110 105,95 Z" fill="rgba(245, 158, 11, 0.25)" stroke="#F59E0B" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#D97706" font-size="16" font-weight="bold" text-anchor="middle">Triangular Sector</text></svg>`
+            },
+            {
+                id: '45', category: 'Shapes Around Us',
+                question: 'What 3D shape is a red house brick or shoe box?',
+                think: 'A solid box with 6 rectangular faces.',
+                options: ['Cuboid', 'Cube', 'Sphere', 'Cone'], correct: 'Cuboid',
+                answer: 'Cuboid 🧱',
+                explanation: 'A red brick used in construction is a Cuboid!',
+                svgFront: `<svg viewBox="0 0 140 90" width="120" height="70"><rect x="10" y="20" width="120" height="50" fill="rgba(220, 38, 38, 0.2)" stroke="#DC2626" stroke-width="3" rx="4"/></svg>`,
+                svgBack: `<svg viewBox="0 0 140 90" width="120" height="70"><text x="70" y="50" fill="#DC2626" font-size="18" font-weight="bold" text-anchor="middle">CUBOID</text></svg>`
+            },
+            {
+                id: '46', category: 'Shapes Around Us',
+                question: 'What 2D shape is a full moon in the clear night sky?',
+                think: 'A perfect flat round disc!',
+                options: ['Circle', 'Oval', 'Square', 'Triangle'], correct: 'Circle',
+                answer: 'Circle 🌕',
+                explanation: 'A full moon appears as a bright circular disc in the night sky.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="45" fill="rgba(245, 158, 11, 0.2)" stroke="#F59E0B" stroke-width="4"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#D97706" font-size="18" font-weight="bold" text-anchor="middle">CIRCLE</text></svg>`
+            },
+            {
+                id: '47', category: 'Shapes Around Us',
+                question: 'What shape is a standard classroom blackboard or smartphone screen?',
+                think: 'Longer than it is tall, with 4 square corners.',
+                options: ['Rectangle', 'Square', 'Circle', 'Triangle'], correct: 'Rectangle',
+                answer: 'Rectangle 📱',
+                explanation: 'Blackboards, smartphone screens, and doors are Rectangles!',
+                svgFront: `<svg viewBox="0 0 150 90" width="130" height="70"><rect x="10" y="15" width="130" height="60" fill="rgba(15, 23, 42, 0.15)" stroke="#0F172A" stroke-width="3" rx="6"/></svg>`,
+                svgBack: `<svg viewBox="0 0 150 90" width="130" height="70"><text x="75" y="50" fill="#0F172A" font-size="18" font-weight="bold" text-anchor="middle">RECTANGLE</text></svg>`
+            },
+            {
+                id: '48', category: 'Shapes Around Us',
+                question: 'What 3D shape is a playing die or a Rubik\'s cube?',
+                think: 'A solid box with 6 identical square sides.',
+                options: ['Cube', 'Cuboid', 'Sphere', 'Cone'], correct: 'Cube',
+                answer: 'Cube 🎲',
+                explanation: 'A Rubik\'s cube and playing dice are 3D Cubes!',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><rect x="25" y="25" width="70" height="70" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" stroke-width="3" rx="6"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#059669" font-size="18" font-weight="bold" text-anchor="middle">CUBE</text></svg>`
+            },
+            {
+                id: '49', category: 'Shapes Around Us',
+                question: 'What 2D shape do bees construct inside honeycombs?',
+                think: 'Count the 6 straight sides!',
+                options: ['Hexagon', 'Pentagon', 'Octagon', 'Square'], correct: 'Hexagon',
+                answer: 'Hexagon 🐝',
+                explanation: 'Bees build honeycomb cells in Hexagons because they fit perfectly together without wasting wax!',
+                svgFront: `<svg viewBox="0 0 130 120" width="110" height="100"><polygon points="32,10 98,10 125,60 98,110 32,110 5,60" fill="rgba(245, 158, 11, 0.2)" stroke="#F59E0B" stroke-width="3" stroke-linejoin="round"/></svg>`,
+                svgBack: `<svg viewBox="0 0 130 120" width="110" height="100"><text x="65" y="65" fill="#D97706" font-size="16" font-weight="bold" text-anchor="middle">HEXAGON</text></svg>`
+            },
+            {
+                id: '50', category: 'Shapes Around Us',
+                question: 'What 3D shape are the famous ancient Pyramids of Egypt?',
+                think: 'Square base with triangular sloping walls.',
+                options: ['Square Pyramid', 'Cone', 'Triangular Prism', 'Cube'], correct: 'Square Pyramid',
+                answer: 'Square Pyramid 🏛️',
+                explanation: 'The ancient Egyptian pyramids are Square Pyramids!',
+                svgFront: `<svg viewBox="0 0 130 120" width="110" height="100"><polygon points="65,12 15,100 115,100" fill="rgba(217, 119, 6, 0.25)" stroke="#D97706" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 130 120" width="110" height="100"><text x="65" y="65" fill="#D97706" font-size="15" font-weight="bold" text-anchor="middle">Pyramid</text></svg>`
+            },
+
+            // ================= THINK & REASON (51-60) =================
+            {
+                id: '51', category: 'Think & Reason',
+                question: 'Can a flat polygon have 3 straight sides but 4 corners?',
+                think: 'Try drawing a 3-sided shape on paper!',
+                options: ['Yes', 'No, sides and corners are always equal in polygons', 'Only in circles', 'Sometimes'], correct: 'No, sides and corners are always equal in polygons',
+                answer: 'No! ❌',
+                explanation: 'In any flat polygon, the number of straight sides ALWAYS equals the number of vertices! 3 sides = 3 vertices.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><polygon points="60,15 15,100 105,100" fill="rgba(37, 99, 235, 0.2)" stroke="#2563EB" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="55" fill="#0F172A" font-size="14" font-weight="bold" text-anchor="middle">3 Sides</text><text x="60" y="80" fill="#DC2626" font-size="14" font-weight="bold" text-anchor="middle">= 3 Corners!</text></svg>`
+            },
+            {
+                id: '52', category: 'Think & Reason',
+                question: 'What is the main difference between a Square and a Cube?',
+                think: 'One is flat on paper, the other is a solid object.',
+                options: ['Square is 2D (flat), Cube is 3D (solid)', 'No difference', 'Cube is round', 'Square has 6 faces'], correct: 'Square is 2D (flat), Cube is 3D (solid)',
+                answer: 'Square = 2D Flat | Cube = 3D Solid 📦',
+                explanation: 'A Square is a 2D flat shape. A Cube is a 3D solid object that takes up space (has volume)!',
+                svgFront: `<svg viewBox="0 0 140 100" width="120" height="80"><rect x="15" y="20" width="45" height="45" fill="rgba(2, 132, 199, 0.2)" stroke="#0284C7" stroke-width="2" rx="4"/><rect x="80" y="30" width="45" height="45" fill="rgba(245, 158, 11, 0.2)" stroke="#F59E0B" stroke-width="2" rx="4"/></svg>`,
+                svgBack: `<svg viewBox="0 0 140 100" width="120" height="80"><text x="70" y="50" fill="#7C3AED" font-size="15" font-weight="bold" text-anchor="middle">2D Flat vs 3D Solid</text></svg>`
+            },
+            {
+                id: '53', category: 'Think & Reason',
+                question: 'If you trace the bottom flat face of a tin soup can on paper, what 2D shape do you draw?',
+                think: 'What shape is the lid of a cylinder?',
+                options: ['Circle', 'Square', 'Triangle', 'Rectangle'], correct: 'Circle',
+                answer: 'Circle 🟡',
+                explanation: 'The flat base of a cylinder is a Circle! Tracing it yields a flat 2D circle.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="40" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#059669" font-size="18" font-weight="bold" text-anchor="middle">CIRCLE</text></svg>`
+            },
+            {
+                id: '54', category: 'Think & Reason',
+                question: 'How many triangles are needed to make a simple 6-pointed star ⭐ shape?',
+                think: 'Think of two overlapping triangles in opposite directions!',
+                options: ['1 triangle', '2 triangles', '4 triangles', '5 triangles'], correct: '2 triangles',
+                answer: '2 Overlapping Triangles ✡️',
+                explanation: 'A 6-pointed star (Hexagram) is formed by overlaying an upright triangle with an inverted triangle!',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><polygon points="60,10 15,90 105,90" fill="rgba(245, 158, 11, 0.15)" stroke="#F59E0B" stroke-width="3"/><polygon points="60,110 15,30 105,30" fill="rgba(37, 99, 235, 0.15)" stroke="#2563EB" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#059669" font-size="16" font-weight="bold" text-anchor="middle">2 Triangles!</text></svg>`
+            },
+            {
+                id: '55', category: 'Think & Reason',
+                question: 'Why are manhole covers on street roads shaped like CIRCLES instead of squares?',
+                think: 'Can a square cover fall through its own diagonal opening if turned sideways?',
+                options: ['Circles cannot fall through their own hole!', 'To look prettier', 'Circles use less iron', 'Easier to paint'], correct: 'Circles cannot fall through their own hole!',
+                answer: 'Circles Cannot Fall In! 🕳️',
+                explanation: 'A circular cover cannot fall through its hole regardless of orientation because its diameter is constant everywhere.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="45" fill="rgba(15, 23, 42, 0.2)" stroke="#0F172A" stroke-width="4"/><circle cx="60" cy="60" r="30" fill="none" stroke="#0F172A" stroke-width="2" stroke-dasharray="4 4"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="55" fill="#0284C7" font-size="14" font-weight="bold" text-anchor="middle">Safe Design!</text><text x="60" y="80" fill="#F59E0B" font-size="12" font-weight="bold" text-anchor="middle">Won't fall through</text></svg>`
+            },
+            {
+                id: '56', category: 'Think & Reason',
+                question: 'What is a pattern made of repeating shapes that cover a surface with NO gaps or overlaps?',
+                think: 'Think of floor tiles or bathroom mosaic patterns!',
+                options: ['Tessellation', 'Perimeter', 'Symmetry', 'Volume'], correct: 'Tessellation',
+                answer: 'Tessellation 🧩',
+                explanation: 'A Tessellation (or tiling) covers a flat surface with repeating geometric shapes without overlaps or gaps.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><rect x="10" y="10" width="50" height="50" fill="rgba(37, 99, 235, 0.2)" stroke="#2563EB" stroke-width="2"/><rect x="60" y="10" width="50" height="50" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" stroke-width="2"/><rect x="10" y="60" width="50" height="50" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" stroke-width="2"/><rect x="60" y="60" width="50" height="50" fill="rgba(37, 99, 235, 0.2)" stroke="#2563EB" stroke-width="2"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#3B82F6" font-size="15" font-weight="bold" text-anchor="middle">Tessellation</text></svg>`
+            },
+            {
+                id: '57', category: 'Think & Reason',
+                question: 'What line splits a shape into two identical mirror-image halves?',
+                think: 'Fold a paper butterfly in half!',
+                options: ['Line of Symmetry', 'Diagonal', 'Radius', 'Perimeter'], correct: 'Line of Symmetry',
+                answer: 'Line of Symmetry 🦋',
+                explanation: 'A Line of Symmetry divides a shape into two exact matching mirror-image halves.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><path d="M60,15 L105,95 L15,95 Z" fill="rgba(124, 58, 237, 0.15)" stroke="#7C3AED" stroke-width="3"/><line x1="60" y1="10" x2="60" y2="105" stroke="#F43F5E" stroke-width="3" stroke-dasharray="4 4"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#F43F5E" font-size="14" font-weight="bold" text-anchor="middle">Mirror Symmetry</text></svg>`
+            },
+            {
+                id: '58', category: 'Think & Reason',
+                question: 'What is the difference between Perimeter and Area?',
+                think: 'One is the outer fence boundary, the other is the grass space inside.',
+                options: ['Perimeter = boundary length | Area = space inside', 'Perimeter is inside | Area is border', 'No difference', 'Perimeter is 3D volume'], correct: 'Perimeter = boundary length | Area = space inside',
+                answer: 'Perimeter = Fence | Area = Grass 🌾',
+                explanation: 'Perimeter measures the total distance around the border. Area measures the 2D surface space enclosed inside!',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><rect x="20" y="20" width="80" height="80" fill="rgba(16, 185, 129, 0.3)" stroke="#059669" stroke-width="4"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="50" fill="#059669" font-size="13" font-weight="bold" text-anchor="middle">Border = Perimeter</text><text x="60" y="75" fill="#3B82F6" font-size="13" font-weight="bold" text-anchor="middle">Inside = Area</text></svg>`
+            },
+            {
+                id: '59', category: 'Think & Reason',
+                question: 'Why are Triangles used heavily in building bridges and roof trusses?',
+                think: 'Triangles do not bend or deform easily when pressure is applied!',
+                options: ['Triangles are strong and rigid', 'Triangles look pretty', 'Triangles are cheaper', 'Triangles are light'], correct: 'Triangles are strong and rigid',
+                answer: 'Triangles Are Strong & Rigid! 🌉',
+                explanation: 'Triangles are the strongest shape in engineering because their side lengths fix their angles rigidly under pressure.',
+                svgFront: `<svg viewBox="0 0 130 100" width="110" height="80"><polygon points="15,85 65,15 115,85" fill="rgba(37, 99, 235, 0.15)" stroke="#2563EB" stroke-width="4"/><line x1="65" y1="15" x2="65" y2="85" stroke="#2563EB" stroke-width="3"/></svg>`,
+                svgBack: `<svg viewBox="0 0 130 100" width="110" height="80"><text x="65" y="55" fill="#2563EB" font-size="15" font-weight="bold" text-anchor="middle">Rigid Structure</text></svg>`
+            },
+            {
+                id: '60', category: 'Think & Reason',
+                question: 'If you cut a Cube straight across parallel to one face, what 2D shape is the slice?',
+                think: 'Imagine slicing a block of cheese!',
+                options: ['Square', 'Triangle', 'Circle', 'Hexagon'], correct: 'Square',
+                answer: 'Square Cross-Section 🧀',
+                explanation: 'Cutting a cube parallel to its faces produces a square cross-section surface!',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><rect x="25" y="25" width="70" height="70" fill="rgba(245, 158, 11, 0.2)" stroke="#F59E0B" stroke-width="3"/><line x1="10" y1="60" x2="110" y2="60" stroke="#F43F5E" stroke-width="3" stroke-dasharray="4 4"/></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="65" fill="#F59E0B" font-size="16" font-weight="bold" text-anchor="middle">Square Slice</text></svg>`
+            },
+
+            // ================= MYSTERY SHAPES (61-70) =================
+            {
+                id: '61', category: 'Mystery Shapes',
+                question: 'I have 1 curved surface and 0 flat faces. I roll smoothly in all directions. Who am I?',
+                think: 'Think of a basketball or globe!',
+                options: ['Sphere', 'Cube', 'Cylinder', 'Cone'], correct: 'Sphere',
+                answer: 'I am a SPHERE! 🔮',
+                explanation: 'A Sphere is perfectly round with 0 corners and 0 flat faces.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="80" fill="#3B82F6" font-size="60" font-weight="bold" text-anchor="middle">?</text></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="45" fill="rgba(124, 58, 237, 0.2)" stroke="#7C3AED" stroke-width="4"/><text x="60" y="65" fill="#7C3AED" font-size="16" font-weight="bold" text-anchor="middle">SPHERE</text></svg>`
+            },
+            {
+                id: '62', category: 'Mystery Shapes',
+                question: 'I have 6 identical square faces, 8 corners, and 12 edges. Who am I?',
+                think: 'Think of a Rubik\'s cube or playing die!',
+                options: ['Cube', 'Cuboid', 'Pyramid', 'Cylinder'], correct: 'Cube',
+                answer: 'I am a CUBE! 🎲',
+                explanation: 'A Cube has 6 identical square faces and 12 straight edges.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="80" fill="#10B981" font-size="60" font-weight="bold" text-anchor="middle">?</text></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><rect x="30" y="30" width="60" height="60" fill="rgba(2, 132, 199, 0.2)" stroke="#0284C7" stroke-width="3" rx="6"/><text x="60" y="65" fill="#0284C7" font-size="16" font-weight="bold" text-anchor="middle">CUBE</text></svg>`
+            },
+            {
+                id: '63', category: 'Mystery Shapes',
+                question: 'I have 3 straight sides and 3 sharp corners. Who am I?',
+                think: 'Tri means three!',
+                options: ['Triangle', 'Square', 'Circle', 'Pentagon'], correct: 'Triangle',
+                answer: 'I am a TRIANGLE! 🔺',
+                explanation: 'A Triangle is a flat 3-sided polygon.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="80" fill="#F59E0B" font-size="60" font-weight="bold" text-anchor="middle">?</text></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><polygon points="60,15 15,100 105,100" fill="rgba(37, 99, 235, 0.2)" stroke="#2563EB" stroke-width="4"/><text x="60" y="75" fill="#2563EB" font-size="14" font-weight="bold" text-anchor="middle">TRIANGLE</text></svg>`
+            },
+            {
+                id: '64', category: 'Mystery Shapes',
+                question: 'I have 2 flat circular faces and 1 curved tube. I can roll AND slide. Who am I?',
+                think: 'Think of a cold drink can!',
+                options: ['Cylinder', 'Cone', 'Sphere', 'Cube'], correct: 'Cylinder',
+                answer: 'I am a CYLINDER! 🥤',
+                explanation: 'A Cylinder has 2 circular bases and 1 curved surface.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="80" fill="#8B5CF6" font-size="60" font-weight="bold" text-anchor="middle">?</text></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><rect x="35" y="25" width="50" height="70" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" stroke-width="3" rx="8"/><text x="60" y="65" fill="#059669" font-size="14" font-weight="bold" text-anchor="middle">CYLINDER</text></svg>`
+            },
+            {
+                id: '65', category: 'Mystery Shapes',
+                question: 'I have 4 equal sides, but my corners are slanted like a diamond. Who am I?',
+                think: 'It looks like a tilted square!',
+                options: ['Rhombus', 'Rectangle', 'Trapezoid', 'Circle'], correct: 'Rhombus',
+                answer: 'I am a RHOMBUS! ♦️',
+                explanation: 'A Rhombus has 4 equal straight sides with slanted corners.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="80" fill="#EC4899" font-size="60" font-weight="bold" text-anchor="middle">?</text></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><polygon points="60,15 105,60 60,105 15,60" fill="rgba(217, 119, 6, 0.2)" stroke="#D97706" stroke-width="3"/><text x="60" y="65" fill="#D97706" font-size="14" font-weight="bold" text-anchor="middle">RHOMBUS</text></svg>`
+            },
+            {
+                id: '66', category: 'Mystery Shapes',
+                question: 'I have 1 flat circular base and 1 pointy vertex at the top called the apex. Who am I?',
+                think: 'Think of an ice-cream cone!',
+                options: ['Cone', 'Cylinder', 'Pyramid', 'Sphere'], correct: 'Cone',
+                answer: 'I am a CONE! 🍦',
+                explanation: 'A Cone has 1 circular base and 1 apex vertex.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="80" fill="#F43F5E" font-size="60" font-weight="bold" text-anchor="middle">?</text></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><path d="M60,15 L20,95 A40,12 0 0,0 100,95 Z" fill="rgba(244, 63, 94, 0.2)" stroke="#F43F5E" stroke-width="3"/><text x="60" y="70" fill="#F43F5E" font-size="15" font-weight="bold" text-anchor="middle">CONE</text></svg>`
+            },
+            {
+                id: '67', category: 'Mystery Shapes',
+                question: 'I am a 6-sided flat polygon. Bees love my shape for honeycombs! Who am I?',
+                think: 'Hex sounds like six!',
+                options: ['Hexagon', 'Pentagon', 'Octagon', 'Heptagon'], correct: 'Hexagon',
+                answer: 'I am a HEXAGON! 🐝',
+                explanation: 'A Hexagon is a flat shape with 6 straight sides.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="80" fill="#10B981" font-size="60" font-weight="bold" text-anchor="middle">?</text></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><polygon points="30,15 90,15 115,60 90,105 30,105 5,60" fill="rgba(16, 185, 129, 0.2)" stroke="#10B981" stroke-width="3"/><text x="60" y="65" fill="#059669" font-size="14" font-weight="bold" text-anchor="middle">HEXAGON</text></svg>`
+            },
+            {
+                id: '68', category: 'Mystery Shapes',
+                question: 'I have 6 rectangular faces, 12 straight edges, and 8 corner vertices. Who am I?',
+                think: 'Think of a cereal box or red brick!',
+                options: ['Cuboid', 'Cube', 'Cylinder', 'Prism'], correct: 'Cuboid',
+                answer: 'I am a CUBOID! 🧱',
+                explanation: 'A Cuboid is a 3D box shape with rectangular faces.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="80" fill="#3B82F6" font-size="60" font-weight="bold" text-anchor="middle">?</text></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><rect x="15" y="35" width="90" height="50" fill="rgba(59, 130, 246, 0.2)" stroke="#3B82F6" stroke-width="3" rx="4"/><text x="60" y="65" fill="#2563EB" font-size="15" font-weight="bold" text-anchor="middle">CUBOID</text></svg>`
+            },
+            {
+                id: '69', category: 'Mystery Shapes',
+                question: 'I am a round 2D shape with 0 straight sides and 0 corners. Who am I?',
+                think: 'Think of a full moon or coin!',
+                options: ['Circle', 'Oval', 'Sphere', 'Cylinder'], correct: 'Circle',
+                answer: 'I am a CIRCLE! 🟡',
+                explanation: 'A Circle is a 2D round shape with 0 straight sides.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="80" fill="#F59E0B" font-size="60" font-weight="bold" text-anchor="middle">?</text></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><circle cx="60" cy="60" r="45" fill="rgba(245, 158, 11, 0.2)" stroke="#F59E0B" stroke-width="4"/><text x="60" y="65" fill="#D97706" font-size="15" font-weight="bold" text-anchor="middle">CIRCLE</text></svg>`
+            },
+            {
+                id: '70', category: 'Mystery Shapes',
+                question: 'I am an 8-sided flat shape used on red STOP traffic signs. Who am I?',
+                think: 'Octo means eight!',
+                options: ['Octagon', 'Hexagon', 'Pentagon', 'Decagon'], correct: 'Octagon',
+                answer: 'I am an OCTAGON! 🛑',
+                explanation: 'An Octagon is an 8-sided flat polygon.',
+                svgFront: `<svg viewBox="0 0 120 120" width="100" height="100"><text x="60" y="80" fill="#DC2626" font-size="60" font-weight="bold" text-anchor="middle">?</text></svg>`,
+                svgBack: `<svg viewBox="0 0 120 120" width="100" height="100"><polygon points="38,15 82,15 105,38 105,82 82,105 38,105 15,82 15,38" fill="rgba(220, 38, 38, 0.2)" stroke="#DC2626" stroke-width="3"/><text x="60" y="65" fill="#DC2626" font-size="14" font-weight="bold" text-anchor="middle">OCTAGON</text></svg>`
+            }
+        ];
+
+        const categories = ['All', '2D Shapes', '3D Shapes', 'Angles', 'Circle', 'Shapes Around Us', 'Think & Reason', 'Mystery Shapes'];
+
+        let activeCategory = 'All';
+        let currentMode = 'learn';
+        let currentDeck = [...allCards];
+        let currentIndex = 0;
+        let cardsViewedCount = 0;
+        let challengeCorrect = 0;
+        let challengeAttempted = 0;
+        let isFlipped = false;
+        let userSelectedChallenge = false;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            updateDeck();
+            setupKeyboardNav();
+        });
+
+        function renderCategories() {
+            const bar = document.getElementById('categoryBar');
+            bar.innerHTML = '';
+            categories.forEach(cat => {
+                const chip = document.createElement('div');
+                chip.className = `category-chip ${cat === activeCategory ? 'active' : ''}`;
+                chip.innerText = getCategoryIcon(cat) + ' ' + cat;
+                chip.onclick = () => selectCategory(cat);
+                bar.appendChild(chip);
+            });
+        }
+
+        function getCategoryIcon(cat) {
+            switch(cat) {
+                case '2D Shapes': return '🔷';
+                case '3D Shapes': return '🧊';
+                case 'Angles': return '📐';
+                case 'Circle': return '⭕';
+                case 'Shapes Around Us': return '🏠';
+                case 'Think & Reason': return '🧠';
+                case 'Mystery Shapes': return '❓';
+                default: return '🌟';
+            }
+        }
+
+        function selectCategory(cat) {
+            activeCategory = cat;
+            renderCategories();
+            updateDeck();
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            if(mode === 'learn') document.getElementById('modeLearn').classList.add('active');
+            if(mode === 'shuffle') document.getElementById('modeShuffle').classList.add('active');
+            if(mode === 'challenge') document.getElementById('modeChallenge').classList.add('active');
+
+            if(mode === 'shuffle') shuffleArray(currentDeck);
+            currentIndex = 0;
+            renderCard();
+        }
+
+        function updateDeck() {
+            if(activeCategory === 'All') {
+                currentDeck = [...allCards];
+            } else {
+                currentDeck = allCards.filter(c => c.category === activeCategory);
+            }
+
+            if(currentMode === 'shuffle') shuffleArray(currentDeck);
+
+            currentIndex = 0;
+            cardsViewedCount = 0;
+            challengeCorrect = 0;
+            challengeAttempted = 0;
+            document.getElementById('summaryOverlay').classList.remove('active');
+            renderCard();
+        }
+
+        function renderCard() {
+            if(currentDeck.length === 0) return;
+
+            isFlipped = false;
+            document.getElementById('flashcard').classList.remove('is-flipped');
+            userSelectedChallenge = false;
+
+            const card = currentDeck[currentIndex];
+
+            document.getElementById('cardCategory').innerText = card.category;
+            document.getElementById('frontIllustration').innerHTML = card.svgFront;
+            document.getElementById('cardQuestion').innerText = card.question;
+            document.getElementById('thinkPrompt').innerText = `"${card.think}"`;
+
+            document.getElementById('cardAnswer').innerText = card.answer;
+            document.getElementById('backIllustration').innerHTML = card.svgBack;
+            document.getElementById('cardExplanation').innerText = card.explanation;
+
+            const challengeBox = document.getElementById('challengeBox');
+            const mcqOptions = document.getElementById('mcqOptions');
+            const feedback = document.getElementById('challengeFeedback');
+            feedback.innerText = '';
+            feedback.className = 'challenge-feedback';
+
+            if(currentMode === 'challenge') {
+                challengeBox.classList.add('active');
+                mcqOptions.innerHTML = '';
+                card.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'mcq-btn';
+                    btn.innerText = opt;
+                    btn.onclick = () => handleChallengeAnswer(opt, card.correct, btn);
+                    mcqOptions.appendChild(btn);
+                });
+            } else {
+                challengeBox.classList.remove('active');
+            }
+
+            const total = currentDeck.length;
+            const progressPercent = ((currentIndex + 1) / total) * 100;
+            document.getElementById('progressBar').style.width = `${progressPercent}%`;
+            document.getElementById('progressText').innerText = `Card ${currentIndex + 1} of ${total}`;
+
+            document.getElementById('btnPrev').disabled = (currentIndex === 0);
+            document.getElementById('btnNext').disabled = (currentIndex === total - 1);
+        }
+
+        function handleChallengeAnswer(selected, correct, btnElement) {
+            if(userSelectedChallenge) return;
+            userSelectedChallenge = true;
+            challengeAttempted++;
+
+            const feedback = document.getElementById('challengeFeedback');
+            const allMcqBtns = document.querySelectorAll('.mcq-btn');
+
+            if(selected === correct) {
+                challengeCorrect++;
+                btnElement.classList.add('selected-correct');
+                feedback.innerText = '✓ Great job! Correct!';
+                feedback.className = 'challenge-feedback feedback-correct';
+            } else {
+                btnElement.classList.add('selected-wrong');
+                feedback.innerText = `✗ Oops! Correct: ${correct}`;
+                feedback.className = 'challenge-feedback feedback-wrong';
+                allMcqBtns.forEach(b => {
+                    if(b.innerText === correct) b.classList.add('selected-correct');
+                });
+            }
+        }
+
+        function flipCard() {
+            const card = document.getElementById('flashcard');
+            isFlipped = !isFlipped;
+            if(isFlipped) {
+                card.classList.add('is-flipped');
+                cardsViewedCount++;
+            } else {
+                card.classList.remove('is-flipped');
+            }
+        }
+
+        function nextCard() {
+            if(currentIndex < currentDeck.length - 1) {
+                currentIndex++;
+                renderCard();
+            } else {
+                showSummary();
+            }
+        }
+
+        function prevCard() {
+            if(currentIndex > 0) {
+                currentIndex--;
+                renderCard();
+            }
+        }
+
+        function toggleShuffle() { setMode('shuffle'); }
+
+        function restartDeck() {
+            currentIndex = 0;
+            document.getElementById('summaryOverlay').classList.remove('active');
+            renderCard();
+        }
+
+        function shuffleAndStart() { setMode('shuffle'); }
+
+        function resetAll() {
+            activeCategory = 'All';
+            currentMode = 'learn';
+            renderCategories();
+            setMode('learn');
+        }
+
+        function showSummary() {
+            document.getElementById('statCardsViewed').innerText = `${cardsViewedCount} of ${currentDeck.length}`;
+            if(currentMode === 'challenge') {
+                document.getElementById('statScore').innerText = `${challengeCorrect} / ${challengeAttempted}`;
+            } else {
+                document.getElementById('statScore').innerText = 'N/A (Learn Mode)';
+            }
+            document.getElementById('summaryOverlay').classList.add('active');
+        }
+
+        function setupKeyboardNav() {
+            document.addEventListener('keydown', (e) => {
+                if(e.key === 'ArrowRight') nextCard();
+                else if(e.key === 'ArrowLeft') prevCard();
+                else if(e.key === ' ' || e.key === 'Enter') {
+                    if(e.key === ' ') e.preventDefault();
+                    flipCard();
+                }
+            });
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+    </script>
+</body>
+</html>
